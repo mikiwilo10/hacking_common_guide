@@ -102,6 +102,10 @@ grep '^[0-9]' scan.txt | cut -d '/' -f1 | sort -u | xargs | tr ' ' ','
 nmap -p135,139,445,5000 -sV -sC -Pn -vvv 192.168.219.133 -oN fullScan.txt 
 ```
 
+```bash
+sudo nmap -p445 -sS -sC -sV --min-rate=5000 -vvv -n -Pn 192.168.219.135
+```
+
 <p align="center">
 <img src="https://github.com/user-attachments/assets/50ce9217-ef58-47c0-94f3-30561aeaff9a"  alt="Mi logo">
 </p>
