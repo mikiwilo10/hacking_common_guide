@@ -1,3 +1,31 @@
+# hackers (consultores de seguridad) o defensores (analistas de seguridad que luchan contra el cibercrimen)
+1. Penetration Tester: Responsable de probar productos tecnológicos para encontrar vulnerabilidades de seguridad explotables.
+2. Red Teamer: Interpreta a un adversario, atacando a una organización y proporcionando retroalimentación desde la perspectiva del enemigo.
+3. Ingeniero de Seguridad: Diseña, supervisa y mantiene controles de seguridad, redes y sistemas para ayudar a prevenir ciberataques.
+Responde las preguntas a continuación.
+
+## seguridad ofensiva
+**cuyo objetivo es identificar y explotar las vulnerabilidades del sistema para mejorar las medidas de seguridad. Esto incluye la explotación de errores de software, el aprovechamiento de configuraciones inseguras y el aprovechamiento de políticas de control de acceso no implementadas, entre otras estrategias. Los equipos rojos y los evaluadores de penetración se especializan en estas técnicas ofensivas.**
+
+## la seguridad defensiva.
+- Prevenir intrusiones
+- Detectar intrusiones cuando ocurren y responder adecuadamente
+- Los equipos azules forman parte del panorama de la seguridad defensiva.
+
+- Concienciación del usuario sobre ciberseguridad: Capacitar a los usuarios en ciberseguridad ayuda a protegerse contra ataques dirigidos a sus sistemas.
+- Documentar y administrar activos: Necesitamos conocer los sistemas y dispositivos que debemos administrar y proteger adecuadamente.
+- Actualizar y aplicar parches a los sistemas: Asegurarse de que los equipos, servidores y dispositivos de red estén correctamente actualizados y parcheados contra cualquier vulnerabilidad(debilidad) conocida. 
+- Configuración de dispositivos de seguridad preventiva: Los firewalls y los sistemas de prevención de intrusiones (IPS) son componentes esenciales de la seguridad preventiva. Los firewalls controlan el tráfico de red que entra y sale del sistema o la red. Los IPS bloquean cualquier tráfico de red que cumpla con las reglas y firmas de ataque actuales.
+- Configuración de dispositivos de registro y monitorización: Un registro y una monitorización de red adecuados son esenciales para detectar actividades maliciosas e intrusiones. Si un nuevo dispositivo no autorizado aparece en nuestra red, deberíamos poder detectarlo.
+
+Centro de Operaciones de Seguridad (SOC)
+
+Inteligencia de Amenazas
+
+Análisis Forense Digital y Respuesta a Incidentes (DFIR)
+
+Análisis de Malware
+
 # Comandos para Pentesting
 
 ## Arp-Scan
