@@ -109,3 +109,34 @@ sudo nmap -p445 -sS -sC -sV --min-rate=5000 -vvv -n -Pn 192.168.219.135
 <p align="center">
 <img src="https://github.com/user-attachments/assets/50ce9217-ef58-47c0-94f3-30561aeaff9a"  alt="Mi logo">
 </p>
+
+
+
+
+
+
+
+
+
+## Gobuster para encontrar páginas web ocultas
+**En el comando anterior, -u indica el sitio web que estamos escaneando, y -w toma una lista de palabras que itera para encontrar páginas ocultas.**
+
+Gobuster le habrá indicado las páginas en la lista de nombres de páginas/directorios (indicadas por Estado: 200).
+```bash
+gobuster dir -u http://fakebank.thm -w wordlist.txt dir
+```
+
+```bash
+gobuster dir -u http://10.10.191.71 -w wordlist.txt dir
+```
+
+```bash
+gobuster dir -u http://10.10.191.71 -x php,html,css,js,txt,pdf -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+```
+
+```bash
+nmap -p80 --script http-enum 10.10.191.71
+
+```bash
+grep -R " "
+```
