@@ -309,8 +309,9 @@ Los pasos clave son:
 - administrator-p1q9m1m3yg1lmnh4l30s
 
 
+# Inyección SQL ciega con respuestas condicionales [1/3]
 
-# Laboratorio: Inyección SQL ciega con respuestas condicionales
+## Laboratorio: Inyección SQL ciega con respuestas condicionales
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL ciega. La aplicación utiliza una cookie de seguimiento para análisis y realiza una consulta SQL que contiene el valor de la cookie enviada.
 
@@ -343,6 +344,7 @@ Este tipo de ataque requiere paciencia y precisión, ya que no vemos los datos d
 administrator  48rgszdjihweim2hstf4
 
 
+- 01-Blind_SQL_conditional_responses.py
 
 
 # Laboratorio: Inyección SQL ciega con errores condicionales

