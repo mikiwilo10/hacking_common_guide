@@ -120,7 +120,7 @@ nmap -sn 192.168.100.0/24 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap TCP
 
 ```bash
-sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.71.91 -oN scan.txt
+sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.98.118 -oN scan.txt
 ```
 
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap UDP
@@ -197,7 +197,7 @@ nmap -p -sV -sC -Pn -vvv -n  ip -oN fullScan.txt
 ```
 
 ```bash
-nmap -p139,3389,445,47001,49664,49665,49666,49667,49668,49670,49671,5985,8000,8080,8443 -sV -sC -Pn -vvv -n 10.201.71.91 -oN fullScan.txt 
+nmap -p22,80,8000 -sV -sC -Pn -vvv -n 10.201.98.118 -oN fullScan.txt 
 ```
 
 
@@ -633,7 +633,7 @@ Using Gobuster:
 
 
 gobuster
-gobuster dir --url http://10.10.186.68/ -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
+gobuster dir --url http://10.201.98.118/ -w /usr/share/wordlists/SecLists/Discovery/Web-Content/common.txt
 Using the results from the commands above, please answer the below questions:
 
 
