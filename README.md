@@ -120,7 +120,7 @@ nmap -sn 192.168.100.0/24 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap TCP
 
 ```bash
-sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.98.118 -oN scan.txt
+sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.123.47 -oN scan.txt
 ```
 
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap UDP
@@ -197,7 +197,7 @@ nmap -p -sV -sC -Pn -vvv -n  ip -oN fullScan.txt
 ```
 
 ```bash
-nmap -p22,80,8000 -sV -sC -Pn -vvv -n 10.201.98.118 -oN fullScan.txt 
+nmap -p135,139,22,3268,3269,3389,389,445,464,47001,49664,49665,49667,49669,49670,49671,49673,49677,49688,49693,53,593,5985,636,88,9389 -sV -sC -Pn -vvv -n 10.201.123.47 -oN fullScan.txt 
 ```
 
 
