@@ -33,3 +33,93 @@ Ambos programas son muy populares en la comunidad de entusiastas de Linux que pr
 
 
 
+
+mkdir ~/.config/{bspwm,sxhkd}
+
+
+┌──(kali㉿kali)-[~/Documents/bspwm/examples]
+└─$ cp bspwmrc ~/.config/bspwm 
+                                                                                                                           
+┌──(kali㉿kali)-[~/Documents/bspwm/examples]
+└─$ cp sxhkdrc ~/.config/sxhkd 
+                                                                                                                           
+
+
+
+└─$ sudo apt-get install kitty
+
+
+
+https://hack4u.io/wp-content/uploads/2022/09/bspwm_resize.txt
+
+
+
+
+
+
+/home/kali/.config/scripts/bspwm_size
+
+
+
+
+usuario normal
+
+
+#!/usr/bin/env dash
+
+if bspc query -N -n focused.floating > /dev/null; then
+	step=20
+else
+	step=100
+fi
+
+case "$1" in
+	west) dir=right; falldir=left; x="-$step"; y=0;;
+	east) dir=right; falldir=left; x="$step"; y=0;;
+	north) dir=top; falldir=bottom; x=0; y="-$step";;
+	south) dir=top; falldir=bottom; x=0; y="$step";;
+esac
+
+bspc node -z "$dir" "$x" "$y" || bspc node -z "$falldir" "$x" "$y"
+
+
+
+
+
+
+
+
+
+└─# apt install polybar -y
+
+
+
+apt install libconfig-dev libdbus-1-dev libegl-dev libev-dev libgl-dev libepoxy-dev libpcre2-dev libpixman-1-dev libx11-xcb-dev libxcb1-dev libxcb-composite0-dev libxcb-damage0-dev libxcb-glx0-dev libxcb-image0-dev libxcb-present-dev libxcb-randr0-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-shape0-dev libxcb-util-dev libxcb-xfixes0-dev meson ninja-build uthash-dev -y
+
+
+
+
+
+
+
+
+
+
+
+
+
+git clone https://github.com/yshui/picom
+
+
+
+$ meson setup --buildtype=release build
+$ ninja -C build
+
+
+
+$ ninja -C build install
+
+
+
+└─$ sudo apt install rofi
+
