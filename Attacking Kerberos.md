@@ -6,6 +6,13 @@ Kerbrute Installation -
 
 3.) chmod +x kerbrute - make kerbrute executable
 
+
+
+sudo mv kerbrute /usr/local/bin
+
+
+
+
 Enumerating Users w/ Kerbrute -
 
 Enumerating users allows you to know which user accounts are on the target domain and which accounts could potentially be used to access the network.

