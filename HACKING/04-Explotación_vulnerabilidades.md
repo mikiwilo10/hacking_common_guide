@@ -315,6 +315,7 @@ searchitem=```
 sqlmap -r sqlmap -p searchitem --batch
 ```
 
+### OBTENER LAS BASES DE DATOS --dbs
 
 sqlmap -r sqlmap -p searchitem --batch --dbs
 
