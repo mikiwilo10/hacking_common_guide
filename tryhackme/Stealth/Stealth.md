@@ -32,6 +32,8 @@ https://github.com/martinsohn/PowerShell-reverse-shell
 
 
 
+
+
 do {
     # Delay before establishing network connection, and between retries
     Start-Sleep -Seconds 1

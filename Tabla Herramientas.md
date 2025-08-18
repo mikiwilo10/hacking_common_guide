@@ -16,3 +16,33 @@
 | **rpcclient** | Cliente RPC para consultar información de Windows. | Enumeración | Linux | `sudo apt install samba-common-bin` | `rpcclient -U "" -N 192.168.1.10` | Acceso anónimo o credenciales válidas. |
 | **proxychains** | Encadena conexiones a través de proxies/Tor. | Pivoting / tunneling | Linux | `sudo apt install proxychains` | `proxychains nmap -Pn 10.10.10.10` | No requiere privilegios especiales. |
 | **chisel** | Túnel TCP/UDP rápido sobre HTTP. | Pivoting / tunneling | Windows/Linux | Descargar desde GitHub o binario precompilado. | `chisel server -p 8000 --reverse` (atacante) y `chisel client atacante_ip:8000 R:8080:127.0.0.1:80` (víctima) | Ejecución en ambos extremos; no requiere privilegios especiales. |
+
+
+
+
+Privilege Name                            Description                                                        State
+========================================= ================================================================== =======
+SeIncreaseQuotaPrivilege                  Adjust memory quotas for a process                                 Enabled
+SeSecurityPrivilege                       Manage auditing and security log                                   Enabled
+SeTakeOwnershipPrivilege                  Take ownership of files or other objects                           Enabled
+SeLoadDriverPrivilege                     Load and unload device drivers                                     Enabled
+SeSystemProfilePrivilege                  Profile system performance                                         Enabled
+SeSystemtimePrivilege                     Change the system time                                             Enabled
+SeProfileSingleProcessPrivilege           Profile single process                                             Enabled
+SeIncreaseBasePriorityPrivilege           Increase scheduling priority                                       Enabled
+SeCreatePagefilePrivilege                 Create a pagefile                                                  Enabled
+SeBackupPrivilege                         Back up files and directories                                      Enabled
+SeRestorePrivilege                        Restore files and directories                                      Enabled
+SeShutdownPrivilege                       Shut down the system                                               Enabled
+SeDebugPrivilege                          Debug programs                                                     Enabled
+SeSystemEnvironmentPrivilege              Modify firmware environment values                                 Enabled
+SeChangeNotifyPrivilege                   Bypass traverse checking                                           Enabled
+SeRemoteShutdownPrivilege                 Force shutdown from a remote system                                Enabled
+SeUndockPrivilege                         Remove computer from docking station                               Enabled
+SeManageVolumePrivilege                   Perform volume maintenance tasks                                   Enabled
+SeImpersonatePrivilege                    Impersonate a client after authentication                          Enabled
+SeCreateGlobalPrivilege                   Create global objects                                              Enabled
+SeIncreaseWorkingSetPrivilege             Increase a process working set                                     Enabled
+SeTimeZonePrivilege                       Change the time zone                                               Enabled
+SeCreateSymbolicLinkPrivilege             Create symbolic links                                              Enabled
+SeDelegateSessionUserImpersonatePrivilege Obtain an impersonation token for another user in the same session 
