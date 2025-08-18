@@ -6,9 +6,7 @@ Kerbrute Installation -
 
 3.) chmod +x kerbrute - make kerbrute executable
 
-
-
-sudo mv kerbrute /usr/local/bin
+4.  sudo mv kerbrute /usr/local/bin
 
 
 

@@ -68,9 +68,6 @@ rpcclient -U 'Administrator%P@$$W0rd'  10.201.3.6     >  user.txt
 
 rpcclient $> enumdomusers
 user:[Administrator] rid:[0x1f4]
-user:[Guest] rid:[0x1f5]
-user:[krbtgt] rid:[0x1f6]
-user:[Machine1] rid:[0x44f]
 user:[Machine2] rid:[0x450]
 user:[Admin1] rid:[0x451]
 user:[Admin2] rid:[0x452]
