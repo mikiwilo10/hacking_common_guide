@@ -27,7 +27,9 @@ C:\Users\USER\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHos
 
 
 
-c:\Users\user> reg query HKLM /f password /t REG_SZ /s #OR
+c:\Users\user> reg query HKLM /f password /t REG_SZ /s
+
+ #OR
 
 C:\Users\user> reg query HKCU /f password /t REG_SZ /s
 
