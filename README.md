@@ -120,7 +120,7 @@ nmap -sn 192.168.100.0/24 | grep -oP '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}' | sort
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap TCP
 
 ```bash
-sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.200.150.100 -oN scan.txt
+sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 10.201.64.240 -oN scan.txt
 ```
 
 ## 🛠️ Ejemplo de uso escaneo agresivo de puertos con Nmap UDP
@@ -191,13 +191,13 @@ grep '^[0-9]' scan.txt | cut -d '/' -f1 | sort -u | xargs | tr ' ' ','
 
 **El comando realiza un escaneo dirigido con Nmap a la IP 192.168.219.133, enfocándose en puertos específicos y obteniendo información detallada de servicios. Aquí la explicación corta:**
 
-
+s
 ```bash
 nmap -p -sV -sC -Pn -vvv -n  ip -oN fullScan.txt 
 ```
 
 ```bash
-nmap -p80,8080 -sV -sC -Pn -vvv -n 10.200.150.100 -oN fullScan.txt 
+nmap -p80,8080 -sV -sC -Pn -vvv -n 10.201.64.240 -oN fullScan.txt 
 ```
 
 

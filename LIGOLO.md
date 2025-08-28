@@ -18,6 +18,12 @@ sudo ip tuntap add user $USER mode tun ligolo
 sudo ip link set ligolo up
 ```
 
+#Delete the 192.168.98.0/24 IP Range from the tun0 interface :
+
+```bash
+sudo ip route del 192.168.98.0/24 dev tun
+```
+
 ## Configurar red de pivoting
 * red_pivoting -> 192.168.1.0/24
 ```bash
