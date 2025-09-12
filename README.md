@@ -1035,3 +1035,53 @@ c:\inetpub\wwwroot\realsecret.txt  34            2021-07-30 09:30:24 +0100
 
 meterpreter > cat "c:\inetpub\wwwroot\realsecret.txt"
 The Flash is the fastest man alivemeterpreter > 
+
+
+
+
+
+
+                                                                                                                  
+┌──(kali㉿kali)-[~/Documents/sedition]
+└─$ unzip /usr/share/wordlists/rockyou.txt.gz
+Archive:  /usr/share/wordlists/rockyou.txt.gz
+  End-of-central-directory signature not found.  Either this file is not
+  a zipfile, or it constitutes one disk of a multi-part archive.  In the
+  latter case the central directory and zipfile comment will be found on
+  the last disk(s) of this archive.
+unzip:  cannot find zipfile directory in one of /usr/share/wordlists/rockyou.txt.gz or
+        /usr/share/wordlists/rockyou.txt.gz.zip, and cannot find /usr/share/wordlists/rockyou.txt.gz.ZIP, period.
+                                                                                                                   
+┌──(kali㉿kali)-[~/Documents/sedition]
+└─$ sudo gunzip /usr/share/wordlists/rockyou.txt.gz
+
+
+
+
+
+
+
+┌──(root㉿kali)-[/home/kali/Documents/ofuspingu]
+└─# cd /usr/share/wordlists 
+                                                                                                                                        
+┌──(root㉿kali)-[/usr/share/wordlists]
+└─# ls
+amass  dirbuster   fasttrack.txt  john.lst  metasploit  rockyou.txt  wfuzz
+dirb   dnsmap.txt  fern-wifi      legion    nmap.lst    sqlmap.txt   wifite.txt
+                                                                                                                                        
+┌──(root㉿kali)-[/usr/share/wordlists]
+└─# git clone --depth 1 https://github.com/danielmiessler/SecLists.git
+Cloning into 'SecLists'...
+remote: Enumerating objects: 6013, done.
+remote: Counting objects: 100% (6013/6013), done.
+remote: Compressing objects: 100% (3666/3666), done.
+remote: Total 6013 (delta 2062), reused 5539 (delta 2039), pack-reused 0 (from 0)
+Receiving objects: 100% (6013/6013), 651.71 MiB | 2.03 MiB/s, done.
+Resolving deltas: 100% (2062/2062), done.
+Updating files: 100% (6239/6239), done.
+                                                                                                                                        
+┌──(root㉿kali)-[/usr/share/wordlists]
+└─# ls                                                                
+amass  dirbuster   fasttrack.txt  john.lst  metasploit  rockyou.txt  sqlmap.txt  wifite.txt
+dirb   dnsmap.txt  fern-wifi      legion    nmap.lst    SecLists     wfuzz
+                                                                                    
