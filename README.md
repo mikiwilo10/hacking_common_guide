@@ -1085,3 +1085,157 @@ Updating files: 100% (6239/6239), done.
 amass  dirbuster   fasttrack.txt  john.lst  metasploit  rockyou.txt  sqlmap.txt  wifite.txt
 dirb   dnsmap.txt  fern-wifi      legion    nmap.lst    SecLists     wfuzz
                                                                                     
+
+
+
+
+
+
+# GO-HASH
+
+
+https://github.com/HunxByts/Go-Hash
+
+
+Go-Hash
+Algorithm identification tools on hashes like MD5, SHA1, SHA256, SHA512, MYSQL
+
+
+
+## Instalation on Linux (deb)
+  sudo apt-get install git
+  sudo apt-get install python3
+
+## Usage Tool
+git clone https://github.com/HunxByts/Go-Hash.git
+
+cd Go-Hash
+
+pip3 install -r requirements.txt
+
+python3 gohash.py
+
+
+
+
+
+
+└─$ git clone https://github.com/HunxByts/Go-Hash.git
+Cloning into 'Go-Hash'...
+remote: Enumerating objects: 34, done.
+remote: Counting objects: 100% (34/34), done.
+remote: Compressing objects: 100% (30/30), done.
+remote: Total 34 (delta 7), reused 0 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (34/34), 38.87 KiB | 9.72 MiB/s, done.
+Resolving deltas: 100% (7/7), done.
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents]
+└─$ cd /home/kali/Documents 
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents]
+└─$ cd /home/kali/Downloads 
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Downloads]
+└─$ ls
+YU30__Zo.html
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Downloads]
+└─$ cd /home/kali/Documents
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents]
+└─$ ls
+dacledit-20250910-172114.bak  dacledit-20250910-172247.bak  Go-Hash  mrRobot  ofuspingu  sedition  webcopilot
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents]
+└─$ cd Go-Hash             
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ ls
+asset  gohash.py  README.md  requirements.txt
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ pip3 install -r requirements.txt
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Kali-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have pypy3-venv installed.
+    
+    If you wish to install a non-Kali-packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    For more information, refer to the following:
+    * https://www.kali.org/docs/general-use/python3-external-packages/
+    * /usr/share/doc/python3.13/README.venv
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ pip3 install -r requirements.txt
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Kali-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have pypy3-venv installed.
+    
+    If you wish to install a non-Kali-packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    For more information, refer to the following:
+    * https://www.kali.org/docs/general-use/python3-external-packages/
+    * /usr/share/doc/python3.13/README.venv
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ pip3 install --user -r requirements.txt
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Kali-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have pypy3-venv installed.
+    
+    If you wish to install a non-Kali-packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    For more information, refer to the following:
+    * https://www.kali.org/docs/general-use/python3-external-packages/
+    * /usr/share/doc/python3.13/README.venv
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ pip3 install --break-system-packages -r requirements.txt
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: requests in /usr/lib/python3/dist-packages (from -r requirements.txt (line 1)) (2.32.3)
+Requirement already satisfied: charset_normalizer<4,>=2 in /usr/lib/python3/dist-packages (from requests->-r requirements.txt (line 1)) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in /usr/lib/python3/dist-packages (from requests->-r requirements.txt (line 1)) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/lib/python3/dist-packages (from requests->-r requirements.txt (line 1)) (2.3.0)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/lib/python3/dist-packages (from requests->-r requirements.txt (line 1)) (2025.1.31)
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ python3 gohash.py
