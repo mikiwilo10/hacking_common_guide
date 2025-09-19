@@ -1239,3 +1239,15 @@ Requirement already satisfied: certifi>=2017.4.17 in /usr/lib/python3/dist-packa
                                                                                                                                                             
 ┌──(kali㉿kali)-[~/Documents/Go-Hash]
 └─$ python3 gohash.py
+
+
+
+
+
+
+
+
+
+
+
+wget https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh

