@@ -1251,3 +1251,50 @@ Requirement already satisfied: certifi>=2017.4.17 in /usr/lib/python3/dist-packa
 
 
 wget https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
+
+
+
+
+
+
+
+
+
+==============================================================
+
+privilege@ubuntu-virtual-machine:/tmp$ cat fping.sh 
+#!/bin/bash
+
+# Uso: ./fping.sh 192.168.1
+# Eso escaneará 192.168.1.1 - 192.168.1.254
+
+RED=$1
+
+if [ -z "$RED" ]; then
+  echo "Uso: $0 <red>"
+  echo "Ejemplo: $0 192.168.1"
+  exit 1
+fi
+
+echo "Escaneando red: $RED.0/24 ..."
+for i in {1..254}; do
+  ping -c 1 -W 1 $RED.$i > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    echo "[+] Host activo: $RED.$i"
+  fi
+done
+
+
+
+privilege@ubuntu-virtual-machine:/tmp$ 
+
+
+
+
+
+privilege@ubuntu-virtual-machine:/tmp$ ./fping.sh 192.168.98
+Escaneando red: 192.168.98.0/24 ...
+[+] Host activo: 192.168.98.2
+[+] Host activo: 192.168.98.15
+[+] Host activo: 192.168.98.30
+[+] Host activo: 192.168.98.120
