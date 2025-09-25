@@ -1251,3 +1251,111 @@ Requirement already satisfied: certifi>=2017.4.17 in /usr/lib/python3/dist-packa
 
 
 wget https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
+
+
+
+
+
+
+
+
+
+Claro 🚀, en Linux tienes varias formas de ver qué puertos están abiertos (y qué procesos los usan). Te paso los comandos más comunes:
+
+🔎 1. Con ss (recomendado, reemplazo moderno de netstat)
+ss -tuln
+
+
+-t → TCP
+
+-u → UDP
+
+-l → solo los que están en listen
+
+-n → muestra números en vez de nombres
+
+👉 Ejemplo de salida:
+
+Netid State   Recv-Q Send-Q Local Address:Port  Peer Address:Port
+tcp   LISTEN  0      128   0.0.0.0:22          0.0.0.0:*
+tcp   LISTEN  0      128   [::]:22             [::]:*
+
+🔎 2. Con ss mostrando también qué proceso usa el puerto
+sudo ss -tulpn
+
+
+-p → muestra PID y nombre del proceso que abrió el puerto.
+
+🔎 3. Con netstat (más viejo, algunos Linux ya no lo traen)
+sudo netstat -tulnp
+
+🔎 4. Ver solo un puerto específico (ejemplo SSH en 22)
+ss -tuln | grep :22
+
+🔎 5. Escaneo desde fuera (para probar firewall o accesibilidad)
+nmap -p- 127.0.0.1
+
+
+-p- → escanea todos los puertos (1–65535).
+
+Puedes cambiar 127.0.0.1 por la IP de otra máquina.
+
+👉 Recomendación: usa ss -tulpn para ver rápido qué servicios están escuchando en tu máquina.
+
+¿Quieres que te arme un script en bash que te muestre en una tabla todos los puertos abiertos con el servicio y el PID, como un mini-monitor?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Descubir host
+
+==============================================================
+
+privilege@ubuntu-virtual-machine:/tmp$ cat fping.sh 
+#!/bin/bash
+
+# Uso: ./fping.sh 192.168.1
+# Eso escaneará 192.168.1.1 - 192.168.1.254
+
+RED=$1
+
+if [ -z "$RED" ]; then
+  echo "Uso: $0 <red>"
+  echo "Ejemplo: $0 192.168.1"
+  exit 1
+fi
+
+echo "Escaneando red: $RED.0/24 ..."
+for i in {1..254}; do
+  ping -c 1 -W 1 $RED.$i > /dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    echo "[+] Host activo: $RED.$i"
+  fi
+done
+
+
+
+privilege@ubuntu-virtual-machine:/tmp$ 
+
+
+
+
+
+privilege@ubuntu-virtual-machine:/tmp$ ./fping.sh 192.168.98
+Escaneando red: 192.168.98.0/24 ...
+[+] Host activo: 192.168.98.2
+[+] Host activo: 192.168.98.15
+[+] Host activo: 192.168.98.30
+[+] Host activo: 192.168.98.120

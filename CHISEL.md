@@ -15,6 +15,14 @@ Este documento explica el uso de **Chisel** y **Proxychains**, herramientas muy 
   - **Servidor**: en la máquina atacante, escucha conexiones entrantes.  
   - **Cliente**: en la máquina víctima, se conecta al servidor y redirige tráfico local hacia él.
 
+https://github.com/jpillora/chisel/releases
+
+
+
+
+┌──(kali㉿kali)-[~/Downloads]
+└─$ chmod +x chisel  
+                                                                                                                               
 ---
 
 ## **Ejemplo 1: Redirección básica de un puerto**
