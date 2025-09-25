@@ -1260,6 +1260,7 @@ wget https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
 
 
 
+<<<<<<< HEAD
 Claro 🚀, en Linux tienes varias formas de ver qué puertos están abiertos (y qué procesos los usan). Te paso los comandos más comunes:
 
 🔎 1. Con ss (recomendado, reemplazo moderno de netstat)
@@ -1321,6 +1322,8 @@ Puedes cambiar 127.0.0.1 por la IP de otra máquina.
 
 # Descubir host
 
+=======
+>>>>>>> 49f60ca7088f660b3b697c5bce544c2621baa158
 ==============================================================
 
 privilege@ubuntu-virtual-machine:/tmp$ cat fping.sh 

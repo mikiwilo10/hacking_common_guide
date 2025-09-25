@@ -70,7 +70,7 @@ Enumerar usuarios le permite saber qué cuentas de usuario están en el dominio 
 
 
 ```bash
-kerbrute userenum --dc CONTROLLER.local -d CONTROLLER.local User.txt - 
+kerbrute userenum --dc CONTROLLER.local -d CONTROLLER.local User.txt
 ```
 
 * EJEMPLO DE SALIDA
