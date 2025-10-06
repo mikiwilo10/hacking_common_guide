@@ -310,7 +310,7 @@ netexec smb 192.168.56.4  -u 'john.smith' -p 'Rk436\#Z4&' --rid-brute | grep Sid
 
 sudo apt-get install dnsmasq
                                                                                                                                                                                                                                                            
-nano /etc/dnsmasq.conf    
+sudo nano /etc/dnsmasq.conf    
 
 address=/ELEVATOR.bloodhound.thl/192.168.56.103
 

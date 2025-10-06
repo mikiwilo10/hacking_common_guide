@@ -236,7 +236,7 @@ SeTimeZonePrivilege           Cambiar la zona horaria                      Desha
 PS C:\temp> 
 ```
 
-## De los cuales SeImpersonatePrivilegeSe puede utilizar para la elevación de la serie Patata, aquí directamente en PrintSpoofer
+## De los cuales SeImpersonatePrivilege puede utilizar para la elevación de la serie Patata, aquí directamente en PrintSpoofer
 
 Descargamos la Herramienta PrintSpoofer.exe y lo copartimos mediante un servidor en python
 
