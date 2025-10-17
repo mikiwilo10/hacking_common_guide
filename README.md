@@ -1375,6 +1375,18 @@ File.zip/Credentials/Credentials.txt:$zip2$*0*1*0*03b3feaba7e84510*b86b*40*889fd
 
 
 
+# Desecriptar base64
+
+
+echo "" | base64 -d
+
+
+# Encriptar base64
+
+echo "" | base64 -w0
+
+cat payload.txt | base64 -w0
+
 ====================================================================================================================================================================================
 
 # Descubir host

@@ -852,6 +852,13 @@ smbpasswd -r 192.168.56.107 -U "svcapp1"
 
 certipy-ad find -u 'svcapp1' -p 'Hola1234$' -dc-ip 10.0.2.6 -vulnerable -stdout
 
+---
+
+# USUARIOS
+
+https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt
+
+
 
 ---
 

