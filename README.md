@@ -1442,3 +1442,13 @@ Escaneando red: 192.168.98.0/24 ...
 
 
  impacket-changepasswd 'Folclore/Ix_Chel':'4+9Ii1wK'@192.168.69.9
+
+
+
+
+
+---
+
+# php_filter_chain_generator
+
+https://github.com/synacktiv/php_filter_chain_generator
