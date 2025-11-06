@@ -1520,3 +1520,18 @@ token= build_token(header,payload, key_bytes)
 
 print("Token--> " + token)
 ```
+
+
+
+
+
+
+ # SNMP (Simple Network Management Protocol)
+
+-v2c: Versión 2c del protocolo SNMP
+
+-c public: Comunidad SNMP (generalmente la default)
+
+192.168.101.5: IP objetivo
+
+snmpwalk -v2c -c public 192.168.101.5
