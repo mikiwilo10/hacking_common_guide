@@ -1356,7 +1356,7 @@ export TERM=  xterm
 
 
 ====================================================================================================================================================================================
-
+# Desecriptar zip
 
 
 ┌──(kali㉿kali)-[~/Documents/uploader]
@@ -1373,6 +1373,11 @@ File.zip/Credentials/Credentials.txt:$zip2$*0*1*0*03b3feaba7e84510*b86b*40*889fd
 ┌──(kali㉿kali)-[~/Documents/uploader]
 └─$ john --wordlist=/usr/share/wordlists/rockyou.txt  hash.txt      
 
+
+
+# Desecriptar rar
+
+rar2john > hash.txt
 
 
 # Desecriptar base64
