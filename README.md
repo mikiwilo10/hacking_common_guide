@@ -1535,3 +1535,22 @@ print("Token--> " + token)
 192.168.101.5: IP objetivo
 
 snmpwalk -v2c -c public 192.168.101.5
+
+
+
+
+
+
+# Analizar PDF
+
+──(kali㉿kali)-[~/Documents/Black_Gold]
+└─$ sudo apt install pdfgrep
+
+
+
+┌──(kali㉿kali)-[~/Documents/Black_Gold]
+└─$ pdfgrep -i "contraseña" pdfs_descargados/*.pdf
+
+pdfs_descargados/2023-01-12.pdf:   ● Contraseña temporal: E@6q%TnR7UEQSXywr8^@ (Por favor, cambia esta
+pdfs_descargados/2023-01-12.pdf:      contraseña en tu primer inicio de sesión)
+
