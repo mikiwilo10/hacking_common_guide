@@ -708,9 +708,14 @@ https://drive.google.com/file/d/1Z0eMHGbyZJN_8tAmsuAls43onlIXn1bu/view
 ──(kali㉿kali)-[~/Documents/RETOS]
 └─$ grep "cmd=\|exec=\|system=" access.log 
 96.127.149.186 - - [20/May/2015:02:05:13 +0000] "GET /wp-content/uploads/c99shell.php?cmd=cat+/var/www/s3cret_fl4g.txt HTTP/1.0" 200 296 "https://example.com" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:22.0) Gecko/20100101 Firefox/22.0"
-                                                                                                                                                            
+
+
+96.127.149.186 - - [20/May/2015:02:05:13 +0000] "GET /wp-content/uploads/c99shell.php?cmd=cat+/var/www/s3cret_fl4g.txt HTTP/1.0" 200 296 "https://example.com" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:22.0) Gecko/20100101 Firefox/22.0"
+
+
 ┌──(kali㉿kali)-[~/Documents/RETOS]
 └─$ echo -n "20/05/2015:02:05:13 +0000" | sha256sum
+    echo -n "20/05/2015:02:05:13 +0000" | sha256sum
 
 8cf18b90f5df3b589799fbf15d599007951291fd970d16f476c335ac8a504de5  -
                                                                                                                                                             
@@ -772,6 +777,63 @@ Las primeras investigaciones apuntan a que un malware fue inyectado y ejecutado 
 ## ctf_Analisis_Captura_De_Red.pcapng
 
 https://drive.google.com/file/d/1NYG9Bu31xFAbTVMspVS7NL4ehqY7q9ms/view
+
+
+
+└─$ ls
+ctf_Analisis_Captura_De_Red.pcapng
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ strings ctf_Analisis_Captura_De_Red.pcapng | grep -i "user\|pass\|login" | head -20 
+
+[04/05/25 16:02:09] INFO     Remote auth-methods: ['publickey', 'password', 'keyboard-interactive']                   
+                                     Username: ilak                                                              
+                                     Password: ilak                                                                   
+USER-AGENT: Chromium/131.0.6778.109 Windows
+USER-AGENT: Chromium/131.0.6778.109 Windows
+USER-AGENT: Chromium/131.0.6778.109 Windows
+USER-AGENT: Chromium/131.0.6778.109 Windows
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ echo -n "ilak&ilak" | sha256sum
+6861063401cd0b78b1fd93590a2a97954559c46c85fe2ac0712a79faf06eec4f  -
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ echo -n "ilak&ilak" | sha256sum
+6861063401cd0b78b1fd93590a2a97954559c46c85fe2ac0712a79faf06eec4f  -
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ strings ctf_Analisis_Captura_De_Red.pcapng | grep -i "login" | head -20 
+
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ strings ctf_Analisis_Captura_De_Red.pcapng | grep -i "pass" | head -20
+
+[04/05/25 16:02:09] INFO     Remote auth-methods: ['publickey', 'password', 'keyboard-interactive']                   
+                                     Password: ilak                                                                   
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ strings ctf_Analisis_Captura_De_Red.pcapng | grep -i "usuario" | head -20
+
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ strings ctf_Analisis_Captura_De_Red.pcapng | grep -i "user" | head -20
+
+                                     Username: ilak                                                              
+USER-AGENT: Chromium/131.0.6778.109 Windows
+USER-AGENT: Chromium/131.0.6778.109 Windows
+USER-AGENT: Chromium/131.0.6778.109 Windows
+USER-AGENT: Chromium/131.0.6778.109 Windows
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ strings ctf_Analisis_Captura_De_Red.pcapng | grep -i "username" | head -20
+
+                                     Username: ilak                                                              
+                                                                                                                                             
+┌──(kali㉿kali)-[~/Documents/RETOS/Packet_mysteries]
+└─$ strings ctf_Analisis_Captura_De_Red.pcapng | grep -i "username" | head -20
+
+
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
