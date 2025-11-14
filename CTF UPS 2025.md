@@ -1,29 +1,3 @@
-# Hidden in Plain Sight
-
-345
- 0  0
-Esta vez tenemos los logs de nuestro servidor web. Tu misión es encontrar la hora en la el hacker explotó la vulnerabilidad. La flag sigue el formato CTF{sha256(DD/MM/YYYY:HH:MM:SS +XXXX)}, donde sha256 es el resultado de sacar el hash"
-
-
-https://drive.google.com/file/d/1Z0eMHGbyZJN_8tAmsuAls43onlIXn1bu/view
-
-
-
-──(kali㉿kali)-[~/Documents/RETOS]
-└─$ grep "cmd=\|exec=\|system=" access.log 
-96.127.149.186 - - [20/May/2015:02:05:13 +0000] "GET /wp-content/uploads/c99shell.php?cmd=cat+/var/www/s3cret_fl4g.txt HTTP/1.0" 200 296 "https://example.com" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:22.0) Gecko/20100101 Firefox/22.0"
-                                                                                                                                                            
-┌──(kali㉿kali)-[~/Documents/RETOS]
-└─$ echo -n "20/05/2015:02:05:13 +0000" | sha256sum
-
-8cf18b90f5df3b589799fbf15d599007951291fd970d16f476c335ac8a504de5  -
-                                                                                                                                                            
-┌──(kali㉿kali)-[~/Documents/RETOS]
-└─$ 
-CTF{8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4}
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Log Rolling
 
@@ -77,6 +51,10 @@ CTF{0cb87f727f31e5f5a59cca8a10c8f9b55622be05305d4e7e92c334f5911e1034}
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Hidden Vault
+
+Uno de nuestros analistas creó un volumen encriptado donde se guarda información muy importante para nuestra empresa. Lamentablemente, olvidó la contraseña. ¿Puedes ayudarnos a recuperar nuestro acceso?
+
+
 
 
 https://drive.google.com/file/d/1AXGgd_FMwfEP9PKumeZJ_qwZzP9i9FTt/view
@@ -446,7 +424,8 @@ ReverseMe.exe
 
 ┌──(kali㉿kali)-[~/Documents/RETOS/Super_Secure_Login]
 └─$ echo 'Q1RGe2U5NjQzZmZlNmExYjc2OGE3OGQ4YTQ2ZjVhYzNiMjYwZGE1MTZmMTNkMmMwM2IxODJmOGQ5NGE2NDVhNGM0Y2J9' | base64 -d
-CTF{e9643ffe6a1b768a78d8a46f5ac3b260da516f13d2c03b182f8d94a645a4c4cb}                                                                                                                                               
+
+CTF{e9643ffe6a1b768a78d8a46f5ac3b260da516f13d2c03b182f8d94a645a4c4cb}                                                                                                                                          
 ┌──(kali㉿kali)-[~/Documents/RETOS/Super_Secure_Login]
 └─$ 
 
@@ -687,6 +666,11 @@ https://drive.usercontent.google.com/download?id=16KwCDg2Zc4TfZX4h-PoBzEEG8sm_6f
 
 ## Broken_File
 
+Nos hemos logrado infiltrar en uno de los servidores de APT 1337, desde acá logramos extraer un archivo que al parecer contiene los secretos de su modo de operación. Nuestro equipo ha tratado de todas formas de abrir el archivo pero este parece corrupto. ¿Puedes ayudarnos a visualizar este archivo tan importante para nosotros?
+
+
+
+
 https://drive.google.com/file/d/13B0G4UDyEhvp1C00CcetDRBQVxo15fFa/view
 
 ┌──(kali㉿kali)-[~/Documents/RETOS/Broken_File]
@@ -710,6 +694,32 @@ http://ns.adobe.com/xap/1.0/
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
 
+## Hidden in Plain Sight
+
+345
+ 0  0
+Esta vez tenemos los logs de nuestro servidor web. Tu misión es encontrar la hora en la el hacker explotó la vulnerabilidad. La flag sigue el formato CTF{sha256(DD/MM/YYYY:HH:MM:SS +XXXX)}, donde sha256 es el resultado de sacar el hash"
+
+
+https://drive.google.com/file/d/1Z0eMHGbyZJN_8tAmsuAls43onlIXn1bu/view
+
+
+
+──(kali㉿kali)-[~/Documents/RETOS]
+└─$ grep "cmd=\|exec=\|system=" access.log 
+96.127.149.186 - - [20/May/2015:02:05:13 +0000] "GET /wp-content/uploads/c99shell.php?cmd=cat+/var/www/s3cret_fl4g.txt HTTP/1.0" 200 296 "https://example.com" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:22.0) Gecko/20100101 Firefox/22.0"
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/RETOS]
+└─$ echo -n "20/05/2015:02:05:13 +0000" | sha256sum
+
+8cf18b90f5df3b589799fbf15d599007951291fd970d16f476c335ac8a504de5  -
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/RETOS]
+└─$ 
+CTF{8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4}
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Secret Blank
 
@@ -724,7 +734,10 @@ https://drive.google.com/file/d/1xfuMGA7Au5Z1dGXcaAUrTmV1d7W4lv77/view
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-## secret_ECO_Sound.wav
+## Echoes of the unseen
+
+
+ secret_ECO_Sound.wav
 
 https://drive.google.com/file/d/1cqTmoRqMNBYQLw1rPSxD47YoMc89sTDJ/view
 
@@ -734,9 +747,25 @@ CTF{a6090c7e9f5e02bJcfab009470e7006949407U770b2e4d4J765d9490J29edd2}
 
 
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+## Ghost in the RAM
+
+https://drive.google.com/drive/folders/1FCWwN_b_YVthb87f2QJMHRAVb_soiBv_
+
+
+115
+ 4 (100% liked)  0
+La Universidad Hola Mundo ha reportado una intrusión crítica en uno de sus servidores administrativos. El equipo de respuesta a incidentes logró capturar una imagen de memoria justo antes de que el sistema fuese completamente comprometido.
+
+Las primeras investigaciones apuntan a que un malware fue inyectado y ejecutado en memoria, evitando dejar rastros en disco. Tu misión, como analista forense digital, es encontrar ese binario malicioso dentro del volcado de RAM, extraerlo, y ejecutarlo en un entorno controlado para recuperar la flag que los atacantes dejaron como firma.
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+## Packet Mysteries
+¿No te intimida la complejidad del networking y la amenaza de un ataque MITM?. Encuentra un user y password el objetivo es poder concatenar user&password y pasarlo a formato CTF{SHA-256}.
 
 
 
@@ -746,11 +775,16 @@ https://drive.google.com/file/d/1NYG9Bu31xFAbTVMspVS7NL4ehqY7q9ms/view
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Hidden Traces
+La vida se disfraza de apariencia, pero su esencia se revela en las sombras. Solo quien se atreve a mirar más allá descifra el enigma del alma. Identifica la sombra pérdida para poder extraer la bandera y la encontraras en formato CTF{SHA-256}.
 
+DESCARGAR RETO
 
+https://drive.google.com/drive/folders/1kDELVHMtxWVMefcwFltazM_xjG8AJ-QF
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Just an image, or is it?
 
-
-# Banana Dance
+ Banana Dance
 
 
 https://drive.google.com/file/d/1BLUvOnzorX8F4vD-9C_QKBOtwrV4Vb6s/view
