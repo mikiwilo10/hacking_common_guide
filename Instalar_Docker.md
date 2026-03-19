@@ -18,6 +18,13 @@ Executing: /usr/lib/systemd/systemd-sysv-install enable docker
 └─$  sudo usermod -aG docker $USER
 
 
+# install docker compose
+
+https://docs.docker.com/compose/install/linux/#install-the-plugin-manually
+
+
+
+
 ┌──(kali㉿kali)-[~/Documents]
 └─$ sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current

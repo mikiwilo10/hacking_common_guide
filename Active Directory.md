@@ -795,6 +795,9 @@ tar -xvzf bloodhound-cli-linux-amd64.tar.gz
 ./bloodhound-cli resetpwd
 ```
 
+
+
+
 ## Extraer Informacion
 ```bash
 bloodhound-python -u 'usuario' -p 'Password123!' -d 'DOMINIO.local' -dc DC.DOMINIO.local -c All --zip
