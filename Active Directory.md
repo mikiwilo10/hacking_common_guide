@@ -770,6 +770,8 @@ Usa grafos para mostrar cómo las cuentas, grupos, equipos y permisos se relacio
 * Grupos con permisos para modificar otros usuarios o GPOs.
 * ACLs mal configuradas que permiten “tomar control” de objetos.
 
+BloodHound es una herramienta de código abierto utilizada por atacantes y defensores por igual para analizar la seguridad del dominio de Active Directory. La herramienta recopila una gran cantidad de datos de un dominio de Active Directory. Utiliza la teoría de grafos para representar visualmente la relación entre objetos e identificar rutas de ataque en el dominio que habrían sido difíciles o imposibles de detectar con la enumeración tradicional. A partir de la versión 4.0, BloodHound ahora también soporta Azure. Aunque el propósito principal de este módulo será Active Directory, introduciremos AzureHound en la sección Enumeración de Azure. Los datos que serán utilizados por BloodHound se recopilan utilizando el recolector SharpHound, que está disponible en PowerShell y C#. Discutiremos la recopilación de datos en las siguientes secciones.
+
 ## ⚙ Componentes principales
 
 * Ingestores (SharpHound, BloodHound.py) → recolectan datos del dominio.

