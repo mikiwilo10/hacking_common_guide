@@ -50,3 +50,6 @@ sudo whoami
 ```
 
 Si el sistema solicita tu contraseña y responde **`root`**, la configuración fue exitosa.
+
+
+sudo localectl set-keymap latam

