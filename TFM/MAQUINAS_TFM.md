@@ -62,6 +62,13 @@ sudo oscap --version
 ```
 
 
+# Solución: Agregar los directorios de sistema al PATH
+Ejecuta esto para incluir los directorios donde suelen estar las herramientas administrativas:
+
+```bash
+bash-5.2# export PATH=$PATH:/usr/sbin:/sbin:/usr/local/sbin
+```
+
 # 🧑‍💻 Creación de un Usuario Dedicado para Auditoría
 1️⃣ En cada nodo remoto (los sistemas a auditar)
 
@@ -69,6 +76,8 @@ sudo oscap --version
 sudo useradd -m -s /bin/bash auditor
 
 sudo passwd auditor  # auditor2026
+
+echo "auditor:auditor2026" | chpasswd
 
 ```
 
