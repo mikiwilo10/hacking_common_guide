@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecAuto - Historial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: #4ade80;
+        }
+        .severity-high { background: #dc2626; }
+        .severity-medium { background: #f59e0b; }
+        .severity-low { background: #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-200 min-h-screen">
+
+    <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-shield-haltered text-green-500 text-xl"></i>
+                <span class="text-white font-bold text-lg">SecAuto</span>
+                <span class="text-xs text-gray-500 ml-2">| Historial</span>
+            </div>
+            <div class="flex gap-4 text-sm">
+                <a href="/" class="text-gray-400 hover:text-green-400 transition-colors">
+                    <i class="fas fa-home mr-1"></i>Inicio
+                </a>
+                <a href="/scanner" class="text-gray-400 hover:text-green-400 transition-colors">
+                    <i class="fas fa-scan mr-1"></i>Escáner
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white">
+                <i class="fas fa-history text-green-500 mr-2"></i>
+                Historial de Escaneos
+            </h1>
+            <p class="text-gray-500 text-sm">Todos los escaneos realizados organizados por fecha (más reciente primero)</p>
+        </div>
+
+        <!-- Filtros y acciones -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div class="flex items-center gap-3">
+                <button onclick="loadScans()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>Actualizar
+                </button>
+                <span id="scanCount" class="text-gray-500 text-sm"></span>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-500">
+                <span>🔽 Más reciente primero</span>
+                <span>|</span>
+                <span>📁 Ordenado por fecha</span>
+            </div>
+        </div>
+
+        <!-- Contenedor de escaneos -->
+        <div id="scansContainer">
+            <div class="text-center py-8" id="loadingIndicator">
+                <i class="fas fa-spinner fa-spin text-3xl text-green-500"></i>
+                <p class="text-gray-500 mt-2">Cargando historial...</p>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div id="statsContainer" class="mt-6 flex flex-wrap justify-center gap-4 text-sm text-gray-500 hidden">
+            <span id="totalScans">📊 Total: 0 registros</span>
+            <span>•</span>
+            <span id="completedScans">✅ Completados: 0</span>
+            <span>•</span>
+            <span id="failedScans">❌ Fallidos: 0</span>
+            <span>•</span>
+            <span id="uniqueTargets">🖥️ Servidores: 0</span>
+        </div>
+
+    </main>
+
+    <script>
+        // ============ CARGAR ESCANEOS ============
+
+        async function loadScans() {
+            const container = document.getElementById('scansContainer');
+            const stats = document.getElementById('statsContainer');
+
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-3xl text-green-500"></i>
+                    <p class="text-gray-500 mt-2">Cargando historial...</p>
+                </div>
+            `;
+            stats.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/scan/list');
+                const data = await res.json();
+
+                if (data.scans && data.scans.length > 0) {
+                    renderScans(data.scans);
+                    updateStats(data.scans);
+                    stats.classList.remove('hidden');
+                } else {
+                    container.innerHTML = `
+                        <div class="bg-gray-900 rounded-xl border border-gray-800 text-center py-12">
+                            <i class="fas fa-inbox text-5xl text-gray-700 mb-4"></i>
+                            <p class="text-gray-500">No hay registros en el historial</p>
+                            <p class="text-gray-600 text-sm">Realiza tu primer escaneo en la página de 
+                                <a href="/scanner" class="text-green-500 hover:underline">escáner</a>
+                            </p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="bg-red-900/20 border border-red-800 rounded-xl text-center py-12">
+                        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                        <p class="text-red-400">Error al cargar el historial</p>
+                        <p class="text-red-300 text-sm">${err.message}</p>
+                        <button onclick="loadScans()" class="mt-4 bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                            Reintentar
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // ============ RENDERIZAR ESCANEOS ============
+
+        function renderScans(scans) {
+            const container = document.getElementById('scansContainer');
+            let html = '<div class="space-y-4">';
+
+            scans.forEach((scan, index) => {
+                const isLatest = index === 0;
+                const metrics = scan.metrics || {};
+                
+                // Datos de métricas
+                const score = metrics.score !== undefined ? metrics.score : null;
+                const passed = metrics.passed || 0;
+                const failed = metrics.failed || 0;
+                const other = metrics.other || 0;
+                const total = passed + failed + other;
+                
+                // Severidad
+                const high = metrics.high || 0;
+                const medium = metrics.medium || 0;
+                const low = metrics.low || 0;
+                
+                // Estado
+                const status = scan.status || 'unknown';
+                const isCompleted = status === 'completed';
+                const isRunning = status === 'running';
+                const isFailed = status === 'failed';
+                
+                const statusIcon = isCompleted ? '✅' : isRunning ? '⏳' : isFailed ? '❌' : '📊';
+                const statusLabel = isCompleted ? 'Completado' : isRunning ? 'Ejecutando' : isFailed ? 'Fallido' : status;
+                const statusColor = isCompleted ? 'green' : isRunning ? 'blue' : isFailed ? 'red' : 'gray';
+                
+                // Score color
+                let scoreColor = 'gray';
+                let scoreBg = 'bg-gray-800';
+                if (score !== null) {
+                    if (score >= 80) { scoreColor = 'green'; scoreBg = 'bg-green-900'; }
+                    else if (score >= 50) { scoreColor = 'yellow'; scoreBg = 'bg-yellow-900'; }
+                    else { scoreColor = 'red'; scoreBg = 'bg-red-900'; }
+                }
+                
+                const folder = scan.folder || `${scan.target}-${scan.started_at?.slice(0, 10)}`;
+                
+                // Formatear fecha
+                let formattedDate = scan.started_at?.replace('T', ' ')?.slice(0, 19) || 'N/A';
+                const dateMatch = folder.match(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/);
+                if (dateMatch) {
+                    formattedDate = `${dateMatch[3]}/${dateMatch[2]}/${dateMatch[1]} ${dateMatch[4]}:${dateMatch[5]}:${dateMatch[6]}`;
+                }
+
+                html += `
+                    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5 hover:border-gray-600 transition-all 
+                                ${isLatest && isCompleted ? 'border-green-500/50 bg-gray-900/80' : ''}">
+                        
+                        <!-- Cabecera -->
+                        <div class="flex items-start justify-between flex-wrap gap-3">
+                            <div class="flex items-start gap-3">
+                                <div class="flex flex-col items-center">
+                                    ${isLatest && isCompleted ? '<span class="text-xs text-green-400 font-bold">🆕 MÁS RECIENTE</span>' : ''}
+                                    <span class="text-xs text-gray-500">#${index + 1}</span>
+                                </div>
+                                <span class="text-2xl">${statusIcon}</span>
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-white font-semibold text-lg">${scan.target}</span>
+                                        <span class="text-xs text-gray-500">(${scan.user})</span>
+                                        <span class="text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-400 font-mono">${scan.id}</span>
+                                        ${isLatest && isCompleted ? '<span class="text-xs px-2 py-0.5 rounded-full bg-green-900 text-green-400 animate-pulse">🟢 Último</span>' : ''}
+                                    </div>
+                                    <div class="flex items-center gap-3 text-xs text-gray-500 mt-0.5 flex-wrap">
+                                        <span>📂 ${folder}</span>
+                                        <span>🖥️ ${scan.so_detected || 'N/A'}</span>
+                                        <span>📅 ${formattedDate}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs px-3 py-1 rounded-full bg-${statusColor}-900 text-${statusColor}-400 font-medium">
+                                    ${statusIcon} ${statusLabel}
+                                </span>
+                                ${score !== null ? `
+                                <span class="text-xs font-bold px-3 py-1 rounded-full ${scoreBg} text-${scoreColor}-400">
+                                    📊 ${score}%
+                                </span>
+                                ` : ''}
+                                <button onclick="viewReport('${scan.id}')" 
+                                        class="text-blue-400 hover:text-blue-300 text-sm transition-colors ${!isCompleted ? 'opacity-50 cursor-not-allowed' : ''}"
+                                        ${!isCompleted ? 'disabled' : ''}>
+                                    <i class="fas fa-eye mr-1"></i>Ver
+                                </button>
+                                <button onclick="downloadReport('${scan.id}')" 
+                                        class="text-green-400 hover:text-green-300 text-sm transition-colors ${!isCompleted ? 'opacity-50 cursor-not-allowed' : ''}"
+                                        ${!isCompleted ? 'disabled' : ''}>
+                                    <i class="fas fa-download mr-1"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Métricas Detalladas -->
+                        ${isCompleted && total > 0 ? `
+                        <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3">
+                            <!-- Score -->
+                            <div class="metric-card bg-gray-800/50 rounded-lg p-3 text-center border border-gray-700">
+                                <p class="text-gray-500 text-xs">Score</p>
+                                <p class="text-xl font-bold ${score >= 80 ? 'text-green-400' : score >= 50 ? 'text-yellow-400' : 'text-red-400'}">
+                                    ${score !== null ? score + '%' : '--'}
+                                </p>
+                            </div>
+                            <!-- Pass -->
+                            <div class="metric-card bg-gray-800/50 rounded-lg p-3 text-center border border-gray-700">
+                                <p class="text-gray-500 text-xs">✅ Pass</p>
+                                <p class="text-xl font-bold text-green-400">${passed}</p>
+                            </div>
+                            <!-- Fail -->
+                            <div class="metric-card bg-gray-800/50 rounded-lg p-3 text-center border border-gray-700">
+                                <p class="text-gray-500 text-xs">❌ Fail</p>
+                                <p class="text-xl font-bold text-red-400">${failed}</p>
+                            </div>
+                            <!-- Other -->
+                            <div class="metric-card bg-gray-800/50 rounded-lg p-3 text-center border border-gray-700">
+                                <p class="text-gray-500 text-xs">⚪ Other</p>
+                                <p class="text-xl font-bold text-gray-400">${other}</p>
+                            </div>
+                            <!-- Total -->
+                            <div class="metric-card bg-gray-800/50 rounded-lg p-3 text-center border border-gray-700">
+                                <p class="text-gray-500 text-xs">📊 Total</p>
+                                <p class="text-xl font-bold text-white">${total}</p>
+                            </div>
+                        </div>
+
+                        <!-- Severidad de Fallos -->
+                        ${failed > 0 ? `
+                        <div class="mt-3 flex items-center gap-4 text-xs flex-wrap">
+                            <span class="text-gray-400 font-medium">Severidad:</span>
+                            ${high > 0 ? `<span class="text-red-400">🔴 High: ${high}</span>` : ''}
+                            ${medium > 0 ? `<span class="text-yellow-400">🟡 Medium: ${medium}</span>` : ''}
+                            ${low > 0 ? `<span class="text-blue-400">🔵 Low: ${low}</span>` : ''}
+                            ${high === 0 && medium === 0 && low === 0 ? '<span class="text-gray-500">No hay fallos de severidad registrados</span>' : ''}
+                        </div>
+                        ` : ''}
+
+                        <!-- Barra de progreso -->
+                        ${total > 0 ? `
+                        <div class="mt-3 flex items-center gap-3">
+                            <div class="flex-1 w-full bg-gray-800 rounded-full h-2.5 overflow-hidden">
+                                <div class="h-2.5 rounded-full bg-gradient-to-r from-green-500 to-green-400" 
+                                     style="width: ${Math.round((passed / total) * 100)}%"></div>
+                            </div>
+                            <span class="text-xs text-gray-400">${Math.round((passed / total) * 100)}%</span>
+                        </div>
+                        ` : ''}
+                        ` : ''}
+
+                        <!-- Escaneo en progreso -->
+                        ${isRunning ? `
+                        <div class="mt-3 w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                            <div class="bg-green-500 h-1.5 rounded-full animate-pulse" 
+                                 style="width: ${Math.min((Date.now() - new Date(scan.started_at).getTime()) / 60000 * 10, 95)}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">⏳ Escaneando... ${Math.min(Math.round((Date.now() - new Date(scan.started_at).getTime()) / 60000 * 10), 95)}%</p>
+                        ` : ''}
+
+                        <!-- Timestamp finalización -->
+                        ${scan.finished_at ? `
+                        <div class="mt-2 text-xs text-gray-500">
+                            ⏱️ Finalizado: ${scan.finished_at.replace('T', ' ').slice(0, 16)}
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+            document.getElementById('scanCount').textContent = `📋 ${scans.length} escaneos`;
+        }
+
+        // ============ ACTUALIZAR ESTADÍSTICAS ============
+
+        function updateStats(scans) {
+            const total = scans.length;
+            const completed = scans.filter(s => s.status === 'completed').length;
+            const failed = scans.filter(s => s.status === 'failed').length;
+            const uniqueTargets = new Set(scans.map(s => s.target)).size;
+
+            document.getElementById('totalScans').textContent = `📊 Total: ${total} registros`;
+            document.getElementById('completedScans').textContent = `✅ Completados: ${completed}`;
+            document.getElementById('failedScans').textContent = `❌ Fallidos: ${failed}`;
+            document.getElementById('uniqueTargets').textContent = `🖥️ Servidores: ${uniqueTargets}`;
+        }
+
+        // ============ DESCARGAR REPORTE ============
+
+        async function downloadReport(scanId) {
+            try {
+                const res = await fetch(`/api/scan/report/${scanId}`);
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `report-${scanId}.html`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + (data.error || 'No se pudo descargar el reporte'));
+                }
+            } catch (err) {
+                alert('Error de conexión');
+            }
+        }
+
+        // ============ VER REPORTE ============
+
+        async function viewReport(scanId) {
+            try {
+                const res = await fetch(`/api/scan/report/${scanId}`);
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    window.open(url, '_blank');
+                    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+                } else {
+                    const data = await res.json();
+                    alert('Error: ' + (data.error || 'No se pudo cargar el reporte'));
+                }
+            } catch (err) {
+                alert('Error de conexión');
+            }
+        }
+
+        // ============ CARGAR AL INICIO ============
+
+        document.addEventListener('DOMContentLoaded', loadScans);
+    </script>
+</body>
+</html>

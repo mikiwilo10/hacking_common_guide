@@ -91,3 +91,27 @@ oscap-ssh phantom_ssh@192.168.56.27 22 \
   --profile xccdf_org.ssgproject.content_profile_pci-dss \
   --report reporte-nodo1.html \
   /usr/share/xml/scap/ssg/content/ssg-rhel8-ds.xml
+
+
+
+  # Instalar Ansible en el Nodo Central
+
+  sudo apt install ansible -y
+
+
+
+# Instalación en entorno virtual (Recomendado para desarrollo)
+
+# Crear entorno virtual
+python3 -m venv ansible-env
+source ansible-env/bin/activate
+
+# Instalar Ansible
+pip install ansible
+
+# Verificar
+ansible --version
+
+# Para salir del entorno virtual
+deactivate
+

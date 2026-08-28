@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecAuto - Hardening Automatizado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-950 text-gray-200 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 border-b border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-shield-haltered text-green-500 text-xl"></i>
+                <span class="text-white font-bold text-lg">SecAuto</span>
+            </div>
+            <div class="flex gap-4 text-sm">
+                <a href="/scanner" class="text-gray-400 hover:text-green-400">
+                    <i class="fas fa-scan mr-1"></i>Escáner
+                </a>
+                <a href="/history" class="text-gray-400 hover:text-green-400">
+                    <i class="fas fa-history mr-1"></i>Historial
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-white mb-2">
+                <i class="fas fa-robot text-green-500 mr-2"></i>
+                Automatización de Hardening con IA
+            </h1>
+            <p class="text-gray-500 max-w-2xl mx-auto">
+                Sube tu informe de vulnerabilidades y genera playbooks de Ansible automáticamente.
+            </p>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4">
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-800 text-center">
+                <p class="text-gray-500 text-xs">Escaneos</p>
+                <p class="text-white text-2xl font-bold">{{ stats.total_scans }}</p>
+            </div>
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-800 text-center">
+                <p class="text-gray-500 text-xs">Playbooks</p>
+                <p class="text-white text-2xl font-bold">{{ stats.total_playbooks }}</p>
+            </div>
+            <div class="bg-gray-900 rounded-lg p-4 border border-gray-800 text-center">
+                <p class="text-gray-500 text-xs">Éxito</p>
+                <p class="text-green-500 text-2xl font-bold">{{ stats.success_rate }}%</p>
+            </div>
+        </div>
+
+        <!-- Upload -->
+        <div class="bg-gray-900 rounded-lg border border-gray-800 p-6">
+            <h2 class="text-lg font-semibold text-white mb-4">
+                <i class="fas fa-upload text-green-500 mr-2"></i>Cargar Informe
+            </h2>
+
+            <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
+
+                <div id="dropZone"
+                     class="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center cursor-pointer
+                            hover:border-green-500 transition-colors">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-600 mb-2"></i>
+                    <p class="text-gray-400">Arrastra tu archivo JSON o haz clic</p>
+                    <p class="text-gray-600 text-sm">Formatos: Lynis, OpenSCAP normalizado</p>
+                    <input type="file" id="fileInput" name="file" accept=".json" class="hidden" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">Perfil CIS</label>
+                        <select name="profile" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200">
+                            <option value="cis_level1_server">CIS Nivel 1 - Servidor</option>
+                            <option value="cis_level2_server">CIS Nivel 2 - Servidor</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm mb-1">Modelo IA</label>
+                        <select name="model" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-gray-200">
+                            <option value="gpt4">GPT-4</option>
+                            <option value="claude">Claude 3.5</option>
+                            <option value="llama3">Llama 3 (Local)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" id="analyzeBtn"
+                        class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg
+                               transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-brain mr-2"></i>Analizar con IA
+                </button>
+            </form>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsSection" class="hidden space-y-6">
+
+            <!-- Findings table -->
+            <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+                <div class="px-4 py-3 border-b border-gray-800">
+                    <h3 class="text-white font-semibold">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                        Hallazgos Detectados
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-950 text-gray-400 text-left">
+                            <tr>
+                                <th class="px-4 py-2">ID</th>
+                                <th class="px-4 py-2">Título</th>
+                                <th class="px-4 py-2">Severidad</th>
+                                <th class="px-4 py-2">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="findingsTable" class="divide-y divide-gray-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Playbook editor -->
+            <div class="bg-gray-900 rounded-lg border border-gray-800 p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-white font-semibold">
+                        <i class="fas fa-code text-blue-500 mr-2"></i>Playbook Generado
+                    </h3>
+                    <div class="flex gap-2">
+                        <button onclick="copyPlaybook()" class="text-gray-400 hover:text-white text-sm">
+                            <i class="fas fa-copy mr-1"></i>Copiar
+                        </button>
+                        <button onclick="downloadPlaybook()" class="text-gray-400 hover:text-white text-sm">
+                            <i class="fas fa-download mr-1"></i>Descargar
+                        </button>
+                    </div>
+                </div>
+                <textarea id="playbookEditor"
+                          class="w-full h-80 bg-gray-950 text-green-400 font-mono text-sm p-4 rounded
+                                 border border-gray-800 focus:border-green-500 outline-none resize-y"></textarea>
+                <button onclick="executePlaybook()"
+                        class="mt-3 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-play mr-2"></i>Ejecutar Playbook
+                </button>
+            </div>
+
+            <!-- Console output -->
+            <div id="consoleSection" class="hidden bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+                <div class="px-4 py-3 border-b border-gray-800">
+                    <h3 class="text-white font-semibold">
+                        <i class="fas fa-terminal text-green-500 mr-2"></i>Consola de Ejecución
+                    </h3>
+                </div>
+                <pre id="consoleOutput"
+                     class="bg-black text-green-400 font-mono text-sm p-4 h-64 overflow-y-auto m-0">Esperando ejecución...</pre>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const resultsSection = document.getElementById('resultsSection');
+        const findingsTable = document.getElementById('findingsTable');
+        const playbookEditor = document.getElementById('playbookEditor');
+        const consoleSection = document.getElementById('consoleSection');
+        const consoleOutput = document.getElementById('consoleOutput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('border-green-500'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-green-500'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('border-green-500');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                dropZone.innerHTML = `<i class="fas fa-file-code text-4xl text-green-500 mb-2"></i>
+                    <p class="text-green-400">${e.dataTransfer.files[0].name}</p>`;
+            }
+        });
+        fileInput.addEventListener('change', e => {
+            if (e.target.files.length) {
+                dropZone.innerHTML = `<i class="fas fa-file-code text-4xl text-green-500 mb-2"></i>
+                    <p class="text-green-400">${e.target.files[0].name}</p>`;
+            }
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const file = fileInput.files[0];
+            if (!file) return alert('Selecciona un archivo JSON');
+
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Analizando...';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('profile', document.querySelector('[name="profile"]').value);
+            formData.append('model', document.querySelector('[name="model"]').value);
+
+            try {
+                const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (res.ok) showResults(data);
+                else alert('Error: ' + (data.error || 'Desconocido'));
+            } catch (err) {
+                alert('Error de conexión');
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<i class="fas fa-brain mr-2"></i>Analizar con IA';
+            }
+        });
+
+        function showResults(data) {
+            resultsSection.classList.remove('hidden');
+            findingsTable.innerHTML = data.findings.map(f => {
+                const sev = f.severity === 'high' ? 'text-red-500' : f.severity === 'medium' ? 'text-yellow-500' : 'text-blue-500';
+                const passed = f.result === 'pass';
+                return `<tr class="hover:bg-gray-800">
+                    <td class="px-4 py-2 font-mono text-gray-300">${f.id}</td>
+                    <td class="px-4 py-2">${f.title}</td>
+                    <td class="px-4 py-2 ${sev} font-medium">${f.severity.toUpperCase()}</td>
+                    <td class="px-4 py-2">
+                        <span class="text-xs px-2 py-0.5 rounded-full ${passed ? 'bg-green-900 text-green-400' : 'bg-red-900 text-red-400'}">
+                            ${passed ? 'PASS' : 'FAIL'}
+                        </span>
+                    </td>
+                </tr>`;
+            }).join('');
+            playbookEditor.value = data.playbook;
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function executePlaybook() {
+            const playbook = playbookEditor.value.trim();
+            if (!playbook) return alert('No hay playbook para ejecutar');
+            consoleSection.classList.remove('hidden');
+            consoleOutput.textContent = 'Ejecutando...\n';
+            try {
+                const res = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playbook })
+                });
+                const data = await res.json();
+                consoleOutput.textContent = data.output || data.error || 'Sin salida';
+            } catch (err) {
+                consoleOutput.textContent = 'Error de conexión';
+            }
+            consoleSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyPlaybook() {
+            navigator.clipboard.writeText(playbookEditor.value).then(() => alert('Copiado'));
+        }
+
+        function downloadPlaybook() {
+            const blob = new Blob([playbookEditor.value], { type: 'text/yaml' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'playbook.yml';
+            a.click();
+        }
+    </script>
+</body>
+</html>
