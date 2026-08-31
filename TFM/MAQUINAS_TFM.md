@@ -43,6 +43,8 @@ Para DHCP (si tu red asigna IP automáticamente):
 ```bash
 auto <nombre_interfaz>
 iface <nombre_interfaz> inet dhcp
+
+
 sudo systemctl restart networking
 ```
 
@@ -122,6 +124,9 @@ Dentro del editor (normalmente nano o vi), agrega:
 
 ```bash
 auditor ALL=(ALL) NOPASSWD: /usr/bin/oscap
+
+auditor ALL=(ALL) ALL
+
 ```
 
 O si quieres ser más restrictivo y limitar también las opciones:
